@@ -12,8 +12,24 @@ import 'package:flutter/material.dart';
 import '/custom_code/actions/index.dart';
 import '/flutter_flow/custom_functions.dart';
 import '/custom_code/actions/init_audio_player.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 Future<void> pauseSongBtn() async {
-  await AudioManager.instance.pause();
-  FFAppState().isPlaying = false;
+  FirebaseCrashlytics.instance.log('audio: pauseSongBtn called');
+  if (!AudioManager.isInitialized) {
+    FirebaseCrashlytics.instance.log('audio: pauseSongBtn called before init — aborting');
+    debugPrint('pauseSongBtn: AudioManager not initialised');
+    return;
+  }
+  try {
+    await AudioManager.instance.pause();
+    FFAppState().isPlaying = false;
+  } catch (e, stack) {
+    debugPrint('pauseSongBtn error: $e');
+    await FirebaseCrashlytics.instance.recordError(
+      e, stack,
+      reason: 'pauseSongBtn failed',
+      fatal: false,
+    );
+  }
 }

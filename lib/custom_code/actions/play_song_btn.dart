@@ -12,8 +12,24 @@ import 'package:flutter/material.dart';
 import '/custom_code/actions/index.dart';
 import '/flutter_flow/custom_functions.dart';
 import '/custom_code/actions/init_audio_player.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 Future<void> playSongBtn() async {
-  await AudioManager.instance.play();
-  FFAppState().isPlaying = true;
+  FirebaseCrashlytics.instance.log('audio: playSongBtn called');
+  if (!AudioManager.isInitialized) {
+    FirebaseCrashlytics.instance.log('audio: playSongBtn called before init — aborting');
+    debugPrint('playSongBtn: AudioManager not initialised');
+    return;
+  }
+  try {
+    await AudioManager.instance.play();
+    FFAppState().isPlaying = true;
+  } catch (e, stack) {
+    debugPrint('playSongBtn error: $e');
+    await FirebaseCrashlytics.instance.recordError(
+      e, stack,
+      reason: 'playSongBtn failed',
+      fatal: false,
+    );
+  }
 }

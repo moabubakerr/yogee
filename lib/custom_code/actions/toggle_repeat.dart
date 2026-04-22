@@ -12,7 +12,25 @@ import 'package:flutter/material.dart';
 import '/custom_code/actions/index.dart';
 import '/flutter_flow/custom_functions.dart';
 import '/custom_code/actions/init_audio_player.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 Future<void> toggleRepeat() async {
-  await AudioManager.instance.toggleRepeat();
+  FirebaseCrashlytics.instance.log('audio: toggleRepeat called');
+  if (!AudioManager.isInitialized) {
+    FirebaseCrashlytics.instance.log('audio: toggleRepeat called before init — aborting');
+    debugPrint('toggleRepeat: AudioManager not initialised');
+    return;
+  }
+  try {
+    await AudioManager.instance.toggleRepeat();
+    FirebaseCrashlytics.instance.log(
+        'audio: repeat is now ${AudioManager.instance.isRepeatingNotifier.value}');
+  } catch (e, stack) {
+    debugPrint('toggleRepeat error: $e');
+    await FirebaseCrashlytics.instance.recordError(
+      e, stack,
+      reason: 'toggleRepeat failed',
+      fatal: false,
+    );
+  }
 }

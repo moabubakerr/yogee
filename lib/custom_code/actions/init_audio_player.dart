@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 // =====================================================================
 // GLOBAL ACCESS — all action files use AudioManager.instance
@@ -69,10 +70,14 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
     player.currentIndexStream.listen(
       (index) {
         if (index != null && index < _songDataList.length) {
+          FirebaseCrashlytics.instance.log('audio: track changed to index $index');
           _updateNowPlayingInfo(index);
         }
       },
-      onError: (e, _) => debugPrint('currentIndexStream error: $e'),
+      onError: (e, stack) {
+        debugPrint('currentIndexStream error: $e');
+        FirebaseCrashlytics.instance.recordError(e, stack, reason: 'currentIndexStream error', fatal: false);
+      },
     );
   }
 
@@ -143,6 +148,8 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
     int initialIndex = 0,
   }) async {
     if (songs.isEmpty) return;
+    FirebaseCrashlytics.instance.log(
+        'audio: loadPlaylistWithMetadata — ${songs.length} tracks, initialIndex=$initialIndex, first="${songs.first.songTitle}"');
     _songDataList = songs;
     final playlist = ConcatenatingAudioSource(
       children:
@@ -156,15 +163,23 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
         initialPosition: Duration.zero,
       );
       _updateNowPlayingInfo(initialIndex);
+      FirebaseCrashlytics.instance.log('audio: playlist loaded, starting playback');
       play();
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint("Error loading playlist: $e");
+      await FirebaseCrashlytics.instance.recordError(
+        e, stack,
+        reason: 'loadPlaylistWithMetadata failed — ${songs.length} tracks, initialIndex=$initialIndex',
+        fatal: false,
+      );
     }
   }
 
   // Playlist loading with just URLs (backward compatible)
   Future<void> loadPlaylist(List<String> urls, {int initialIndex = 0}) async {
     if (urls.isEmpty) return;
+    FirebaseCrashlytics.instance.log(
+        'audio: loadPlaylist — ${urls.length} URLs, initialIndex=$initialIndex');
     _songDataList = urls
         .asMap()
         .entries
@@ -187,9 +202,15 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
         initialPosition: Duration.zero,
       );
       _updateNowPlayingInfo(initialIndex);
+      FirebaseCrashlytics.instance.log('audio: URL playlist loaded, starting playback');
       play();
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint("Error loading playlist: $e");
+      await FirebaseCrashlytics.instance.recordError(
+        e, stack,
+        reason: 'loadPlaylist failed — ${urls.length} URLs, initialIndex=$initialIndex',
+        fatal: false,
+      );
     }
   }
 
@@ -229,6 +250,7 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   // Downloads
   Future<void> downloadMusic(String url, String fileName) async {
+    FirebaseCrashlytics.instance.log('audio: downloadMusic started — $fileName');
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -236,9 +258,18 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
         final file = File('${directory.path}/$fileName');
         await file.writeAsBytes(response.bodyBytes);
         debugPrint('Download complete: ${file.path}');
+        FirebaseCrashlytics.instance.log('audio: downloadMusic complete — ${file.path}');
+      } else {
+        FirebaseCrashlytics.instance.log(
+            'audio: downloadMusic HTTP error ${response.statusCode} — $fileName');
       }
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint('Download error: $e');
+      await FirebaseCrashlytics.instance.recordError(
+        e, stack,
+        reason: 'downloadMusic failed — $fileName',
+        fatal: false,
+      );
     }
   }
 
@@ -269,6 +300,8 @@ Future<void> initAudioPlayer() async {
   }
   AudioManager._initCompleter = Completer<void>();
 
+  FirebaseCrashlytics.instance.log('audio: initAudioPlayer starting');
+
   try {
     AudioManager.instance = await AudioService.init(
       builder: () => AudioPlayerHandler(),
@@ -279,19 +312,26 @@ Future<void> initAudioPlayer() async {
         androidStopForegroundOnPause: true,
       ),
     );
+    FirebaseCrashlytics.instance.log('audio: AudioService.init succeeded');
   } on AssertionError catch (_) {
     // AudioService is already registered (e.g. after hot-restart or when the
     // Android background service survives an app foreground/background cycle).
     // AudioManager.instance was set during the first successful init — reuse it.
     debugPrint('AudioService already initialized — skipping re-init.');
+    FirebaseCrashlytics.instance.log('audio: AudioService already registered — reusing existing instance');
     AudioManager.isInitialized = true;
     AudioManager._initCompleter!.complete();
     AudioManager._initCompleter = null;
     return;
-  } catch (e) {
+  } catch (e, stack) {
     // Non-fatal: fall back to a bare handler (no OS media controls / lock screen).
     // Common cause on Android: MainActivity must extend FlutterFragmentActivity.
     debugPrint('AudioService init failed, using fallback handler: $e');
+    await FirebaseCrashlytics.instance.recordError(
+      e, stack,
+      reason: 'AudioService.init failed — falling back to bare AudioPlayerHandler (no OS controls)',
+      fatal: false,
+    );
     AudioManager.instance = AudioPlayerHandler();
   }
 
@@ -299,18 +339,29 @@ Future<void> initAudioPlayer() async {
   AudioManager._initCompleter!.complete();
   AudioManager._initCompleter = null;
 
+  FirebaseCrashlytics.instance.log('audio: initAudioPlayer complete, subscribing to streams');
+
   AudioManager.instance.player.positionStream.listen(
     (pos) => FFAppState().currentPosition = pos.inSeconds.toDouble(),
-    onError: (e, _) => debugPrint('positionStream error: $e'),
+    onError: (e, stack) {
+      debugPrint('positionStream error: $e');
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'positionStream error', fatal: false);
+    },
   );
 
   AudioManager.instance.player.durationStream.listen(
     (dur) => FFAppState().totalDuration = dur?.inSeconds.toDouble() ?? 0.0,
-    onError: (e, _) => debugPrint('durationStream error: $e'),
+    onError: (e, stack) {
+      debugPrint('durationStream error: $e');
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'durationStream error', fatal: false);
+    },
   );
 
   AudioManager.instance.player.playerStateStream.listen(
     (state) => FFAppState().isPlaying = state.playing,
-    onError: (e, _) => debugPrint('playerStateStream error: $e'),
+    onError: (e, stack) {
+      debugPrint('playerStateStream error: $e');
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'playerStateStream error', fatal: false);
+    },
   );
 }

@@ -10,6 +10,7 @@ import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:provider/provider.dart';
 import 'nav_model.dart';
 export 'nav_model.dart';
@@ -404,9 +405,14 @@ class _NavWidgetState extends State<NavWidget> {
                                                 highlightColor:
                                                     Colors.transparent,
                                                 onTap: () async {
-                                                  context.goNamed(
-                                                      DashboardWidget
-                                                          .routeName);
+                                                  FirebaseCrashlytics.instance.log('nav: tapping Dashboard tab');
+                                                  try {
+                                                    context.goNamed(
+                                                        DashboardWidget
+                                                            .routeName);
+                                                  } catch (e, stack) {
+                                                    await FirebaseCrashlytics.instance.recordError(e, stack, reason: 'nav: Dashboard tab navigation failed', fatal: false);
+                                                  }
                                                 },
                                                 child: Column(
                                                   mainAxisSize:
@@ -485,20 +491,25 @@ class _NavWidgetState extends State<NavWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
-                                                    context.goNamed(
-                                                      JournalWidget.routeName,
-                                                      extra: <String, dynamic>{
-                                                        '__transition_info__':
-                                                            TransitionInfo(
-                                                          hasTransition: true,
-                                                          transitionType:
-                                                              PageTransitionType
-                                                                  .fade,
-                                                          duration: Duration(
-                                                              milliseconds: 0),
-                                                        ),
-                                                      },
-                                                    );
+                                                    FirebaseCrashlytics.instance.log('nav: tapping Journal tab');
+                                                    try {
+                                                      context.goNamed(
+                                                        JournalWidget.routeName,
+                                                        extra: <String, dynamic>{
+                                                          '__transition_info__':
+                                                              TransitionInfo(
+                                                            hasTransition: true,
+                                                            transitionType:
+                                                                PageTransitionType
+                                                                    .fade,
+                                                            duration: Duration(
+                                                                milliseconds: 0),
+                                                          ),
+                                                        },
+                                                      );
+                                                    } catch (e, stack) {
+                                                      await FirebaseCrashlytics.instance.recordError(e, stack, reason: 'nav: Journal tab navigation failed', fatal: false);
+                                                    }
                                                   },
                                                   child: Column(
                                                     mainAxisSize:
@@ -587,20 +598,25 @@ class _NavWidgetState extends State<NavWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
-                                                    context.goNamed(
-                                                      CommunityWidget.routeName,
-                                                      extra: <String, dynamic>{
-                                                        '__transition_info__':
-                                                            TransitionInfo(
-                                                          hasTransition: true,
-                                                          transitionType:
-                                                              PageTransitionType
-                                                                  .fade,
-                                                          duration: Duration(
-                                                              milliseconds: 0),
-                                                        ),
-                                                      },
-                                                    );
+                                                    FirebaseCrashlytics.instance.log('nav: tapping Community tab');
+                                                    try {
+                                                      context.goNamed(
+                                                        CommunityWidget.routeName,
+                                                        extra: <String, dynamic>{
+                                                          '__transition_info__':
+                                                              TransitionInfo(
+                                                            hasTransition: true,
+                                                            transitionType:
+                                                                PageTransitionType
+                                                                    .fade,
+                                                            duration: Duration(
+                                                                milliseconds: 0),
+                                                          ),
+                                                        },
+                                                      );
+                                                    } catch (e, stack) {
+                                                      await FirebaseCrashlytics.instance.recordError(e, stack, reason: 'nav: Community tab navigation failed', fatal: false);
+                                                    }
                                                   },
                                                   child: Column(
                                                     mainAxisSize:
@@ -674,20 +690,25 @@ class _NavWidgetState extends State<NavWidget> {
                                                 highlightColor:
                                                     Colors.transparent,
                                                 onTap: () async {
-                                                  context.goNamed(
-                                                    LibraryWidget.routeName,
-                                                    extra: <String, dynamic>{
-                                                      '__transition_info__':
-                                                          TransitionInfo(
-                                                        hasTransition: true,
-                                                        transitionType:
-                                                            PageTransitionType
-                                                                .fade,
-                                                        duration: Duration(
-                                                            milliseconds: 0),
-                                                      ),
-                                                    },
-                                                  );
+                                                  FirebaseCrashlytics.instance.log('nav: tapping Library tab');
+                                                  try {
+                                                    context.goNamed(
+                                                      LibraryWidget.routeName,
+                                                      extra: <String, dynamic>{
+                                                        '__transition_info__':
+                                                            TransitionInfo(
+                                                          hasTransition: true,
+                                                          transitionType:
+                                                              PageTransitionType
+                                                                  .fade,
+                                                          duration: Duration(
+                                                              milliseconds: 0),
+                                                        ),
+                                                      },
+                                                    );
+                                                  } catch (e, stack) {
+                                                    await FirebaseCrashlytics.instance.recordError(e, stack, reason: 'nav: Library tab navigation failed', fatal: false);
+                                                  }
                                                 },
                                                 child: Column(
                                                   mainAxisSize:
@@ -777,16 +798,21 @@ class _NavWidgetState extends State<NavWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                context.goNamed(
-                                  MeditationWidget.routeName,
-                                  extra: <String, dynamic>{
-                                    '__transition_info__': TransitionInfo(
-                                      hasTransition: true,
-                                      transitionType: PageTransitionType.fade,
-                                      duration: Duration(milliseconds: 0),
-                                    ),
-                                  },
-                                );
+                                FirebaseCrashlytics.instance.log('nav: tapping Meditate tab');
+                                try {
+                                  context.goNamed(
+                                    MeditationWidget.routeName,
+                                    extra: <String, dynamic>{
+                                      '__transition_info__': TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType: PageTransitionType.fade,
+                                        duration: Duration(milliseconds: 0),
+                                      ),
+                                    },
+                                  );
+                                } catch (e, stack) {
+                                  await FirebaseCrashlytics.instance.recordError(e, stack, reason: 'nav: Meditate tab navigation failed', fatal: false);
+                                }
                               },
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,

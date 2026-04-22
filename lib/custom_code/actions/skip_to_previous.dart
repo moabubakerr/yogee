@@ -12,7 +12,23 @@ import 'package:flutter/material.dart';
 import '/custom_code/actions/index.dart';
 import '/flutter_flow/custom_functions.dart';
 import '/custom_code/actions/init_audio_player.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 Future<void> skipToPrevious() async {
-  await AudioManager.instance.skipToPrevious();
+  FirebaseCrashlytics.instance.log('audio: skipToPrevious called');
+  if (!AudioManager.isInitialized) {
+    FirebaseCrashlytics.instance.log('audio: skipToPrevious called before init — aborting');
+    debugPrint('skipToPrevious: AudioManager not initialised');
+    return;
+  }
+  try {
+    await AudioManager.instance.skipToPrevious();
+  } catch (e, stack) {
+    debugPrint('skipToPrevious error: $e');
+    await FirebaseCrashlytics.instance.recordError(
+      e, stack,
+      reason: 'skipToPrevious failed',
+      fatal: false,
+    );
+  }
 }
