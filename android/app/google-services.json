@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "453398507872",
+    "project_id": "yoogeeapp",
+    "storage_bucket": "yoogeeapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453398507872:android:1c704f3ae94aa6a5962e05",
+        "android_client_info": {
+          "package_name": "com.mycompany.yoogeeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "453398507872-53fsnd1kbl3bj1ia9ouub1r57c42ncns.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.yoogeeapp",
+            "certificate_hash": "6e07f73e43157d0d0704b277f2e15311b2bd6879"
+          }
+        },
+        {
+          "client_id": "453398507872-6uqh1n473l2sh28igjaekegmv7e2k0kp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.yoogeeapp",
+            "certificate_hash": "35159a1a13e86a2037ceec1ab47a05d9124a63c9"
+          }
+        },
+        {
+          "client_id": "453398507872-e6kbhsovak52qg836bgbu47ds20g983s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.yoogeeapp",
+            "certificate_hash": "77f6a254480e22fec983a5bd2a233bb71550deb0"
+          }
+        },
+        {
+          "client_id": "453398507872-g296l1j3odt9a4dnim4vj20oagp02696.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.yoogeeapp",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "453398507872-l9s0l3hivr3m67tjr4ombqt6kkdhj1kc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.yoogeeapp",
+            "certificate_hash": "eed956c6ed04cb1726ab4c09c3cb90f7f7040cc7"
+          }
+        },
+        {
+          "client_id": "453398507872-uuclbk71s6vuuonr0qaefaqonpfsjioo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRPs7dZtAP8LJXoOCkrFE1aJ_pzk3Otb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "453398507872-uuclbk71s6vuuonr0qaefaqonpfsjioo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "453398507872-6lgf96v7tcpkd01rej5l7ar1clpsco3c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.yoogeeapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
