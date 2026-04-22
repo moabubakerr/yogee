@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(flutter analyze *)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(grep -v \"//\")"
     ]
   }
 }

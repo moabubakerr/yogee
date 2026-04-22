@@ -1762,6 +1762,7 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                       )
                                                       .orderBy('date',
                                                           descending: true),
+                                              limit: _model.postsPageSize,
                                             ),
                                             builder: (context, snapshot) {
                                               // Customize what your widget looks like when it's loading.
@@ -1787,6 +1788,10 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                   listViewPostsRecordList =
                                                   snapshot.data!;
 
+                                              final hasMore =
+                                                  listViewPostsRecordList
+                                                          .length >=
+                                                      _model.postsPageSize;
                                               return ListView.separated(
                                                 padding: EdgeInsets.zero,
                                                 primary: false,
@@ -1794,11 +1799,36 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                 scrollDirection: Axis.vertical,
                                                 itemCount:
                                                     listViewPostsRecordList
-                                                        .length,
+                                                            .length +
+                                                        (hasMore ? 1 : 0),
                                                 separatorBuilder: (_, __) =>
                                                     SizedBox(height: 16.0),
                                                 itemBuilder:
                                                     (context, listViewIndex) {
+                                                  if (listViewIndex ==
+                                                      listViewPostsRecordList
+                                                          .length) {
+                                                    return Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16.0),
+                                                      child: Center(
+                                                        child: TextButton(
+                                                          onPressed: () =>
+                                                              safeSetState(() =>
+                                                                  _model.postsPageSize +=
+                                                                      20),
+                                                          child: Text(
+                                                            'Load More',
+                                                            style: TextStyle(
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
                                                   final listViewPostsRecord =
                                                       listViewPostsRecordList[
                                                           listViewIndex];

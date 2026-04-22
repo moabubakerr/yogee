@@ -42,6 +42,9 @@ class OthersprofileModel extends FlutterFlowModel<OthersprofileWidget> {
   // Model for nav component.
   late NavModel navModel;
 
+  // Pagination for profile posts list
+  int postsPageSize = 20;
+
   @override
   void initState(BuildContext context) {
     navModel = createModel(context, () => NavModel());

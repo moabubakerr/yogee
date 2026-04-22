@@ -406,6 +406,7 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                             []))
                                                     .orderBy('date',
                                                         descending: true),
+                                            limit: _model.allPostsPageSize,
                                           ),
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
@@ -441,11 +442,41 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                               primary: false,
                                               scrollDirection: Axis.vertical,
                                               itemCount: listViewPostsRecordList
-                                                  .length,
+                                                      .length +
+                                                  (listViewPostsRecordList
+                                                              .length >=
+                                                          _model.allPostsPageSize
+                                                      ? 1
+                                                      : 0),
                                               separatorBuilder: (_, __) =>
                                                   SizedBox(height: 16.0),
                                               itemBuilder:
                                                   (context, listViewIndex) {
+                                                if (listViewIndex ==
+                                                    listViewPostsRecordList
+                                                        .length) {
+                                                  return Center(
+                                                    child: TextButton(
+                                                      onPressed: () =>
+                                                          safeSetState(() =>
+                                                              _model.allPostsPageSize +=
+                                                                  20),
+                                                      child: Text('Load More',
+                                                          style: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .bodyMedium
+                                                              .override(
+                                                                font: GoogleFonts
+                                                                    .manrope(),
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                                letterSpacing:
+                                                                    0.0,
+                                                              )),
+                                                    ),
+                                                  );
+                                                }
                                                 final listViewPostsRecord =
                                                     listViewPostsRecordList[
                                                         listViewIndex];
@@ -1041,6 +1072,8 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                   []))
                                                           .orderBy('date',
                                                               descending: true),
+                                                      limit: _model
+                                                          .followingPostsPageSize,
                                                     ),
                                                     builder:
                                                         (context, snapshot) {
@@ -1080,12 +1113,44 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                             Axis.vertical,
                                                         itemCount:
                                                             listViewPostsRecordList
-                                                                .length,
+                                                                    .length +
+                                                                (listViewPostsRecordList
+                                                                            .length >=
+                                                                        _model
+                                                                            .followingPostsPageSize
+                                                                    ? 1
+                                                                    : 0),
                                                         separatorBuilder:
                                                             (_, __) => SizedBox(
                                                                 height: 16.0),
                                                         itemBuilder: (context,
                                                             listViewIndex) {
+                                                          if (listViewIndex ==
+                                                              listViewPostsRecordList
+                                                                  .length) {
+                                                            return Center(
+                                                              child: TextButton(
+                                                                onPressed: () =>
+                                                                    safeSetState(
+                                                                        () => _model
+                                                                            .followingPostsPageSize +=
+                                                                            20),
+                                                                child: Text(
+                                                                    'Load More',
+                                                                    style: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .override(
+                                                                          font: GoogleFonts
+                                                                              .manrope(),
+                                                                          color: FlutterFlowTheme.of(context)
+                                                                              .primary,
+                                                                          letterSpacing:
+                                                                              0.0,
+                                                                        )),
+                                                              ),
+                                                            );
+                                                          }
                                                           final listViewPostsRecord =
                                                               listViewPostsRecordList[
                                                                   listViewIndex];

@@ -1104,6 +1104,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                           arrayContains:
                                                               currentUserReference,
                                                         ),
+                                                        limit: 50,
                                                       ),
                                                       builder:
                                                           (context, snapshot) {

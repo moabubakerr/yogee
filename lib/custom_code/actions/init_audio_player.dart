@@ -23,6 +23,7 @@ import 'package:path_provider/path_provider.dart';
 class AudioManager {
   static late AudioPlayerHandler instance;
   static bool isInitialized = false;
+  static Completer<void>? _initCompleter;
 }
 
 // =====================================================================
@@ -65,11 +66,14 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   AudioPlayerHandler() {
     player.playbackEventStream.map(_transformEvent).pipe(playbackState);
-    player.currentIndexStream.listen((index) {
-      if (index != null && index < _songDataList.length) {
-        _updateNowPlayingInfo(index);
-      }
-    });
+    player.currentIndexStream.listen(
+      (index) {
+        if (index != null && index < _songDataList.length) {
+          _updateNowPlayingInfo(index);
+        }
+      },
+      onError: (e, _) => debugPrint('currentIndexStream error: $e'),
+    );
   }
 
   void _updateNowPlayingInfo(int index) {
@@ -259,27 +263,54 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
 Future<void> initAudioPlayer() async {
   if (AudioManager.isInitialized) return;
 
-  AudioManager.instance = await AudioService.init(
-    builder: () => AudioPlayerHandler(),
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.yoogeeapp.audio',
-      androidNotificationChannelName: 'Music Playback',
-      androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
-    ),
-  );
+  // If already in progress, wait for that call to finish instead of calling init() again.
+  if (AudioManager._initCompleter != null) {
+    return AudioManager._initCompleter!.future;
+  }
+  AudioManager._initCompleter = Completer<void>();
+
+  try {
+    AudioManager.instance = await AudioService.init(
+      builder: () => AudioPlayerHandler(),
+      config: const AudioServiceConfig(
+        androidNotificationChannelId: 'com.yoogeeapp.audio',
+        androidNotificationChannelName: 'Music Playback',
+        androidNotificationOngoing: true,
+        androidStopForegroundOnPause: true,
+      ),
+    );
+  } on AssertionError catch (_) {
+    // AudioService is already registered (e.g. after hot-restart or when the
+    // Android background service survives an app foreground/background cycle).
+    // AudioManager.instance was set during the first successful init — reuse it.
+    debugPrint('AudioService already initialized — skipping re-init.');
+    AudioManager.isInitialized = true;
+    AudioManager._initCompleter!.complete();
+    AudioManager._initCompleter = null;
+    return;
+  } catch (e) {
+    // Non-fatal: fall back to a bare handler (no OS media controls / lock screen).
+    // Common cause on Android: MainActivity must extend FlutterFragmentActivity.
+    debugPrint('AudioService init failed, using fallback handler: $e');
+    AudioManager.instance = AudioPlayerHandler();
+  }
 
   AudioManager.isInitialized = true;
+  AudioManager._initCompleter!.complete();
+  AudioManager._initCompleter = null;
 
-  AudioManager.instance.player.positionStream.listen((pos) {
-    FFAppState().currentPosition = pos.inSeconds.toDouble();
-  });
+  AudioManager.instance.player.positionStream.listen(
+    (pos) => FFAppState().currentPosition = pos.inSeconds.toDouble(),
+    onError: (e, _) => debugPrint('positionStream error: $e'),
+  );
 
-  AudioManager.instance.player.durationStream.listen((dur) {
-    FFAppState().totalDuration = dur?.inSeconds.toDouble() ?? 0.0;
-  });
+  AudioManager.instance.player.durationStream.listen(
+    (dur) => FFAppState().totalDuration = dur?.inSeconds.toDouble() ?? 0.0,
+    onError: (e, _) => debugPrint('durationStream error: $e'),
+  );
 
-  AudioManager.instance.player.playerStateStream.listen((state) {
-    FFAppState().isPlaying = state.playing;
-  });
+  AudioManager.instance.player.playerStateStream.listen(
+    (state) => FFAppState().isPlaying = state.playing,
+    onError: (e, _) => debugPrint('playerStateStream error: $e'),
+  );
 }

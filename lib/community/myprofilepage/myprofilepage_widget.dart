@@ -1352,6 +1352,7 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                     )
                                                     .orderBy('date',
                                                         descending: true),
+                                            limit: _model.postsPageSize,
                                           ),
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
@@ -1377,6 +1378,10 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                 listViewPostsRecordList =
                                                 snapshot.data!;
 
+                                            final hasMore =
+                                                listViewPostsRecordList
+                                                        .length >=
+                                                    _model.postsPageSize;
                                             return ListView.separated(
                                               padding: EdgeInsets.fromLTRB(
                                                 0,
@@ -1387,12 +1392,39 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                               primary: false,
                                               shrinkWrap: true,
                                               scrollDirection: Axis.vertical,
-                                              itemCount: listViewPostsRecordList
-                                                  .length,
+                                              itemCount:
+                                                  listViewPostsRecordList
+                                                          .length +
+                                                      (hasMore ? 1 : 0),
                                               separatorBuilder: (_, __) =>
                                                   SizedBox(height: 16.0),
                                               itemBuilder:
                                                   (context, listViewIndex) {
+                                                if (listViewIndex ==
+                                                    listViewPostsRecordList
+                                                        .length) {
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16.0),
+                                                    child: Center(
+                                                      child: TextButton(
+                                                        onPressed: () =>
+                                                            safeSetState(() =>
+                                                                _model.postsPageSize +=
+                                                                    20),
+                                                        child: Text(
+                                                          'Load More',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primary),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
                                                 final listViewPostsRecord =
                                                     listViewPostsRecordList[
                                                         listViewIndex];

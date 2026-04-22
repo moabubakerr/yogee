@@ -72,6 +72,7 @@ class _MeditationWidgetState extends State<MeditationWidget> {
               'filter',
               isEqualTo: _model.filter,
             ),
+        limit: 50,
       ),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
@@ -1709,8 +1710,12 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                             milliseconds:
                                                                                 500),
                                                                     imageUrl:
-                                                                        albumsItem
-                                                                            .coverImage,
+                                                                        valueOrDefault<
+                                                                            String>(
+                                                                      albumsItem
+                                                                          .coverImage,
+                                                                      'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
+                                                                    ),
                                                                     width:
                                                                         150.0,
                                                                     height:

@@ -112,7 +112,10 @@ class _AlbumsongoptionsWidgetState extends State<AlbumsongoptionsWidget> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: Image.network(
-                              bottomSheetMaterialSongsRecord.songCoverImage,
+                              valueOrDefault<String>(
+                                bottomSheetMaterialSongsRecord.songCoverImage,
+                                'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
+                              ),
                               width: 70.0,
                               height: 70.0,
                               fit: BoxFit.cover,

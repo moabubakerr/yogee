@@ -14,6 +14,7 @@ import 'index.dart'; // Imports other custom widgets
 
 import '/app_state.dart';
 import 'package:just_audio/just_audio.dart';
+import 'dart:async';
 import '/custom_code/actions/init_audio_player.dart';
 
 class MusicPlayerWidget extends StatefulWidget {
@@ -42,6 +43,7 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
   // hasn't finished yet, causing a white screen. Use nullable + async setup instead.
   AudioPlayerHandler? _audio;
   SongsRecord? _currentSong;
+  StreamSubscription? _indexSubscription;
   final Color _primaryColor = const Color(0xFFE0A4F0);
 
   final String pyramidImageUrl =
@@ -77,7 +79,8 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
     _audio!.loadPlaylist(urls, initialIndex: widget.initialIndex);
 
     // Update the displayed song when the track changes
-    _audio!.player.currentIndexStream.listen((index) {
+    _indexSubscription?.cancel();
+    _indexSubscription = _audio!.player.currentIndexStream.listen((index) {
       if (index != null && index < widget.playlist.length && mounted) {
         setState(() {
           _currentSong = widget.playlist[index];
@@ -92,6 +95,12 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
     String minutes = duration.inMinutes.toString();
     String seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
     return "$minutes:$seconds";
+  }
+
+  @override
+  void dispose() {
+    _indexSubscription?.cancel();
+    super.dispose();
   }
 
   @override

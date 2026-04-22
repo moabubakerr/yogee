@@ -96,7 +96,10 @@ class _DetailPageWidgetState extends State<DetailPageWidget> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: Image.network(
-                              stackAlbumsRecord.coverImage,
+                              valueOrDefault<String>(
+                                stackAlbumsRecord.coverImage,
+                                'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/Square.jpeg?alt=media&token=6bb95a92-ae29-4638-9326-8ad36bcfaff0',
+                              ),
                               width: double.infinity,
                               height: 393.0,
                               fit: BoxFit.cover,
@@ -110,6 +113,7 @@ class _DetailPageWidgetState extends State<DetailPageWidget> {
                                     isEqualTo: widget!.album,
                                   )
                                   .orderBy('num'),
+                              limit: 50,
                             ),
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
@@ -990,6 +994,7 @@ class _DetailPageWidgetState extends State<DetailPageWidget> {
                                               arrayContains:
                                                   stackAlbumsRecord.reference,
                                             ),
+                                            limit: 20,
                                           ),
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
@@ -1043,8 +1048,11 @@ class _DetailPageWidgetState extends State<DetailPageWidget> {
                                                         shape: BoxShape.circle,
                                                       ),
                                                       child: Image.network(
-                                                        listViewArtistsRecord
-                                                            .image,
+                                                        valueOrDefault<String>(
+                                                          listViewArtistsRecord
+                                                              .image,
+                                                          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                                                        ),
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),

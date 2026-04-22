@@ -124,7 +124,7 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                       alignment: AlignmentDirectional(0.0, 1.0),
                       child: Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
-                            0.0, 20.0, 0.0, 20.0),
+                            0.0, 20.0, 0.0, 0.0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.center,

@@ -168,7 +168,10 @@ class _NextWidgetState extends State<NextWidget> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            rowSongsRecord.songCoverImage,
+                            valueOrDefault<String>(
+                              rowSongsRecord.songCoverImage,
+                              'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
+                            ),
                             width: 80.0,
                             height: 80.0,
                             fit: BoxFit.cover,
@@ -294,6 +297,7 @@ class _NextWidgetState extends State<NextWidget> {
                         'num',
                         isGreaterThan: FFAppState().songnum,
                       ),
+                      limit: 20,
                     ),
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
@@ -329,7 +333,10 @@ class _NextWidgetState extends State<NextWidget> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Image.network(
-                                    listViewSongsRecord.songCoverImage,
+                                    valueOrDefault<String>(
+                                      listViewSongsRecord.songCoverImage,
+                                      'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
+                                    ),
                                     width: 60.0,
                                     height: 60.0,
                                     fit: BoxFit.cover,

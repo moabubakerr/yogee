@@ -318,7 +318,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
-                                                    context.pushNamed(
+                                                    context.goNamed(
                                                         DashboardWidget
                                                             .routeName);
                                                   },
@@ -390,7 +390,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                                     highlightColor:
                                                         Colors.transparent,
                                                     onTap: () async {
-                                                      context.pushNamed(
+                                                      context.goNamed(
                                                         JournalWidget.routeName,
                                                         extra: <String,
                                                             dynamic>{
@@ -481,7 +481,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                                     highlightColor:
                                                         Colors.transparent,
                                                     onTap: () async {
-                                                      context.pushNamed(
+                                                      context.goNamed(
                                                         CommunityWidget
                                                             .routeName,
                                                         extra: <String,
@@ -561,7 +561,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                                   highlightColor:
                                                       Colors.transparent,
                                                   onTap: () async {
-                                                    context.pushNamed(
+                                                    context.goNamed(
                                                       LibraryWidget.routeName,
                                                       extra: <String, dynamic>{
                                                         '__transition_info__':
@@ -653,7 +653,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
-                                  context.pushNamed(
+                                  context.goNamed(
                                     MeditationWidget.routeName,
                                     extra: <String, dynamic>{
                                       '__transition_info__': TransitionInfo(

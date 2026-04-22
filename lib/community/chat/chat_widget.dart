@@ -604,7 +604,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (_model.isDataUploading_uploadDataUda)
+                          if (_model.isDataUploading_uploadDataUda && _model.uploadedFileUrl_uploadDataUda.isNotEmpty)
                             Padding(
                               padding: EdgeInsetsDirectional.fromSTEB(
                                   0.0, 10.0, 0.0, 10.0),
