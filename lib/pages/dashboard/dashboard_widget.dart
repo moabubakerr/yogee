@@ -296,14 +296,46 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                 child: Padding(
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       5.0, 0.0, 0.0, 0.0),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(0.0),
-                                    child: Image.asset(
-                                      'assets/images/soverin_badge2.png',
-                                      width: 200.0,
-                                      fit: BoxFit.cover,
-                                      alignment: Alignment(-1.0, -1.0),
-                                    ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      // TODO(brand-stickers): replace with a
+                                      // StreamBuilder<List<BrandStickerRecord>>
+                                      // once the dynamic stickers collection
+                                      // exists in Firestore. Placeholder chips
+                                      // render the structure so the layout is
+                                      // correct ahead of backend wiring.
+                                      ...List.generate(4, (i) => Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    0.0, 0.0, 4.0, 0.0),
+                                            child: Container(
+                                              width: 28.0,
+                                              height: 28.0,
+                                              decoration: BoxDecoration(
+                                                color: Color(0xFF161616),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                border: Border.all(
+                                                  color: Color(0x33D4B8E8),
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                            ),
+                                          )),
+                                      SizedBox(width: 6.0),
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(0.0),
+                                        child: Image.asset(
+                                          'assets/images/soverin_badge2.png',
+                                          width: 130.0,
+                                          fit: BoxFit.cover,
+                                          alignment: Alignment(-1.0, -1.0),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -368,28 +400,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Color(0xA9FFFFFF),
-                                                    offset: Offset(
-                                                      -0.5,
-                                                      -0.5,
-                                                    ),
-                                                  )
+                                                    blurRadius: 24.0,
+                                                    color: Color(0x33D4B8E8),
+                                                    offset: Offset(0.0, 0.0),
+                                                    spreadRadius: 1.0,
+                                                  ),
                                                 ],
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF181818),
-                                                    Colors.black
-                                                  ],
-                                                  stops: [0.0, 1.0],
-                                                  begin: AlignmentDirectional(
-                                                      0.64, 1.0),
-                                                  end: AlignmentDirectional(
-                                                      -0.64, -1.0),
-                                                ),
+                                                color: Color(0xFF161616),
                                                 borderRadius:
-                                                    BorderRadius.circular(6.0),
+                                                    BorderRadius.circular(24.0),
                                                 border: Border.all(
-                                                  color: Color(0x15FFFFFF),
+                                                  color: Color(0x33D4B8E8),
                                                 ),
                                               ),
                                               child: Column(
@@ -405,7 +426,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/mediate.png',
-                                                      width: 30.0,
+                                                      width: 48.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -464,28 +485,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Color(0xA9FFFFFF),
-                                                    offset: Offset(
-                                                      -0.5,
-                                                      -0.5,
-                                                    ),
-                                                  )
+                                                    blurRadius: 24.0,
+                                                    color: Color(0x33D4B8E8),
+                                                    offset: Offset(0.0, 0.0),
+                                                    spreadRadius: 1.0,
+                                                  ),
                                                 ],
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF181818),
-                                                    Colors.black
-                                                  ],
-                                                  stops: [0.0, 1.0],
-                                                  begin: AlignmentDirectional(
-                                                      0.64, 1.0),
-                                                  end: AlignmentDirectional(
-                                                      -0.64, -1.0),
-                                                ),
+                                                color: Color(0xFF161616),
                                                 borderRadius:
-                                                    BorderRadius.circular(6.0),
+                                                    BorderRadius.circular(24.0),
                                                 border: Border.all(
-                                                  color: Color(0x14FFFFFF),
+                                                  color: Color(0x33D4B8E8),
                                                 ),
                                               ),
                                               child: Column(
@@ -501,7 +511,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/jornal.png',
-                                                      width: 30.0,
+                                                      width: 48.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -560,28 +570,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Color(0xA9FFFFFF),
-                                                    offset: Offset(
-                                                      -0.5,
-                                                      -0.5,
-                                                    ),
-                                                  )
+                                                    blurRadius: 24.0,
+                                                    color: Color(0x33D4B8E8),
+                                                    offset: Offset(0.0, 0.0),
+                                                    spreadRadius: 1.0,
+                                                  ),
                                                 ],
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF181818),
-                                                    Colors.black
-                                                  ],
-                                                  stops: [0.0, 1.0],
-                                                  begin: AlignmentDirectional(
-                                                      0.64, 1.0),
-                                                  end: AlignmentDirectional(
-                                                      -0.64, -1.0),
-                                                ),
+                                                color: Color(0xFF161616),
                                                 borderRadius:
-                                                    BorderRadius.circular(6.0),
+                                                    BorderRadius.circular(24.0),
                                                 border: Border.all(
-                                                  color: Color(0x14FFFFFF),
+                                                  color: Color(0x33D4B8E8),
                                                 ),
                                               ),
                                               child: Column(
@@ -597,7 +596,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/community.png',
-                                                      width: 30.0,
+                                                      width: 48.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -680,28 +679,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Color(0xA9FFFFFF),
-                                                    offset: Offset(
-                                                      -0.5,
-                                                      -0.5,
-                                                    ),
-                                                  )
+                                                    blurRadius: 24.0,
+                                                    color: Color(0x33D4B8E8),
+                                                    offset: Offset(0.0, 0.0),
+                                                    spreadRadius: 1.0,
+                                                  ),
                                                 ],
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF181818),
-                                                    Colors.black
-                                                  ],
-                                                  stops: [0.0, 1.0],
-                                                  begin: AlignmentDirectional(
-                                                      0.64, 1.0),
-                                                  end: AlignmentDirectional(
-                                                      -0.64, -1.0),
-                                                ),
+                                                color: Color(0xFF161616),
                                                 borderRadius:
-                                                    BorderRadius.circular(6.0),
+                                                    BorderRadius.circular(24.0),
                                                 border: Border.all(
-                                                  color: Color(0x14FFFFFF),
+                                                  color: Color(0x33D4B8E8),
                                                 ),
                                               ),
                                               child: Column(
@@ -717,7 +705,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/courses.png',
-                                                      width: 30.0,
+                                                      width: 48.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -772,26 +760,16 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                     boxShadow: [
                                       BoxShadow(
                                         blurRadius: 32.0,
-                                        color: Color(0x4BFFFFFF),
-                                        offset: Offset(
-                                          0.0,
-                                          0.0,
-                                        ),
-                                      )
+                                        color: Color(0x66D4B8E8),
+                                        offset: Offset(0.0, 0.0),
+                                        spreadRadius: 1.0,
+                                      ),
                                     ],
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Color(0x8D78576F),
-                                        Color(0xFF273C48),
-                                        Color(0x72362631)
-                                      ],
-                                      stops: [0.1, 0.5, 0.9],
-                                      begin: AlignmentDirectional(0.0, -1.0),
-                                      end: AlignmentDirectional(0, 1.0),
-                                    ),
-                                    borderRadius: BorderRadius.circular(10.0),
+                                    color: Color(0xFF0F0F0F),
+                                    borderRadius: BorderRadius.circular(20.0),
                                     border: Border.all(
-                                      color: Color(0x62FFFFFF),
+                                      color: Color(0x33D4B8E8),
+                                      width: 1.0,
                                     ),
                                   ),
                                   child: Padding(
@@ -813,20 +791,22 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                           ),
                                         ),
                                         Text(
-                                          'You Meditead',
+                                          'You Meditated',
                                           style: FlutterFlowTheme.of(context)
                                               .bodySmall
                                               .override(
                                                 font: GoogleFonts.manrope(
-                                                  fontWeight: FontWeight.w300,
+                                                  fontWeight: FontWeight.w500,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
                                                               context)
                                                           .bodySmall
                                                           .fontStyle,
                                                 ),
+                                                color: Colors.white,
+                                                fontSize: 13.0,
                                                 letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w300,
+                                                fontWeight: FontWeight.w500,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)
                                                         .bodySmall
@@ -1031,19 +1011,13 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                 child: Text(
                                   'New Meditations',
                                   style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
+                                      .headlineSmall
                                       .override(
-                                        font: GoogleFonts.manrope(
-                                          fontWeight: FontWeight.w500,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                        ),
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 22.0,
+                                        letterSpacing: -0.3,
                                         fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
+                                            .headlineSmall
                                             .fontStyle,
                                       ),
                                 ),
@@ -1051,17 +1025,14 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                             ),
                             Container(
                                 width: double.infinity,
-                                height: 150.0,
+                                height: 180.0,
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
                                       blurRadius: 40.0,
-                                      color: Color(0x30F1B2F0),
-                                      offset: Offset(
-                                        0.0,
-                                        2.0,
-                                      ),
-                                    )
+                                      color: Color(0x30D4B8E8),
+                                      offset: Offset(0.0, 2.0),
+                                    ),
                                   ],
                                 ),
                                 child: StreamBuilder<List<AlbumsRecord>>(
@@ -1127,32 +1098,22 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               );
                                             },
                                             child: Container(
-                                              width: 115.0,
+                                              width: 150.0,
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Color(0xC6FFFFFF),
-                                                    offset: Offset(
-                                                      -0.5,
-                                                      -0.5,
-                                                    ),
-                                                  )
+                                                    blurRadius: 20.0,
+                                                    color: Color(0x33D4B8E8),
+                                                    offset: Offset(0.0, 0.0),
+                                                    spreadRadius: 1.0,
+                                                  ),
                                                 ],
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF161616),
-                                                    Colors.black
-                                                  ],
-                                                  stops: [0.0, 1.0],
-                                                  begin: AlignmentDirectional(
-                                                      -0.64, 1.0),
-                                                  end: AlignmentDirectional(
-                                                      0.64, -1.0),
-                                                ),
+                                                color: Color(0xFF0F0F0F),
                                                 borderRadius:
-                                                    BorderRadius.circular(12.0),
+                                                    BorderRadius.circular(24.0),
                                                 border: Border.all(
-                                                  color: Color(0xFF404040),
+                                                  color: Color(0x33D4B8E8),
+                                                  width: 1.0,
                                                 ),
                                               ),
                                               child: Padding(
