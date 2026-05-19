@@ -134,7 +134,7 @@ class _AlbumsongoptionsWidgetState extends State<AlbumsongoptionsWidget> {
                                 style: FlutterFlowTheme.of(context)
                                     .headlineSmall
                                     .override(
-                                      font: GoogleFonts.manrope(
+                                      font: GoogleFonts.plusJakartaSans(
                                         fontWeight: FlutterFlowTheme.of(context)
                                             .headlineSmall
                                             .fontWeight,

@@ -115,7 +115,7 @@ class _PersonalinfoWidgetState extends State<PersonalinfoWidget> {
                 'Personal info',
                 textAlign: TextAlign.center,
                 style: FlutterFlowTheme.of(context).headlineSmall.override(
-                      font: GoogleFonts.manrope(
+                      font: GoogleFonts.plusJakartaSans(
                         fontWeight: FlutterFlowTheme.of(context)
                             .headlineSmall
                             .fontWeight,
@@ -672,7 +672,7 @@ class _PersonalinfoWidgetState extends State<PersonalinfoWidget> {
                                                 context)
                                             .headlineLarge
                                             .override(
-                                              font: GoogleFonts.manrope(
+                                              font: GoogleFonts.plusJakartaSans(
                                                 fontWeight: FontWeight.w600,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)

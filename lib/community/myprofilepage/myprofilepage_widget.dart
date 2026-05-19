@@ -1315,7 +1315,7 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                     style: FlutterFlowTheme.of(context)
                                         .headlineSmall
                                         .override(
-                                          font: GoogleFonts.manrope(
+                                          font: GoogleFonts.plusJakartaSans(
                                             fontWeight:
                                                 FlutterFlowTheme.of(context)
                                                     .headlineSmall

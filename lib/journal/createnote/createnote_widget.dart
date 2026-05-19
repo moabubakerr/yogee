@@ -52,28 +52,25 @@ class _CreatenoteWidgetState extends State<CreatenoteWidget> {
     return Align(
       alignment: AlignmentDirectional(0.0, 0.0),
       child: Container(
-        width: 330.0,
-        height: 500.0,
+        width: 360.0,
+        height: 580.0,
         decoration: BoxDecoration(
-          color: Color(0xD8000000),
+          color: Color(0xFF0A0A0A),
           boxShadow: [
             BoxShadow(
-              blurRadius: 24.0,
-              color: Color(0x2CF1B2F0),
+              blurRadius: 60.0,
+              color: Color(0x66D4B8E8),
               offset: Offset(
                 0.0,
-                2.0,
+                0.0,
               ),
-              spreadRadius: 3.0,
+              spreadRadius: 4.0,
             )
           ],
-          borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(
-            color: Color(0xFF939393),
-          ),
+          borderRadius: BorderRadius.circular(32.0),
         ),
         child: Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(4.0, 8.0, 4.0, 8.0),
+          padding: EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 20.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -131,35 +128,28 @@ class _CreatenoteWidgetState extends State<CreatenoteWidget> {
                               safeSetState(() {});
                             },
                             child: Container(
-                              width: 110.0,
-                              height: 110.0,
+                              width: 140.0,
+                              height: 140.0,
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    blurRadius: 30.0,
-                                    color: Color(0x5BF1B2F0),
-                                    offset: Offset(
-                                      -1.0,
-                                      -1.0,
-                                    ),
+                                    blurRadius: 24.0,
+                                    color: _model.state == 'note'
+                                        ? Color(0x80D4B8E8)
+                                        : Color(0x33D4B8E8),
+                                    offset: Offset(0.0, 0.0),
+                                    spreadRadius: 1.0,
                                   )
                                 ],
-                                gradient: LinearGradient(
-                                  colors: [
-                                    _model.state == 'note'
-                                        ? FlutterFlowTheme.of(context).primary
-                                        : Color(0xFF0A090A),
-                                    _model.state == 'note'
-                                        ? FlutterFlowTheme.of(context).primary
-                                        : Color(0xFF201E20)
-                                  ],
-                                  stops: [0.0, 1.0],
-                                  begin: AlignmentDirectional(0.0, -1.0),
-                                  end: AlignmentDirectional(0, 1.0),
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
+                                color: _model.state == 'note'
+                                    ? FlutterFlowTheme.of(context).primary
+                                    : Color(0xFF161616),
+                                borderRadius: BorderRadius.circular(24.0),
                                 border: Border.all(
-                                  color: Color(0x37FAFAFA),
+                                  color: _model.state == 'note'
+                                      ? FlutterFlowTheme.of(context).primary
+                                      : Color(0x33D6A8D8),
+                                  width: 1.0,
                                 ),
                               ),
                               child: Column(
@@ -216,35 +206,28 @@ class _CreatenoteWidgetState extends State<CreatenoteWidget> {
                               safeSetState(() {});
                             },
                             child: Container(
-                              width: 110.0,
-                              height: 110.0,
+                              width: 140.0,
+                              height: 140.0,
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    blurRadius: 30.0,
-                                    color: Color(0x5BF1B2F0),
-                                    offset: Offset(
-                                      -1.0,
-                                      -1.0,
-                                    ),
+                                    blurRadius: 24.0,
+                                    color: _model.state == 'voice'
+                                        ? Color(0x80D4B8E8)
+                                        : Color(0x33D4B8E8),
+                                    offset: Offset(0.0, 0.0),
+                                    spreadRadius: 1.0,
                                   )
                                 ],
-                                gradient: LinearGradient(
-                                  colors: [
-                                    _model.state == 'voice'
-                                        ? FlutterFlowTheme.of(context).primary
-                                        : Color(0xFF0A090A),
-                                    _model.state == 'voice'
-                                        ? FlutterFlowTheme.of(context).primary
-                                        : Color(0xFF201E20)
-                                  ],
-                                  stops: [0.0, 1.0],
-                                  begin: AlignmentDirectional(0.0, -1.0),
-                                  end: AlignmentDirectional(0, 1.0),
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
+                                color: _model.state == 'voice'
+                                    ? FlutterFlowTheme.of(context).primary
+                                    : Color(0xFF161616),
+                                borderRadius: BorderRadius.circular(24.0),
                                 border: Border.all(
-                                  color: Color(0x38FFFFFF),
+                                  color: _model.state == 'voice'
+                                      ? FlutterFlowTheme.of(context).primary
+                                      : Color(0x33D6A8D8),
+                                  width: 1.0,
                                 ),
                               ),
                               child: Column(
@@ -302,7 +285,7 @@ class _CreatenoteWidgetState extends State<CreatenoteWidget> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          'Give your journal a name :',
+                          'Give your journal a name:',
                           style:
                               FlutterFlowTheme.of(context).bodyLarge.override(
                                     font: GoogleFonts.manrope(
@@ -452,17 +435,7 @@ class _CreatenoteWidgetState extends State<CreatenoteWidget> {
                         ),
                       ].divide(SizedBox(height: 20.0)),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xA531222D), Color(0x84EBB7E7)],
-                          stops: [0.0, 1.0],
-                          begin: AlignmentDirectional(0.64, 1.0),
-                          end: AlignmentDirectional(-0.64, -1.0),
-                        ),
-                        borderRadius: BorderRadius.circular(24.0),
-                      ),
-                      child: FFButtonWidget(
+                    FFButtonWidget(
                         onPressed: () async {
                           if (_model.state != 'notset') {
                             if (_model.state == 'voice') {
@@ -535,15 +508,20 @@ class _CreatenoteWidgetState extends State<CreatenoteWidget> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'choose the note type',
-                                  style: TextStyle(
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
+                                  'Choose a journal type first',
+                                  style: GoogleFonts.manrope(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                duration: Duration(milliseconds: 4000),
+                                duration: Duration(milliseconds: 3000),
                                 backgroundColor:
-                                    FlutterFlowTheme.of(context).secondary,
+                                    FlutterFlowTheme.of(context).primary,
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.fromLTRB(16, 0, 16, 130),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
                               ),
                             );
                           }
@@ -552,35 +530,37 @@ class _CreatenoteWidgetState extends State<CreatenoteWidget> {
                         },
                         text: 'Create',
                         options: FFButtonOptions(
-                          width: 150.0,
-                          height: 35.0,
+                          width: 200.0,
+                          height: 56.0,
                           padding: EdgeInsetsDirectional.fromSTEB(
                               0.0, 0.0, 0.0, 0.0),
                           iconPadding: EdgeInsetsDirectional.fromSTEB(
                               0.0, 0.0, 0.0, 0.0),
-                          color: Color(0x1DF1B2F0),
+                          color: FlutterFlowTheme.of(context).primary,
                           textStyle:
                               FlutterFlowTheme.of(context).bodyLarge.override(
                                     font: GoogleFonts.manrope(
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w700,
                                       fontStyle: FlutterFlowTheme.of(context)
                                           .bodyLarge
                                           .fontStyle,
                                     ),
-                                    letterSpacing: 1.0,
-                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                    fontSize: 17.0,
+                                    letterSpacing: 0.3,
+                                    fontWeight: FontWeight.w700,
                                     fontStyle: FlutterFlowTheme.of(context)
                                         .bodyLarge
                                         .fontStyle,
                                   ),
                           elevation: 0.0,
                           borderSide: BorderSide(
-                            color: Color(0x6CE0E3E7),
+                            color: Colors.transparent,
+                            width: 0.0,
                           ),
-                          borderRadius: BorderRadius.circular(24.0),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
-                    ),
                   ].divide(SizedBox(height: 32.0)),
                 ),
               ),

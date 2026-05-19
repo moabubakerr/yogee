@@ -522,7 +522,7 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                                         .headlineMedium
                                                                         .override(
                                                                           font:
-                                                                              GoogleFonts.manrope(
+                                                                              GoogleFonts.plusJakartaSans(
                                                                             fontWeight:
                                                                                 FlutterFlowTheme.of(context).headlineMedium.fontWeight,
                                                                             fontStyle:
@@ -589,7 +589,7 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                                         .headlineMedium
                                                                         .override(
                                                                           font:
-                                                                              GoogleFonts.manrope(
+                                                                              GoogleFonts.plusJakartaSans(
                                                                             fontWeight:
                                                                                 FlutterFlowTheme.of(context).headlineMedium.fontWeight,
                                                                             fontStyle:
@@ -654,7 +654,7 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                                         .headlineMedium
                                                                         .override(
                                                                           font:
-                                                                              GoogleFonts.manrope(
+                                                                              GoogleFonts.plusJakartaSans(
                                                                             fontWeight:
                                                                                 FlutterFlowTheme.of(context).headlineMedium.fontWeight,
                                                                             fontStyle:
@@ -1722,7 +1722,7 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                         style: FlutterFlowTheme.of(context)
                                             .headlineSmall
                                             .override(
-                                              font: GoogleFonts.manrope(
+                                              font: GoogleFonts.plusJakartaSans(
                                                 fontWeight:
                                                     FlutterFlowTheme.of(context)
                                                         .headlineSmall

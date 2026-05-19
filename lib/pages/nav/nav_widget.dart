@@ -79,7 +79,8 @@ class _NavWidgetState extends State<NavWidget> {
               Align(
                 alignment: AlignmentDirectional(0.0, -1.0),
                 child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 0.0),
+                  padding:
+                      EdgeInsetsDirectional.fromSTEB(12.0, 8.0, 12.0, 0.0),
                   child: StreamBuilder<SongsRecord>(
                     stream:
                         SongsRecord.getDocument(FFAppState().activeSongRef!),
@@ -103,22 +104,21 @@ class _NavWidgetState extends State<NavWidget> {
 
                       return Container(
                         width: double.infinity,
-                        height: 100.0,
+                        height: 84.0,
                         decoration: BoxDecoration(
-                          color: Color(0xD1000000),
+                          color: Color(0xFF0A0A0A),
                           boxShadow: [
                             BoxShadow(
-                              blurRadius: 0.0,
-                              color: Color(0x33FFFFFF),
-                              offset: Offset(
-                                0.0,
-                                -3.0,
-                              ),
-                            )
+                              blurRadius: 32.0,
+                              color: Color(0x66D4B8E8),
+                              offset: Offset(0.0, 0.0),
+                              spreadRadius: 2.0,
+                            ),
                           ],
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30.0),
-                            topRight: Radius.circular(30.0),
+                          borderRadius: BorderRadius.circular(42.0),
+                          border: Border.all(
+                            color: Color(0x33D4B8E8),
+                            width: 1.0,
                           ),
                         ),
                         child: InkWell(
@@ -256,7 +256,7 @@ class _NavWidgetState extends State<NavWidget> {
                               ),
                               Padding(
                                 padding: EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 24.0, 0.0),
+                                    0.0, 0.0, 16.0, 0.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment:
@@ -273,14 +273,18 @@ class _NavWidgetState extends State<NavWidget> {
                                           safeSetState(() {});
                                           await actions.pauseSongBtn();
                                         },
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child: Image.asset(
-                                            'assets/images/pause.png',
-                                            width: 50.0,
-                                            height: 50.0,
-                                            fit: BoxFit.cover,
+                                        child: Container(
+                                          width: 44.0,
+                                          height: 44.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                          ),
+                                          child: Icon(
+                                            Icons.pause_rounded,
+                                            color: Colors.black,
+                                            size: 26.0,
                                           ),
                                         ),
                                       ),
@@ -295,20 +299,24 @@ class _NavWidgetState extends State<NavWidget> {
                                           safeSetState(() {});
                                           await actions.playSongBtn();
                                         },
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child: Image.asset(
-                                            'assets/images/PLAY4.png',
-                                            width: 50.0,
-                                            height: 50.0,
-                                            fit: BoxFit.cover,
+                                        child: Container(
+                                          width: 44.0,
+                                          height: 44.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                          ),
+                                          child: Icon(
+                                            Icons.play_arrow_rounded,
+                                            color: Colors.black,
+                                            size: 28.0,
                                           ),
                                         ),
                                       ),
                                     Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
-                                          16.0, 0.0, 0.0, 0.0),
+                                          12.0, 0.0, 0.0, 0.0),
                                       child: InkWell(
                                         splashColor: Colors.transparent,
                                         focusColor: Colors.transparent,
@@ -319,14 +327,15 @@ class _NavWidgetState extends State<NavWidget> {
                                           FFAppState().miniplayer = false;
                                           safeSetState(() {});
                                         },
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child: Image.asset(
-                                            'assets/images/crossplayer.png',
-                                            width: 25.0,
-                                            height: 25.0,
-                                            fit: BoxFit.cover,
+                                        child: Container(
+                                          width: 32.0,
+                                          height: 32.0,
+                                          alignment: Alignment.center,
+                                          child: Icon(
+                                            Icons.close_rounded,
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                            size: 24.0,
                                           ),
                                         ),
                                       ),
@@ -372,7 +381,7 @@ class _NavWidgetState extends State<NavWidget> {
                                   boxShadow: [
                                     BoxShadow(
                                       blurRadius: 30.0,
-                                      color: Color(0x9EF1B2F0),
+                                      color: Color(0x9ED4B8E8),
                                       offset: Offset(
                                         0.0,
                                         -85.0,
@@ -826,7 +835,7 @@ class _NavWidgetState extends State<NavWidget> {
                                         boxShadow: [
                                           BoxShadow(
                                             blurRadius: 30.0,
-                                            color: Color(0x53F1B2F0),
+                                            color: Color(0x53D4B8E8),
                                             offset: Offset(
                                               0.0,
                                               15.0,

@@ -100,7 +100,7 @@ class _AddtoplaylistWidgetState extends State<AddtoplaylistWidget> {
                   Text(
                     'Playlists',
                     style: FlutterFlowTheme.of(context).headlineLarge.override(
-                          font: GoogleFonts.manrope(
+                          font: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w500,
                             fontStyle: FlutterFlowTheme.of(context)
                                 .headlineLarge

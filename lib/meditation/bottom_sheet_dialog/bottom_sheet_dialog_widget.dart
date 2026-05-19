@@ -96,7 +96,7 @@ class _BottomSheetDialogWidgetState extends State<BottomSheetDialogWidget> {
                           style: FlutterFlowTheme.of(context)
                               .headlineSmall
                               .override(
-                                font: GoogleFonts.manrope(
+                                font: GoogleFonts.plusJakartaSans(
                                   fontWeight: FlutterFlowTheme.of(context)
                                       .headlineSmall
                                       .fontWeight,

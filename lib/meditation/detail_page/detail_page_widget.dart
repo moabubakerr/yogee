@@ -162,7 +162,7 @@ class _DetailPageWidgetState extends State<DetailPageWidget> {
                                             style: FlutterFlowTheme.of(context)
                                                 .headlineMedium
                                                 .override(
-                                                  font: GoogleFonts.manrope(
+                                                  font: GoogleFonts.plusJakartaSans(
                                                     fontWeight:
                                                         FlutterFlowTheme.of(
                                                                 context)

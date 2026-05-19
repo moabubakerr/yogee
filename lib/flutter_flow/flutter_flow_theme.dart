@@ -146,15 +146,15 @@ class LightModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFFF1B2F0);
+  late Color primary = const Color(0xFFD4B8E8);
   late Color secondary = const Color(0xFF38D2C0);
   late Color tertiary = const Color(0xFFEE8B60);
-  late Color alternate = const Color(0xFF262D34);
-  late Color primaryText = const Color(0xFF14181B);
-  late Color secondaryText = const Color(0xFF95A1AC);
-  late Color primaryBackground = const Color(0xFF1D2428);
-  late Color secondaryBackground = const Color(0xFF14181B);
-  late Color accent1 = const Color(0x4C4B39EF);
+  late Color alternate = const Color(0xFF1A1A1A);
+  late Color primaryText = const Color(0xFFFFFFFF);
+  late Color secondaryText = const Color(0xFFD6A8D8);
+  late Color primaryBackground = const Color(0xFF000000);
+  late Color secondaryBackground = const Color(0xFF0A0A0A);
+  late Color accent1 = const Color(0x4CD4B8E8);
   late Color accent2 = const Color(0x4D39D2C0);
   late Color accent3 = const Color(0x4DEE8B60);
   late Color accent4 = const Color(0xCCFFFFFF);
@@ -163,7 +163,7 @@ class LightModeTheme extends FlutterFlowTheme {
   late Color error = const Color(0xFFFF5963);
   late Color info = const Color(0xFFFFFFFF);
 
-  late Color textcolor = const Color(0xFFF1B2F0);
+  late Color textcolor = const Color(0xFFD4B8E8);
 }
 
 abstract class Typography {
@@ -219,47 +219,53 @@ class ThemeTypography extends Typography {
 
   final FlutterFlowTheme theme;
 
-  String get displayLargeFamily => 'Manrope';
+  String get displayLargeFamily => 'Plus Jakarta Sans';
   bool get displayLargeIsCustom => false;
-  TextStyle get displayLarge => GoogleFonts.manrope(
-        color: Color(0xFFE7E7E7),
-        fontWeight: FontWeight.w600,
+  TextStyle get displayLarge => GoogleFonts.plusJakartaSans(
+        color: Color(0xFFFFFFFF),
+        fontWeight: FontWeight.w800,
         fontSize: 64.0,
+        letterSpacing: -1.5,
       );
-  String get displayMediumFamily => 'Manrope';
+  String get displayMediumFamily => 'Plus Jakarta Sans';
   bool get displayMediumIsCustom => false;
-  TextStyle get displayMedium => GoogleFonts.manrope(
-        color: Color(0xFFE7E7E7),
-        fontWeight: FontWeight.w600,
+  TextStyle get displayMedium => GoogleFonts.plusJakartaSans(
+        color: Color(0xFFFFFFFF),
+        fontWeight: FontWeight.w800,
         fontSize: 44.0,
+        letterSpacing: -1.0,
       );
-  String get displaySmallFamily => 'Manrope';
+  String get displaySmallFamily => 'Plus Jakarta Sans';
   bool get displaySmallIsCustom => false;
-  TextStyle get displaySmall => GoogleFonts.manrope(
-        color: Color(0xFFE7E7E7),
-        fontWeight: FontWeight.w600,
+  TextStyle get displaySmall => GoogleFonts.plusJakartaSans(
+        color: Color(0xFFFFFFFF),
+        fontWeight: FontWeight.w800,
         fontSize: 36.0,
+        letterSpacing: -0.8,
       );
-  String get headlineLargeFamily => 'Manrope';
+  String get headlineLargeFamily => 'Plus Jakarta Sans';
   bool get headlineLargeIsCustom => false;
-  TextStyle get headlineLarge => GoogleFonts.manrope(
-        color: Color(0xFFE7E7E7),
-        fontWeight: FontWeight.w600,
+  TextStyle get headlineLarge => GoogleFonts.plusJakartaSans(
+        color: Color(0xFFFFFFFF),
+        fontWeight: FontWeight.w800,
         fontSize: 32.0,
+        letterSpacing: -0.6,
       );
-  String get headlineMediumFamily => 'Manrope';
+  String get headlineMediumFamily => 'Plus Jakarta Sans';
   bool get headlineMediumIsCustom => false;
-  TextStyle get headlineMedium => GoogleFonts.manrope(
-        color: Color(0xFFE7E7E7),
-        fontWeight: FontWeight.w600,
+  TextStyle get headlineMedium => GoogleFonts.plusJakartaSans(
+        color: Color(0xFFFFFFFF),
+        fontWeight: FontWeight.w800,
         fontSize: 28.0,
+        letterSpacing: -0.4,
       );
-  String get headlineSmallFamily => 'Manrope';
+  String get headlineSmallFamily => 'Plus Jakarta Sans';
   bool get headlineSmallIsCustom => false;
-  TextStyle get headlineSmall => GoogleFonts.manrope(
-        color: Color(0xFFE7E7E7),
-        fontWeight: FontWeight.w600,
+  TextStyle get headlineSmall => GoogleFonts.plusJakartaSans(
+        color: Color(0xFFFFFFFF),
+        fontWeight: FontWeight.w800,
         fontSize: 24.0,
+        letterSpacing: -0.3,
       );
   String get titleLargeFamily => 'Manrope';
   bool get titleLargeIsCustom => false;
@@ -334,24 +340,24 @@ class DarkModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFFF1B2F0);
+  late Color primary = const Color(0xFFD4B8E8);
   late Color secondary = const Color(0xFF38D2C0);
   late Color tertiary = const Color(0xFFEE8B60);
-  late Color alternate = const Color(0xFF262D34);
-  late Color primaryText = const Color(0xFF14181B);
-  late Color secondaryText = const Color(0xFF95A1AC);
-  late Color primaryBackground = const Color(0xFF1D2428);
-  late Color secondaryBackground = const Color(0xFF14181B);
-  late Color accent1 = const Color(0x4C4B39EF);
+  late Color alternate = const Color(0xFF1A1A1A);
+  late Color primaryText = const Color(0xFFFFFFFF);
+  late Color secondaryText = const Color(0xFFD6A8D8);
+  late Color primaryBackground = const Color(0xFF000000);
+  late Color secondaryBackground = const Color(0xFF0A0A0A);
+  late Color accent1 = const Color(0x4CD4B8E8);
   late Color accent2 = const Color(0x4D39D2C0);
   late Color accent3 = const Color(0x4DEE8B60);
-  late Color accent4 = const Color(0xB2262D34);
+  late Color accent4 = const Color(0xB21A1A1A);
   late Color success = const Color(0xFF249689);
   late Color warning = const Color(0xFFF9CF58);
   late Color error = const Color(0xFFFF5963);
   late Color info = const Color(0xFFFFFFFF);
 
-  late Color textcolor = const Color(0xFFC3B236);
+  late Color textcolor = const Color(0xFFD4B8E8);
 }
 
 class FFDesignTokens {

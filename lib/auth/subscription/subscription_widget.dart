@@ -111,7 +111,7 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                         textAlign: TextAlign.center,
                         style:
                             FlutterFlowTheme.of(context).headlineLarge.override(
-                                  font: GoogleFonts.manrope(
+                                  font: GoogleFonts.plusJakartaSans(
                                     fontWeight: FontWeight.bold,
                                     fontStyle: FlutterFlowTheme.of(context)
                                         .headlineLarge
@@ -314,7 +314,7 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                       style: FlutterFlowTheme.of(context)
                                           .headlineSmall
                                           .override(
-                                            font: GoogleFonts.manrope(
+                                            font: GoogleFonts.plusJakartaSans(
                                               fontWeight:
                                                   FlutterFlowTheme.of(context)
                                                       .headlineSmall
@@ -345,7 +345,7 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineMedium
                                               .override(
-                                                font: GoogleFonts.manrope(
+                                                font: GoogleFonts.plusJakartaSans(
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)
@@ -451,7 +451,7 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineSmall
                                               .override(
-                                                font: GoogleFonts.manrope(
+                                                font: GoogleFonts.plusJakartaSans(
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)
@@ -479,7 +479,7 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineSmall
                                               .override(
-                                                font: GoogleFonts.manrope(
+                                                font: GoogleFonts.plusJakartaSans(
                                                   fontWeight: FontWeight.w500,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
@@ -511,7 +511,7 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineMedium
                                               .override(
-                                                font: GoogleFonts.manrope(
+                                                font: GoogleFonts.plusJakartaSans(
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)

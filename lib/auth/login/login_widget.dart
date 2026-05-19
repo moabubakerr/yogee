@@ -119,7 +119,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                       textAlign: TextAlign.center,
                       style:
                           FlutterFlowTheme.of(context).headlineMedium.override(
-                                font: GoogleFonts.manrope(
+                                font: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.bold,
                                   fontStyle: FlutterFlowTheme.of(context)
                                       .headlineMedium

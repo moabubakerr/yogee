@@ -98,7 +98,7 @@ class _DeleteaccountWidgetState extends State<DeleteaccountWidget> {
               Text(
                 'Delete account',
                 style: FlutterFlowTheme.of(context).headlineSmall.override(
-                      font: GoogleFonts.manrope(
+                      font: GoogleFonts.plusJakartaSans(
                         fontWeight: FlutterFlowTheme.of(context)
                             .headlineSmall
                             .fontWeight,

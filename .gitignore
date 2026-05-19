@@ -1,1 +1,10 @@
 build 
+.claude
+._bmad
+._bmad.*
+# Ignore all files in the "logs" directory
+logs/
+# Ignore all files in the "temp" directory
+temp/
+# Ignore all files in the "bmad" directory
+bmad/

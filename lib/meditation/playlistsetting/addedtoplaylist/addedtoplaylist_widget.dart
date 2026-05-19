@@ -226,7 +226,7 @@ class _AddedtoplaylistWidgetState extends State<AddedtoplaylistWidget> {
                         'Added',
                         style:
                             FlutterFlowTheme.of(context).headlineLarge.override(
-                                  font: GoogleFonts.manrope(
+                                  font: GoogleFonts.plusJakartaSans(
                                     fontWeight: FontWeight.w500,
                                     fontStyle: FlutterFlowTheme.of(context)
                                         .headlineLarge

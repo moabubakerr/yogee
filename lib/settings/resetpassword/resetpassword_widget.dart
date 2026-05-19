@@ -102,7 +102,7 @@ class _ResetpasswordWidgetState extends State<ResetpasswordWidget> {
                     'New\nPassword',
                     textAlign: TextAlign.center,
                     style: FlutterFlowTheme.of(context).displaySmall.override(
-                          font: GoogleFonts.manrope(
+                          font: GoogleFonts.plusJakartaSans(
                             fontWeight: FlutterFlowTheme.of(context)
                                 .displaySmall
                                 .fontWeight,

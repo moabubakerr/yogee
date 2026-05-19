@@ -95,7 +95,7 @@ class _SelectatagWidgetState extends State<SelectatagWidget> {
                 'Choose \none tag',
                 textAlign: TextAlign.center,
                 style: FlutterFlowTheme.of(context).headlineSmall.override(
-                      font: GoogleFonts.manrope(
+                      font: GoogleFonts.plusJakartaSans(
                         fontWeight: FlutterFlowTheme.of(context)
                             .headlineSmall
                             .fontWeight,

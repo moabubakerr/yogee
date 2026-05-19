@@ -75,7 +75,7 @@ class _CoursesWidgetState extends State<CoursesWidget> {
                     'Courses',
                     textAlign: TextAlign.center,
                     style: FlutterFlowTheme.of(context).headlineLarge.override(
-                          font: GoogleFonts.manrope(
+                          font: GoogleFonts.plusJakartaSans(
                             fontWeight: FlutterFlowTheme.of(context)
                                 .headlineLarge
                                 .fontWeight,

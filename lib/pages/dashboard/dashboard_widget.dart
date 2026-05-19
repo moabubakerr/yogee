@@ -858,7 +858,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                       .displaySmall
                                                       .override(
                                                         font:
-                                                            GoogleFonts.manrope(
+                                                            GoogleFonts.plusJakartaSans(
                                                           fontWeight:
                                                               FontWeight.w800,
                                                           fontStyle:

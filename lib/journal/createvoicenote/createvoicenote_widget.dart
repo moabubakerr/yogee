@@ -4,7 +4,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/journal/deletenote/deletenote_widget.dart';
 import 'dart:ui';
 import '/custom_code/actions/index.dart' as actions;
@@ -118,48 +117,48 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                           Row(
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              FFButtonWidget(
-                                onPressed: () async {
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
                                   context.pushNamed(JournalWidget.routeName);
                                 },
-                                text: 'Back',
-                                icon: Icon(
-                                  Icons.arrow_back_ios_rounded,
-                                  size: 15.0,
-                                ),
-                                options: FFButtonOptions(
-                                  height: 40.0,
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0, 0.0, 16.0, 0.0),
-                                  iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 0.0),
-                                  color: Colors.transparent,
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .bodyLarge
-                                      .override(
-                                        font: GoogleFonts.manrope(
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyLarge
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyLarge
-                                                  .fontStyle,
-                                        ),
-                                        letterSpacing: 0.0,
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyLarge
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyLarge
-                                            .fontStyle,
-                                      ),
-                                  elevation: 0.0,
-                                  borderRadius: BorderRadius.circular(8.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.chevron_left_rounded,
+                                      color: Colors.white,
+                                      size: 28.0,
+                                    ),
+                                    Text(
+                                      'Back',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .override(
+                                            font: GoogleFonts.manrope(
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyLarge
+                                                      .fontStyle,
+                                            ),
+                                            color: Colors.white,
+                                            fontSize: 18.0,
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyLarge
+                                                    .fontStyle,
+                                          ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ].divide(SizedBox(width: 12.0)),
+                            ],
                           ),
                           Align(
                             alignment: AlignmentDirectional(0.0, -1.0),
@@ -170,13 +169,10 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                                 color: Color(0xAE000000),
                                 boxShadow: [
                                   BoxShadow(
-                                    blurRadius: 20.0,
-                                    color: Color(0x42F1B2F0),
-                                    offset: Offset(
-                                      0.0,
-                                      17.0,
-                                    ),
-                                    spreadRadius: 5.0,
+                                    blurRadius: 30.0,
+                                    color: Color(0x66D4B8E8),
+                                    offset: Offset(0.0, 0.0),
+                                    spreadRadius: 4.0,
                                   )
                                 ],
                                 borderRadius: BorderRadius.circular(50.0),
@@ -498,72 +494,194 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                                                   children: [
                                                     if (_model.isrecording ==
                                                         false)
-                                                      FlutterFlowIconButton(
-                                                        borderColor:
-                                                            Color(0xFF6F6F6F),
-                                                        borderRadius: 50.0,
-                                                        borderWidth: 2.0,
-                                                        buttonSize: 54.0,
-                                                        fillColor:
-                                                            Color(0x44000000),
-                                                        disabledColor:
-                                                            Color(0xFF767676),
-                                                        icon: Icon(
-                                                          Icons.circle_rounded,
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .primary,
-                                                          size: 30.0,
-                                                        ),
-                                                        onPressed: (containerWrittenNoteRecord
-                                                                        .voicenote !=
-                                                                    null &&
-                                                                containerWrittenNoteRecord
-                                                                        .voicenote !=
-                                                                    '')
-                                                            ? null
-                                                            : () async {
-                                                                await actions
-                                                                    .stopSong();
-                                                                FFAppState()
-                                                                        .isSongPlaying =
-                                                                    false;
-                                                                safeSetState(
-                                                                    () {});
-                                                                await startAudioRecording(
-                                                                  context,
-                                                                  audioRecorder:
-                                                                      _model.audioRecorder ??=
-                                                                          AudioRecorder(),
+                                                      InkWell(
+                                                        splashColor:
+                                                            Colors.transparent,
+                                                        focusColor:
+                                                            Colors.transparent,
+                                                        hoverColor:
+                                                            Colors.transparent,
+                                                        highlightColor:
+                                                            Colors.transparent,
+                                                        onTap: () async {
+                                                          final hasExisting =
+                                                              containerWrittenNoteRecord
+                                                                          .voicenote !=
+                                                                      null &&
+                                                                  containerWrittenNoteRecord
+                                                                          .voicenote !=
+                                                                      '';
+                                                          if (hasExisting) {
+                                                            final confirm =
+                                                                await showDialog<
+                                                                    bool>(
+                                                              context: context,
+                                                              barrierColor: Color(
+                                                                  0xCC000000),
+                                                              builder: (ctx) {
+                                                                return AlertDialog(
+                                                                  backgroundColor:
+                                                                      Color(0xFF0A0A0A),
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(28.0),
+                                                                    side: BorderSide(
+                                                                        color: Color(
+                                                                            0x33D4B8E8),
+                                                                        width:
+                                                                            1.0),
+                                                                  ),
+                                                                  title: Text(
+                                                                    'Replace existing recording?',
+                                                                    style: GoogleFonts
+                                                                        .plusJakartaSans(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w800,
+                                                                      fontSize:
+                                                                          20.0,
+                                                                    ),
+                                                                  ),
+                                                                  content: Text(
+                                                                    'Recording again will overwrite the saved audio for this note.',
+                                                                    style: GoogleFonts
+                                                                        .manrope(
+                                                                      color: Color(
+                                                                          0xFFD6A8D8),
+                                                                      fontSize:
+                                                                          14.0,
+                                                                    ),
+                                                                  ),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed: () =>
+                                                                          Navigator.pop(
+                                                                              ctx,
+                                                                              false),
+                                                                      child:
+                                                                          Text(
+                                                                        'Cancel',
+                                                                        style: GoogleFonts.manrope(
+                                                                            color:
+                                                                                Colors.white70,
+                                                                            fontWeight: FontWeight.w600),
+                                                                      ),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed: () =>
+                                                                          Navigator.pop(
+                                                                              ctx,
+                                                                              true),
+                                                                      child:
+                                                                          Text(
+                                                                        'Replace',
+                                                                        style: GoogleFonts.manrope(
+                                                                            color:
+                                                                                FlutterFlowTheme.of(context).primary,
+                                                                            fontWeight: FontWeight.w700),
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 );
-
-                                                                _model.isrecording =
-                                                                    true;
-                                                                safeSetState(
-                                                                    () {});
-                                                                _model
-                                                                    .timerController
-                                                                    .onStartTimer();
                                                               },
+                                                            );
+                                                            if (confirm != true)
+                                                              return;
+                                                          }
+                                                          await actions
+                                                              .stopSong();
+                                                          FFAppState()
+                                                                  .isSongPlaying =
+                                                              false;
+                                                          safeSetState(() {});
+                                                          await startAudioRecording(
+                                                            context,
+                                                            audioRecorder: _model
+                                                                .audioRecorder ??= AudioRecorder(),
+                                                          );
+
+                                                          _model.isrecording =
+                                                              true;
+                                                          safeSetState(() {});
+                                                          _model.timerController
+                                                              .onResetTimer();
+                                                          _model.timerController
+                                                              .onStartTimer();
+                                                        },
+                                                        child: Container(
+                                                          width: 88.0,
+                                                          height: 88.0,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            shape: BoxShape
+                                                                .circle,
+                                                            color: Color(
+                                                                0x33000000),
+                                                            border: Border.all(
+                                                              color: FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .primary,
+                                                              width: 3.0,
+                                                            ),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                blurRadius:
+                                                                    24.0,
+                                                                color: Color(
+                                                                    0x80D4B8E8),
+                                                                offset: Offset(
+                                                                    0.0, 0.0),
+                                                                spreadRadius:
+                                                                    2.0,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          child: Center(
+                                                            child: Container(
+                                                              width: 56.0,
+                                                              height: 56.0,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                gradient:
+                                                                    LinearGradient(
+                                                                  colors: [
+                                                                    Color(
+                                                                        0xFFE5C9F0),
+                                                                    FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                  ],
+                                                                  begin:
+                                                                      AlignmentDirectional(
+                                                                          0.0,
+                                                                          -1.0),
+                                                                  end:
+                                                                      AlignmentDirectional(
+                                                                          0.0,
+                                                                          1.0),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
                                                     if (_model.isrecording ==
                                                         true)
-                                                      FlutterFlowIconButton(
-                                                        borderColor:
-                                                            Color(0xFF6F6F6F),
-                                                        borderRadius: 50.0,
-                                                        borderWidth: 2.0,
-                                                        buttonSize: 54.0,
-                                                        fillColor:
-                                                            Color(0x44000000),
-                                                        icon: Icon(
-                                                          Icons.square,
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .primary,
-                                                          size: 30.0,
-                                                        ),
-                                                        onPressed: () async {
+                                                      InkWell(
+                                                        splashColor:
+                                                            Colors.transparent,
+                                                        focusColor:
+                                                            Colors.transparent,
+                                                        hoverColor:
+                                                            Colors.transparent,
+                                                        highlightColor:
+                                                            Colors.transparent,
+                                                        onTap: () async {
                                                           await stopAudioRecording(
                                                             audioRecorder: _model
                                                                 .audioRecorder,
@@ -597,26 +715,105 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                                                               .showSnackBar(
                                                             SnackBar(
                                                               content: Text(
-                                                                'Audio recording saved!',
+                                                                'Voice note saved',
                                                                 style:
-                                                                    TextStyle(
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryText,
+                                                                    GoogleFonts
+                                                                        .manrope(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
                                                                 ),
                                                               ),
                                                               duration: Duration(
                                                                   milliseconds:
-                                                                      4000),
+                                                                      3000),
                                                               backgroundColor:
                                                                   FlutterFlowTheme.of(
                                                                           context)
-                                                                      .secondary,
+                                                                      .primary,
+                                                              behavior:
+                                                                  SnackBarBehavior
+                                                                      .floating,
+                                                              margin: EdgeInsets
+                                                                  .fromLTRB(
+                                                                      16,
+                                                                      0,
+                                                                      16,
+                                                                      130),
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            40),
+                                                              ),
                                                             ),
                                                           );
 
                                                           safeSetState(() {});
                                                         },
+                                                        child: Container(
+                                                          width: 88.0,
+                                                          height: 88.0,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            shape: BoxShape
+                                                                .circle,
+                                                            color: Color(
+                                                                0x33000000),
+                                                            border: Border.all(
+                                                              color: FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .primary,
+                                                              width: 3.0,
+                                                            ),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                blurRadius:
+                                                                    24.0,
+                                                                color: Color(
+                                                                    0x80D4B8E8),
+                                                                offset: Offset(
+                                                                    0.0, 0.0),
+                                                                spreadRadius:
+                                                                    2.0,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          child: Center(
+                                                            child: Container(
+                                                              width: 32.0,
+                                                              height: 32.0,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            6.0),
+                                                                gradient:
+                                                                    LinearGradient(
+                                                                  colors: [
+                                                                    Color(
+                                                                        0xFFE5C9F0),
+                                                                    FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                  ],
+                                                                  begin:
+                                                                      AlignmentDirectional(
+                                                                          0.0,
+                                                                          -1.0),
+                                                                  end:
+                                                                      AlignmentDirectional(
+                                                                          0.0,
+                                                                          1.0),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
                                                   ],
                                                 ),
