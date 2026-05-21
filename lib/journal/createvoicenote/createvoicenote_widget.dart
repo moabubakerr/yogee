@@ -165,6 +165,7 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                             child: Container(
                               width: 325.0,
                               height: 260.0,
+                              clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
                                 color: Color(0xAE000000),
                                 boxShadow: [
@@ -301,29 +302,16 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                                       ),
                                     ),
                                   ),
-                                  Flexible(
+                                  Expanded(
                                     child: Container(
                                       width: double.infinity,
                                       decoration: BoxDecoration(),
                                       child: Stack(
+                                        fit: StackFit.expand,
                                         children: [
-                                          Align(
-                                            alignment:
-                                                AlignmentDirectional(0.0, 0.0),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.only(
-                                                bottomLeft:
-                                                    Radius.circular(50.0),
-                                                bottomRight:
-                                                    Radius.circular(50.0),
-                                              ),
-                                              child: Image.asset(
-                                                'assets/images/voicerecordingbackground.png',
-                                                width: double.infinity,
-                                                height: double.infinity,
-                                                fit: BoxFit.none,
-                                              ),
-                                            ),
+                                          Image.asset(
+                                            'assets/images/voicerecordingbackground.png',
+                                            fit: BoxFit.cover,
                                           ),
                                           Align(
                                             alignment:
