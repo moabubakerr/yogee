@@ -722,7 +722,7 @@
     },
     {
       "name": "page_transition",
-      "version": "2.1.0",
+      "version": "2.2.1",
       "dependencies": [
         "flutter"
       ]
@@ -943,7 +943,7 @@
     },
     {
       "name": "font_awesome_flutter",
-      "version": "10.7.0",
+      "version": "11.0.0",
       "dependencies": [
         "flutter"
       ]

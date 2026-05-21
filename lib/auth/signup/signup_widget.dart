@@ -468,7 +468,7 @@ class _SignupWidgetState extends State<SignupWidget> {
                                     ),
                                     filled: true,
                                     fillColor: Colors.transparent,
-                                    prefixIcon: Icon(
+                                    prefixIcon: FaIcon(
                                       FontAwesomeIcons.at,
                                       color:
                                           FlutterFlowTheme.of(context).primary,

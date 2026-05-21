@@ -551,7 +551,7 @@ class _PersonalinfoWidgetState extends State<PersonalinfoWidget> {
                                       ),
                                       filled: true,
                                       fillColor: Colors.transparent,
-                                      prefixIcon: Icon(
+                                      prefixIcon: FaIcon(
                                         FontAwesomeIcons.at,
                                         color: Color(0xFFF1B2F0),
                                         size: 20.0,
