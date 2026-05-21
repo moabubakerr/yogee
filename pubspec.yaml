@@ -163,6 +163,8 @@ dependencies:
 dependency_overrides:
   http: 1.4.0
   uuid: ^4.0.0
+  page_transition:
+    path: local_packages/page_transition
 
 dev_dependencies:
   flutter_launcher_icons: 0.13.1

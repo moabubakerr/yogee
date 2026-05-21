@@ -1,0 +1,10 @@
+name: page_transition
+description: Local fork of page_transition 2.2.1 with cupertino import fix for Flutter SDKs that moved CupertinoPageTransitionsBuilder out of material.dart
+version: 2.2.1+local
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter

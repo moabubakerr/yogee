@@ -705,7 +705,7 @@
     },
     {
       "name": "page_transition",
-      "rootUri": "file:///C:/Users/mammohamed/AppData/Local/Pub/Cache/hosted/pub.dev/page_transition-2.2.1",
+      "rootUri": "../local_packages/page_transition",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },

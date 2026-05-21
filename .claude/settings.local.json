@@ -4,7 +4,10 @@
       "Bash(flutter analyze *)",
       "Bash(xargs grep *)",
       "Bash(grep -v \"//\")",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:pub.dev)",
+      "Bash(grep -n \"CupertinoPageTransitionsBuilder\\\\|matchingBuilder\" ~/AppData/Local/Pub/Cache/hosted/pub.dev/page_transition-2.2.1/lib/src/page_transition.dart 2>&1 | head -20)",
+      "Read(//c/Users/mammohamed/AppData/Local/Pub/Cache/hosted/pub.dev/page_transition-2.2.1/lib/src/**)"
     ]
   }
 }
