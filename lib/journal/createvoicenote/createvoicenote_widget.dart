@@ -305,14 +305,26 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                                   Expanded(
                                     child: Container(
                                       width: double.infinity,
-                                      decoration: BoxDecoration(),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color(0xFF5A3E70),
+                                            Color(0xFF2A1A35),
+                                            Color(0xFF0A0A0A),
+                                          ],
+                                          stops: [0.0, 0.55, 1.0],
+                                          begin: AlignmentDirectional(0.0, -1.0),
+                                          end: AlignmentDirectional(0.0, 1.0),
+                                        ),
+                                      ),
                                       child: Stack(
                                         fit: StackFit.expand,
                                         children: [
-                                          Image.asset(
-                                            'assets/images/voicerecordingbackground.png',
-                                            fit: BoxFit.cover,
-                                          ),
+                                          // Transparent spacer to preserve the
+                                          // Stack's two-child structure without
+                                          // depending on the broken background
+                                          // asset (had white padding baked in).
+                                          SizedBox.expand(),
                                           Align(
                                             alignment:
                                                 AlignmentDirectional(0.0, 0.0),
