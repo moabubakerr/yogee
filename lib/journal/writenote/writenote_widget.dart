@@ -8,7 +8,6 @@ import 'dart:ui';
 import '/index.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'writenote_model.dart';
@@ -54,6 +53,23 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
     super.dispose();
   }
 
+  Widget _buildNoteMessage(BuildContext context, String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: FlutterFlowTheme.of(context).bodyLarge.override(
+                font: GoogleFonts.manrope(fontWeight: FontWeight.w500),
+                color: Colors.white,
+                letterSpacing: 0.0,
+              ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -88,13 +104,27 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
                     children: [
                       Align(
                         alignment: AlignmentDirectional(1.0, 0.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            'assets/images/journal.png',
-                            width: 250.0,
-                            height: 50.0,
-                            fit: BoxFit.cover,
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                              0.0, 0.0, 16.0, 0.0),
+                          child: Text(
+                            'Journal',
+                            style: FlutterFlowTheme.of(context)
+                                .headlineSmall
+                                .override(
+                                  font: GoogleFonts.manrope(
+                                    fontWeight: FontWeight.w800,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .headlineSmall
+                                        .fontStyle,
+                                  ),
+                                  color: Colors.white,
+                                  letterSpacing: -0.3,
+                                  fontWeight: FontWeight.w800,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .headlineSmall
+                                      .fontStyle,
+                                ),
                           ),
                         ),
                       ),
@@ -149,10 +179,17 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
                         ),
                       ),
                       Expanded(
-                        child: StreamBuilder<WrittenNoteRecord>(
-                          stream:
-                              WrittenNoteRecord.getDocument(widget!.noteref!),
+                        child: widget.noteref == null
+                            ? _buildNoteMessage(
+                                context, 'This note could not be found.')
+                            : StreamBuilder<WrittenNoteRecord>(
+                          stream: WrittenNoteRecord.getDocument(widget.noteref!),
                           builder: (context, snapshot) {
+                            // Surface stream errors instead of spinning forever.
+                            if (snapshot.hasError) {
+                              return _buildNoteMessage(context,
+                                  'Couldn\'t load this note. Please try again.');
+                            }
                             // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
                               return Center(
@@ -392,12 +429,12 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
                                               child: FlutterFlowIconButton(
                                                 borderRadius: 8.0,
                                                 buttonSize: 40.0,
-                                                icon: FaIcon(
-                                                  FontAwesomeIcons.solidSave,
+                                                icon: Icon(
+                                                  Icons.save_rounded,
                                                   color: FlutterFlowTheme.of(
                                                           context)
                                                       .primary,
-                                                  size: 20.0,
+                                                  size: 22.0,
                                                 ),
                                                 onPressed: () async {
                                                   await showModalBottomSheet(
@@ -443,13 +480,12 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
                                               child: FlutterFlowIconButton(
                                                 borderRadius: 8.0,
                                                 buttonSize: 40.0,
-                                                icon: FaIcon(
-                                                  FontAwesomeIcons
-                                                      .solidTrashAlt,
+                                                icon: Icon(
+                                                  Icons.delete_rounded,
                                                   color: FlutterFlowTheme.of(
                                                           context)
                                                       .primary,
-                                                  size: 20.0,
+                                                  size: 22.0,
                                                 ),
                                                 onPressed: () async {
                                                   await showModalBottomSheet(

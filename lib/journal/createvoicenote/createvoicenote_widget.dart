@@ -60,6 +60,23 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
     super.dispose();
   }
 
+  Widget _buildVoiceMessage(BuildContext context, String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: FlutterFlowTheme.of(context).bodyLarge.override(
+                font: GoogleFonts.manrope(fontWeight: FontWeight.w500),
+                color: Colors.white,
+                letterSpacing: 0.0,
+              ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -70,9 +87,16 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        body: StreamBuilder<WrittenNoteRecord>(
-          stream: WrittenNoteRecord.getDocument(widget!.note!),
+        body: widget.note == null
+            ? _buildVoiceMessage(context, 'This voice note could not be found.')
+            : StreamBuilder<WrittenNoteRecord>(
+          stream: WrittenNoteRecord.getDocument(widget.note!),
           builder: (context, snapshot) {
+            // Surface stream errors instead of spinning forever.
+            if (snapshot.hasError) {
+              return _buildVoiceMessage(
+                  context, 'Couldn\'t load this voice note. Please try again.');
+            }
             // Customize what your widget looks like when it's loading.
             if (!snapshot.hasData) {
               return Center(
@@ -506,11 +530,8 @@ class _CreatevoicenoteWidgetState extends State<CreatevoicenoteWidget> {
                                                         onTap: () async {
                                                           final hasExisting =
                                                               containerWrittenNoteRecord
-                                                                          .voicenote !=
-                                                                      null &&
-                                                                  containerWrittenNoteRecord
-                                                                          .voicenote !=
-                                                                      '';
+                                                                      .voicenote !=
+                                                                  '';
                                                           if (hasExisting) {
                                                             final confirm =
                                                                 await showDialog<

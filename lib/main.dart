@@ -32,6 +32,51 @@ void main() async {
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   }
 
+  // Replace Flutter's default opaque grey crash box with a readable, on-brand
+  // error view. Without this, any exception thrown while building a subtree
+  // (e.g. a page's StreamBuilder content) renders as a featureless grey
+  // rectangle in release builds, which is impossible to diagnose on-device.
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Material(
+      color: const Color(0xFF0A0A0A),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.error_outline_rounded,
+                  color: Color(0xFFD4B8E8), size: 48.0),
+              const SizedBox(height: 16.0),
+              const Text(
+                'Something went wrong on this screen.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Text(
+                    details.exceptionAsString(),
+                    style: const TextStyle(
+                      color: Color(0xFFD6A8D8),
+                      fontSize: 13.0,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  };
+
   runApp(ChangeNotifierProvider(
     create: (context) => appState,
     child: MyApp(),
