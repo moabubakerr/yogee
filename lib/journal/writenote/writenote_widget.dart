@@ -2,7 +2,6 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/journal/deletenote/deletenote_widget.dart';
 import '/journal/savenote/savenote_widget.dart';
 import 'dart:ui';
@@ -99,52 +98,57 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          FFButtonWidget(
-                            onPressed: () async {
-                              context.pushNamed(JournalWidget.routeName);
-                            },
-                            text: 'Back',
-                            icon: Icon(
-                              Icons.arrow_back_ios_rounded,
-                              size: 15.0,
-                            ),
-                            options: FFButtonOptions(
-                              height: 40.0,
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  16.0, 0.0, 16.0, 0.0),
-                              iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 0.0, 0.0, 0.0),
-                              color: Colors.transparent,
-                              textStyle: FlutterFlowTheme.of(context)
-                                  .bodyLarge
-                                  .override(
-                                    font: GoogleFonts.manrope(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .fontStyle,
-                                    ),
-                                    letterSpacing: 0.0,
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyLarge
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyLarge
-                                        .fontStyle,
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            16.0, 0.0, 16.0, 0.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed(JournalWidget.routeName);
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.chevron_left_rounded,
+                                    color: Colors.white,
+                                    size: 28.0,
                                   ),
-                              elevation: 0.0,
-                              borderRadius: BorderRadius.circular(8.0),
+                                  Text(
+                                    'Back',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyLarge
+                                        .override(
+                                          font: GoogleFonts.manrope(
+                                            fontWeight: FontWeight.w600,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyLarge
+                                                    .fontStyle,
+                                          ),
+                                          color: Colors.white,
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w600,
+                                          fontStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .bodyLarge
+                                                  .fontStyle,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ].divide(SizedBox(width: 12.0)),
+                          ],
+                        ),
                       ),
-                      Align(
-                        alignment: AlignmentDirectional(0.0, -1.0),
+                      Expanded(
                         child: StreamBuilder<WrittenNoteRecord>(
                           stream:
                               WrittenNoteRecord.getDocument(widget!.noteref!),
@@ -168,21 +172,22 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
 
                             return Container(
                               width: double.infinity,
-                              height: 660.0,
+                              clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
-                                color: Color(0xFF171117),
+                                color: Color(0xFF0F0F0F),
                                 boxShadow: [
                                   BoxShadow(
-                                    blurRadius: 20.0,
-                                    color: Color(0x42F1B2F0),
-                                    offset: Offset(
-                                      0.0,
-                                      17.0,
-                                    ),
-                                    spreadRadius: 5.0,
-                                  )
+                                    blurRadius: 24.0,
+                                    color: Color(0x66D4B8E8),
+                                    offset: Offset(0.0, 0.0),
+                                    spreadRadius: 2.0,
+                                  ),
                                 ],
-                                borderRadius: BorderRadius.only(),
+                                borderRadius: BorderRadius.circular(28.0),
+                                border: Border.all(
+                                  color: Color(0x33D4B8E8),
+                                  width: 1.0,
+                                ),
                               ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
@@ -487,17 +492,19 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
                                       ),
                                     ),
                                   ),
-                                  Align(
-                                    alignment: AlignmentDirectional(0.0, 0.0),
+                                  Expanded(
                                     child: Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
-                                          24.0, 8.0, 24.0, 0.0),
+                                          24.0, 8.0, 24.0, 16.0),
                                       child: TextFormField(
                                         controller: _model.textController2,
                                         focusNode: _model.textFieldFocusNode2,
                                         autofocus: false,
                                         enabled: true,
                                         obscureText: false,
+                                        expands: true,
+                                        textAlignVertical:
+                                            TextAlignVertical.top,
                                         decoration: InputDecoration(
                                           isDense: true,
                                           labelStyle: FlutterFlowTheme.of(
