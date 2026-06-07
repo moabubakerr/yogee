@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FlutterFlowIconButton extends StatefulWidget {
   const FlutterFlowIconButton({
@@ -60,21 +59,14 @@ class _FlutterFlowIconButtonState extends State<FlutterFlowIconButton> {
   }
 
   void _updateIcon() {
-    final isFontAwesome = widget.icon is FaIcon;
-    if (isFontAwesome) {
-      FaIcon icon = widget.icon as FaIcon;
-      effectiveIcon = FaIcon(
-        icon.icon as FaIconData?,
-        size: icon.size,
-      );
-      iconSize = icon.size;
-      iconColor = icon.color;
-    } else {
-      Icon icon = widget.icon as Icon;
-      effectiveIcon = Icon(
-        icon.icon,
-        size: icon.size,
-      );
+    // Reuse the already-built icon widget directly. We must NOT reconstruct a
+    // FaIcon from `icon.icon`: in font_awesome v11 `FaIcon.icon` returns a
+    // plain IconData (FaIconData.data), so `icon.icon as FaIconData?` throws
+    // "type 'IconData' is not a subtype of type 'FaIconData?'". FaIcon extends
+    // Icon, so this handles both Material and FontAwesome icons.
+    final icon = widget.icon;
+    effectiveIcon = icon;
+    if (icon is Icon) {
       iconSize = icon.size;
       iconColor = icon.color;
     }
