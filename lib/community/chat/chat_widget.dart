@@ -328,7 +328,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                             borderRadius:
                                                 BorderRadius.circular(24.0),
                                             child: Image.network(
-                                              'https://picsum.photos/seed/221/600',
+                                              listViewChatMessagesRecord.image,
                                               width: 250.0,
                                               height: 150.0,
                                               fit: BoxFit.cover,
@@ -450,7 +450,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                           borderRadius:
                                               BorderRadius.circular(24.0),
                                           child: Image.network(
-                                            'https://picsum.photos/seed/221/600',
+                                            listViewChatMessagesRecord.image,
                                             width: 250.0,
                                             height: 150.0,
                                             fit: BoxFit.cover,
