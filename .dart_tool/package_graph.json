@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "yogee",
-      "version": "1.0.0+23",
+      "version": "1.0.0+24",
       "dependencies": [
         "aligned_dialog",
         "any_link_preview",
