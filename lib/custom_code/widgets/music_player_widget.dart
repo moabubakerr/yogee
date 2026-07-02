@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'index.dart'; // Imports other custom widgets
 
 import '/app_state.dart';
-import 'package:just_audio/just_audio.dart';
 import 'dart:async';
 import '/custom_code/actions/init_audio_player.dart';
 
@@ -308,51 +307,9 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
             },
           ),
 
-          const SizedBox(height: 16),
-
-          // FIX 2: PLAYBACK CONTROLS — these were completely missing
-          StreamBuilder<PlayerState>(
-            stream: audio.playerStateStream,
-            builder: (context, snapshot) {
-              final playing = snapshot.data?.playing ?? false;
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Previous track
-                  IconButton(
-                    icon: const Icon(Icons.skip_previous_rounded,
-                        color: Colors.white, size: 40),
-                    onPressed: () => audio.seekToPrevious(),
-                  ),
-                  const SizedBox(width: 20),
-                  // Play / Pause
-                  GestureDetector(
-                    onTap: () => playing ? audio.pause() : audio.play(),
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        color: _primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        playing ? Icons.pause : Icons.play_arrow,
-                        color: Colors.black,
-                        size: 36,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  // Next track
-                  IconButton(
-                    icon: const Icon(Icons.skip_next_rounded,
-                        color: Colors.white, size: 40),
-                    onPressed: () => audio.seekToNext(),
-                  ),
-                ],
-              );
-            },
-          ),
+          // Transport controls (prev / play-pause / next) plus shuffle & repeat
+          // are rendered by the FlutterFlow page that embeds this widget, so they
+          // are intentionally omitted here to avoid a duplicate set of controls.
 
           const SizedBox(height: 16),
         ],
