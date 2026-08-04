@@ -671,7 +671,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                                         .fontStyle,
                                               ),
                                           alignLabelWithHint: false,
-                                          hintText: 'TextField',
+                                          hintText: '@username',
                                           hintStyle: FlutterFlowTheme.of(
                                                   context)
                                               .labelMedium
@@ -1075,7 +1075,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                                               .fontStyle,
                                                     ),
                                             alignLabelWithHint: false,
-                                            hintText: 'TextField',
+                                            hintText: 'Type interests here',
                                             hintStyle:
                                                 FlutterFlowTheme.of(context)
                                                     .labelMedium

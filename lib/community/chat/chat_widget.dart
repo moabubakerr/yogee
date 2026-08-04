@@ -7,7 +7,6 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
-import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:aligned_dialog/aligned_dialog.dart';
@@ -955,13 +954,6 @@ class _ChatWidgetState extends State<ChatWidget> {
                       ),
                     ),
                   ),
-                ),
-              ),
-              wrapWithModel(
-                model: _model.navModel,
-                updateCallback: () => safeSetState(() {}),
-                child: NavWidget(
-                  pageindex: 4,
                 ),
               ),
             ],

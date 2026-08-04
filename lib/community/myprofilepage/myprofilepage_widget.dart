@@ -48,6 +48,11 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
     super.dispose();
   }
 
+  // Profile stat counts show two digits like the design (e.g. 03, 11);
+  // larger values fall back to the compact format (e.g. 1.2K).
+  String _padCount(int n) =>
+      n < 10 ? '0$n' : formatNumber(n, formatType: FormatType.compact);
+
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
@@ -108,11 +113,11 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                             color: Colors.black,
                             boxShadow: [
                               BoxShadow(
-                                blurRadius: 0.0,
+                                blurRadius: 16.0,
                                 color: FlutterFlowTheme.of(context).primary,
                                 offset: Offset(
                                   0.0,
-                                  5.0,
+                                  2.0,
                                 ),
                               )
                             ],
@@ -337,8 +342,8 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                                 currentUserPhoto,
                                                                 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
                                                               ),
-                                                              width: 70.0,
-                                                              height: 70.0,
+                                                              width: 90.0,
+                                                              height: 90.0,
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
@@ -370,26 +375,23 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                                 currentUserDisplayName,
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
-                                                                    .titleSmall
+                                                                    .headlineSmall
                                                                     .override(
                                                                       font: GoogleFonts
-                                                                          .manrope(
-                                                                        fontWeight: FlutterFlowTheme.of(context)
-                                                                            .titleSmall
-                                                                            .fontWeight,
+                                                                          .plusJakartaSans(
+                                                                        fontWeight:
+                                                                            FontWeight.w700,
                                                                         fontStyle: FlutterFlowTheme.of(context)
-                                                                            .titleSmall
+                                                                            .headlineSmall
                                                                             .fontStyle,
                                                                       ),
                                                                       letterSpacing:
                                                                           0.0,
-                                                                      fontWeight: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .titleSmall
-                                                                          .fontWeight,
+                                                                      fontWeight:
+                                                                          FontWeight.w700,
                                                                       fontStyle: FlutterFlowTheme.of(
                                                                               context)
-                                                                          .titleSmall
+                                                                          .headlineSmall
                                                                           .fontStyle,
                                                                     ),
                                                               ),
@@ -516,13 +518,10 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                                         Text(
                                                                   valueOrDefault<
                                                                       String>(
-                                                                    formatNumber(
+                                                                    _padCount(
                                                                       (currentUserDocument?.following?.toList() ??
                                                                               [])
                                                                           .length,
-                                                                      formatType:
-                                                                          FormatType
-                                                                              .compact,
                                                                     ),
                                                                     '0',
                                                                   ),
@@ -595,13 +594,10 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                                         Text(
                                                                   valueOrDefault<
                                                                       String>(
-                                                                    formatNumber(
+                                                                    _padCount(
                                                                       (currentUserDocument?.followers?.toList() ??
                                                                               [])
                                                                           .length,
-                                                                      formatType:
-                                                                          FormatType
-                                                                              .compact,
                                                                     ),
                                                                     '0',
                                                                   ),
@@ -671,11 +667,8 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                               Text(
                                                                 valueOrDefault<
                                                                     String>(
-                                                                  formatNumber(
+                                                                  _padCount(
                                                                     containerCount,
-                                                                    formatType:
-                                                                        FormatType
-                                                                            .compact,
                                                                   ),
                                                                   '0',
                                                                 ),
@@ -1157,117 +1150,48 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                         final interestsItem =
                                                             interests[
                                                                 interestsIndex];
-                                                        return ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    24.0),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    24.0),
-                                                            bottomLeft:
-                                                                Radius.circular(
-                                                                    24.0),
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                                    24.0),
+                                                        return Container(
+                                                          alignment:
+                                                              AlignmentDirectional(
+                                                                  0.0, 0.0),
+                                                          padding:
+                                                              EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                                      16.0,
+                                                                      6.0,
+                                                                      16.0,
+                                                                      6.0),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Color(
+                                                                0x1FD4B8E8),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        24.0),
+                                                            border: Border.all(
+                                                              color: Color(
+                                                                  0x59D4B8E8),
+                                                              width: 1.0,
+                                                            ),
                                                           ),
-                                                          child: Container(
-                                                            width: 120.0,
-                                                            height: 31.0,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              gradient:
-                                                                  LinearGradient(
-                                                                colors: [
-                                                                  Color(
-                                                                      0xFFDEB6E0),
-                                                                  Color(
-                                                                      0xFF887189)
-                                                                ],
-                                                                stops: [
-                                                                  0.0,
-                                                                  1.0
-                                                                ],
-                                                                begin:
-                                                                    AlignmentDirectional(
-                                                                        1.0,
-                                                                        0.0),
-                                                                end:
-                                                                    AlignmentDirectional(
-                                                                        -1.0,
-                                                                        0),
-                                                              ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .only(
-                                                                topLeft: Radius
-                                                                    .circular(
-                                                                        24.0),
-                                                                topRight: Radius
-                                                                    .circular(
-                                                                        24.0),
-                                                                bottomLeft: Radius
-                                                                    .circular(
-                                                                        24.0),
-                                                                bottomRight: Radius
-                                                                    .circular(
-                                                                        24.0),
-                                                              ),
-                                                            ),
-                                                            child: Stack(
-                                                              children: [
-                                                                ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              8.0),
-                                                                  child: Image
-                                                                      .asset(
-                                                                    'assets/images/choiceback.png',
-                                                                    width:
-                                                                        200.0,
-                                                                    height:
-                                                                        200.0,
-                                                                    fit: BoxFit
-                                                                        .fitHeight,
-                                                                    alignment:
-                                                                        Alignment(
-                                                                            -1.0,
-                                                                            -1.0),
-                                                                  ),
+                                                          child: Text(
+                                                            interestsItem,
+                                                            textAlign:
+                                                                TextAlign.center,
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  font: GoogleFonts
+                                                                      .manrope(),
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primaryText,
+                                                                  fontSize: 13.0,
+                                                                  letterSpacing:
+                                                                      0.0,
                                                                 ),
-                                                                Align(
-                                                                  alignment:
-                                                                      AlignmentDirectional(
-                                                                          0.0,
-                                                                          0.0),
-                                                                  child:
-                                                                      Padding(
-                                                                    padding: EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            2.0,
-                                                                            0.0,
-                                                                            2.0,
-                                                                            0.0),
-                                                                    child: Text(
-                                                                      interestsItem,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      style: GoogleFonts
-                                                                          .roboto(
-                                                                        color: Color(
-                                                                            0xFFDAB3DC),
-                                                                        fontSize:
-                                                                            12.0,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
                                                           ),
                                                         );
                                                       },
