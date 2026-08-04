@@ -11,33 +11,28 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Future markAllNotificationsAsRead(DocumentReference userRef) async {
+/// Deletes every notification addressed to [userRef].
+///
+/// The "clear all" button used to call `.delete()` on a single document taken
+/// from a `singleRecord: true` stream, so it only ever removed one notification.
+Future clearAllNotifications(DocumentReference userRef) async {
   final firestore = FirebaseFirestore.instance;
 
-  // All notifications addressed to this user that are still unread.
   final querySnapshot = await firestore
       .collection('notifications')
       .where('madeto', isEqualTo: userRef)
-      .where('isread', isEqualTo: false)
       .get();
 
   if (querySnapshot.docs.isEmpty) return;
 
-  // The field is 'isread' — the same one NotificationsRecord and every unread
-  // badge query read. Writing anything else (e.g. 'is_seen') leaves the
-  // notifications unread forever and the badge never clears.
-  //
   // Firestore caps a batch at 500 writes, so commit in chunks.
   const int batchLimit = 500;
   for (int start = 0; start < querySnapshot.docs.length; start += batchLimit) {
     final chunk = querySnapshot.docs.skip(start).take(batchLimit);
     final batch = firestore.batch();
     for (final doc in chunk) {
-      batch.update(doc.reference, {'isread': true});
+      batch.delete(doc.reference);
     }
     await batch.commit();
   }
 }
-
-// Set your action name, define your arguments and return parameter,
-// and then add the boilerplate code using the green button on the right!

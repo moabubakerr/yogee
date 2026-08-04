@@ -208,8 +208,10 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                 .addToStart(SizedBox(height: 4.0))
                                 .addToEnd(SizedBox(height: 4.0)),
                           ),
-                          FutureBuilder<int>(
-                            future: queryNotificationsRecordCount(
+                          // Streamed so the dot appears as soon as a
+                          // notification lands and disappears once it is read.
+                          StreamBuilder<List<NotificationsRecord>>(
+                            stream: queryNotificationsRecord(
                               queryBuilder: (notificationsRecord) =>
                                   notificationsRecord
                                       .where(
@@ -222,21 +224,9 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                       ),
                             ),
                             builder: (context, snapshot) {
-                              // Customize what your widget looks like when it's loading.
-                              if (!snapshot.hasData) {
-                                return Center(
-                                  child: SizedBox(
-                                    width: 50.0,
-                                    height: 50.0,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        FlutterFlowTheme.of(context).primary,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                              int stackCount = snapshot.data!;
+                              // Until the count arrives, show the bell with no
+                              // dot rather than a spinner in its place.
+                              int stackCount = snapshot.data?.length ?? 0;
 
                               return Stack(
                                 alignment: AlignmentDirectional(0.5, -0.5),
@@ -253,14 +243,14 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                     onPressed: () async {
                                       context.pushNamed(
                                           NotificationsWidget.routeName);
-
-                                      FFAppState().notificationisseen = true;
-                                      safeSetState(() {});
                                     },
                                   ),
-                                  if ((stackCount >= 1) &&
-                                      (FFAppState().notificationisseen ==
-                                          false))
+                                  // Driven purely by the unread count. The old
+                                  // FFAppState().notificationisseen gate was set
+                                  // to true on first tap and never reset, so the
+                                  // dot stayed hidden for the rest of the session
+                                  // no matter how many notifications arrived.
+                                  if (stackCount >= 1)
                                     Container(
                                       width: 18.0,
                                       height: 18.0,
@@ -445,7 +435,8 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                       .length +
                                                   (listViewPostsRecordList
                                                               .length >=
-                                                          _model.allPostsPageSize
+                                                          _model
+                                                              .allPostsPageSize
                                                       ? 1
                                                       : 0),
                                               separatorBuilder: (_, __) =>
@@ -1111,15 +1102,14 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                         primary: false,
                                                         scrollDirection:
                                                             Axis.vertical,
-                                                        itemCount:
-                                                            listViewPostsRecordList
-                                                                    .length +
-                                                                (listViewPostsRecordList
-                                                                            .length >=
-                                                                        _model
-                                                                            .followingPostsPageSize
-                                                                    ? 1
-                                                                    : 0),
+                                                        itemCount: listViewPostsRecordList
+                                                                .length +
+                                                            (listViewPostsRecordList
+                                                                        .length >=
+                                                                    _model
+                                                                        .followingPostsPageSize
+                                                                ? 1
+                                                                : 0),
                                                         separatorBuilder:
                                                             (_, __) => SizedBox(
                                                                 height: 16.0),
@@ -1131,9 +1121,8 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                             return Center(
                                                               child: TextButton(
                                                                 onPressed: () =>
-                                                                    safeSetState(
-                                                                        () => _model
-                                                                            .followingPostsPageSize +=
+                                                                    safeSetState(() =>
+                                                                        _model.followingPostsPageSize +=
                                                                             20),
                                                                 child: Text(
                                                                     'Load More',
@@ -1141,10 +1130,10 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                             context)
                                                                         .bodyMedium
                                                                         .override(
-                                                                          font: GoogleFonts
-                                                                              .manrope(),
-                                                                          color: FlutterFlowTheme.of(context)
-                                                                              .primary,
+                                                                          font:
+                                                                              GoogleFonts.manrope(),
+                                                                          color:
+                                                                              FlutterFlowTheme.of(context).primary,
                                                                           letterSpacing:
                                                                               0.0,
                                                                         )),

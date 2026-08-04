@@ -82,7 +82,10 @@ service cloud.firestore {
       allow create: if true;
       allow read: if true;
       allow write: if true;
-      allow delete: if false;
+      // Users may clear notifications addressed to them ("clear all" on the
+      // notifications screen). Deleting anyone else's is still denied.
+      allow delete: if request.auth != null
+        && resource.data.madeto == /databases/$(database)/documents/users/$(request.auth.uid);
     }
 
     match /artists/{document} {

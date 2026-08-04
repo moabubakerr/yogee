@@ -10,4 +10,5 @@ export 'play_song_btn.dart' show playSongBtn;
 export 'skip_to_next.dart' show skipToNext;
 export 'skip_to_previous.dart' show skipToPrevious;
 export 'mark_all_notifications_as_read.dart' show markAllNotificationsAsRead;
+export 'clear_all_notifications.dart' show clearAllNotifications;
 export 'init_audio_player.dart' show initAudioPlayer;

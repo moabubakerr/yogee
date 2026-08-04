@@ -103,11 +103,56 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          Stack(
+                            alignment: AlignmentDirectional(0.0, 0.0),
                             children: [
+                              // Centered against the full row width, so the
+                              // back button never pushes the title off-centre.
+                              Container(
+                                height: 50.0,
+                                alignment: AlignmentDirectional(0.0, 0.0),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      50.0, 0.0, 50.0, 0.0),
+                                  child: Text(
+                                    'Profile settings',
+                                    textAlign: TextAlign.center,
+                                    style: FlutterFlowTheme.of(context)
+                                        .titleLarge
+                                        .override(
+                                      font: GoogleFonts.manrope(
+                                        fontWeight: FlutterFlowTheme.of(context)
+                                            .titleLarge
+                                            .fontWeight,
+                                        fontStyle: FlutterFlowTheme.of(context)
+                                            .titleLarge
+                                            .fontStyle,
+                                      ),
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      letterSpacing: 0.0,
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .titleLarge
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .titleLarge
+                                          .fontStyle,
+                                      shadows: [
+                                        Shadow(
+                                          color: Color(0xCCF1B2F0),
+                                          offset: Offset(15.0, 0.0),
+                                          blurRadius: 15.0,
+                                        ),
+                                        Shadow(
+                                          color: Color(0xA3FFFFFF),
+                                          offset: Offset(-15.0, 0.0),
+                                          blurRadius: 15.0,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                               Align(
                                 alignment: AlignmentDirectional(-1.0, 0.0),
                                 child: FlutterFlowIconButton(
@@ -122,45 +167,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                   },
                                 ),
                               ),
-                              Align(
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                child: Text(
-                                  'Profile settings',
-                                  style: FlutterFlowTheme.of(context)
-                                      .titleLarge
-                                      .override(
-                                    font: GoogleFonts.manrope(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .titleLarge
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .titleLarge
-                                          .fontStyle,
-                                    ),
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .titleLarge
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleLarge
-                                        .fontStyle,
-                                    shadows: [
-                                      Shadow(
-                                        color: Color(0xCCF1B2F0),
-                                        offset: Offset(15.0, 0.0),
-                                        blurRadius: 15.0,
-                                      ),
-                                      Shadow(
-                                        color: Color(0xA3FFFFFF),
-                                        offset: Offset(-15.0, 0.0),
-                                        blurRadius: 15.0,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ].divide(SizedBox(width: 56.0)),
+                            ],
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.max,
@@ -369,7 +376,11 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 64.0),
-                            child: Column(
+                            child: ConstrainedBox(
+                              // Keeps the form block centred on wide screens
+                              // instead of the fields hugging the left edge.
+                              constraints: BoxConstraints(maxWidth: 480.0),
+                              child: Column(
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -419,7 +430,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Container(
-                                    width: 250.0,
+                                    width: double.infinity,
                                     child: TextFormField(
                                       controller:
                                           _model.fullnameTextController ??=
@@ -631,7 +642,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     child: Container(
-                                      width: 250.0,
+                                      width: double.infinity,
                                       child: TextFormField(
                                         controller:
                                             _model.usernameTextController ??=
@@ -827,7 +838,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 0.0, 8.0),
                                     child: Container(
-                                      width: 250.0,
+                                      width: double.infinity,
                                       child: TextFormField(
                                         controller: _model.bioTextController ??=
                                             TextEditingController(
@@ -1013,11 +1024,11 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                   ),
                                 ),
                                 Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
+                                    Expanded(
+                                      child: Container(
                                       decoration: BoxDecoration(
                                         boxShadow: [
                                           BoxShadow(
@@ -1037,7 +1048,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                         ),
                                       ),
                                       child: Container(
-                                        width: 180.0,
+                                        width: double.infinity,
                                         child: TextFormField(
                                           controller:
                                               _model.interestsTextController,
@@ -1183,6 +1194,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                               .interestsTextControllerValidator
                                               .asValidator(context),
                                         ),
+                                      ),
                                       ),
                                     ),
                                     FFButtonWidget(
@@ -1353,7 +1365,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                   ),
                                 ),
                                 Container(
-                                  width: 250.0,
+                                  width: double.infinity,
                                   decoration: BoxDecoration(),
                                   child: Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(
@@ -1400,7 +1412,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                                         Radius.circular(24.0),
                                                   ),
                                                   child: Container(
-                                                    width: 120.0,
+                                                    width: double.infinity,
                                                     height: 31.0,
                                                     decoration: BoxDecoration(
                                                       gradient: LinearGradient(
@@ -1610,7 +1622,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Container(
-                                    width: 250.0,
+                                    width: double.infinity,
                                     child: TextFormField(
                                       controller: _model.fromTextController ??=
                                           TextEditingController(
@@ -1784,7 +1796,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Container(
-                                    width: 250.0,
+                                    width: double.infinity,
                                     child: TextFormField(
                                       controller:
                                           _model.currentTextController ??=
@@ -1915,6 +1927,7 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                   ),
                                 ),
                               ].divide(SizedBox(height: 16.0)),
+                            ),
                             ),
                           ),
                           Padding(

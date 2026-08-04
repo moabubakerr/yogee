@@ -199,8 +199,10 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                     ),
                                   ].divide(SizedBox(height: 8.0)),
                                 ),
-                                FutureBuilder<int>(
-                                  future: queryNotificationsRecordCount(
+                                // Streamed so the dot appears as soon as a
+                                // notification lands and disappears once read.
+                                StreamBuilder<List<NotificationsRecord>>(
+                                  stream: queryNotificationsRecord(
                                     queryBuilder: (notificationsRecord) =>
                                         notificationsRecord
                                             .where(
@@ -213,23 +215,9 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                             ),
                                   ),
                                   builder: (context, snapshot) {
-                                    // Customize what your widget looks like when it's loading.
-                                    if (!snapshot.hasData) {
-                                      return Center(
-                                        child: SizedBox(
-                                          width: 50.0,
-                                          height: 50.0,
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              FlutterFlowTheme.of(context)
-                                                  .primary,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    int stackCount = snapshot.data!;
+                                    // Until the count arrives, show the bell
+                                    // with no dot rather than a spinner.
+                                    int stackCount = snapshot.data?.length ?? 0;
 
                                     return Stack(
                                       alignment:
@@ -247,15 +235,12 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                           onPressed: () async {
                                             context.pushNamed(
                                                 NotificationsWidget.routeName);
-
-                                            FFAppState().notificationisseen =
-                                                true;
-                                            safeSetState(() {});
                                           },
                                         ),
-                                        if ((stackCount >= 1) &&
-                                            (FFAppState().notificationisseen ==
-                                                false))
+                                        // Driven purely by the unread count —
+                                        // the old notificationisseen gate was
+                                        // never reset after the first tap.
+                                        if (stackCount >= 1)
                                           Container(
                                             width: 18.0,
                                             height: 18.0,
@@ -388,7 +373,8 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                                       letterSpacing:
                                                                           0.0,
                                                                       fontWeight:
-                                                                          FontWeight.w700,
+                                                                          FontWeight
+                                                                              .w700,
                                                                       fontStyle: FlutterFlowTheme.of(
                                                                               context)
                                                                           .headlineSmall
@@ -1177,8 +1163,8 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                           ),
                                                           child: Text(
                                                             interestsItem,
-                                                            textAlign:
-                                                                TextAlign.center,
+                                                            textAlign: TextAlign
+                                                                .center,
                                                             style: FlutterFlowTheme
                                                                     .of(context)
                                                                 .bodyMedium
@@ -1188,7 +1174,8 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                                   color: FlutterFlowTheme.of(
                                                                           context)
                                                                       .primaryText,
-                                                                  fontSize: 13.0,
+                                                                  fontSize:
+                                                                      13.0,
                                                                   letterSpacing:
                                                                       0.0,
                                                                 ),
@@ -1316,10 +1303,9 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                               primary: false,
                                               shrinkWrap: true,
                                               scrollDirection: Axis.vertical,
-                                              itemCount:
-                                                  listViewPostsRecordList
-                                                          .length +
-                                                      (hasMore ? 1 : 0),
+                                              itemCount: listViewPostsRecordList
+                                                      .length +
+                                                  (hasMore ? 1 : 0),
                                               separatorBuilder: (_, __) =>
                                                   SizedBox(height: 16.0),
                                               itemBuilder:
@@ -1340,10 +1326,9 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                         child: Text(
                                                           'Load More',
                                                           style: TextStyle(
-                                                              color:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primary),
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .primary),
                                                         ),
                                                       ),
                                                     ),

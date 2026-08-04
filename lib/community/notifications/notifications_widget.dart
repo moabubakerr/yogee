@@ -57,8 +57,11 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: Colors.black,
-        body: FutureBuilder<int>(
-          future: queryNotificationsRecordCount(
+        // Streamed, not a one-shot count: a FutureBuilder here meant the page
+        // was stuck on whatever count it read at first build, so notifications
+        // arriving (or being cleared) while the page was open never showed up.
+        body: StreamBuilder<List<NotificationsRecord>>(
+          stream: queryNotificationsRecord(
             queryBuilder: (notificationsRecord) => notificationsRecord.where(
               'madeto',
               isEqualTo: currentUserReference,
@@ -79,7 +82,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                 ),
               );
             }
-            int stackCount = snapshot.data!;
+            int stackCount = snapshot.data!.length;
 
             return Stack(
               children: [
@@ -173,147 +176,46 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                   .addToEnd(SizedBox(width: 20.0)),
                             ),
                           ),
-                          StreamBuilder<List<NotificationsRecord>>(
-                            stream: queryNotificationsRecord(
-                              queryBuilder: (notificationsRecord) =>
-                                  notificationsRecord.where(
-                                'madeto',
-                                isEqualTo: currentUserReference,
-                              ),
-                              singleRecord: true,
-                            ),
-                            builder: (context, snapshot) {
-                              // Customize what your widget looks like when it's loading.
-                              if (!snapshot.hasData) {
-                                return Center(
-                                  child: SizedBox(
-                                    width: 50.0,
-                                    height: 50.0,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        FlutterFlowTheme.of(context).primary,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                              List<NotificationsRecord>
-                                  rowNotificationsRecordList = snapshot.data!;
-                              // Return an empty Container when the item does not exist.
-                              if (snapshot.data!.isEmpty) {
-                                return Container();
-                              }
-                              final rowNotificationsRecord =
-                                  rowNotificationsRecordList.isNotEmpty
-                                      ? rowNotificationsRecordList.first
-                                      : null;
-
-                              return Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Container(
-                                    width: 100.0,
-                                    height: 70.0,
-                                    decoration: BoxDecoration(),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      focusColor: Colors.transparent,
-                                      hoverColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () async {
-                                        await rowNotificationsRecord!.reference
-                                            .delete();
-                                      },
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          FaIcon(
-                                            FontAwesomeIcons.ban,
-                                            color: FlutterFlowTheme.of(context)
-                                                .primary,
-                                            size: 20.0,
-                                          ),
-                                          Text(
-                                            'clear all',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyLarge
-                                                .override(
-                                                  font: GoogleFonts.manrope(
-                                                    fontWeight:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyLarge
-                                                            .fontWeight,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyLarge
-                                                            .fontStyle,
-                                                  ),
-                                                  letterSpacing: 0.0,
-                                                  fontWeight:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyLarge
-                                                          .fontWeight,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyLarge
-                                                          .fontStyle,
-                                                ),
-                                          ),
-                                        ].divide(SizedBox(height: 4.0)),
-                                      ),
-                                    ),
-                                  ),
-                                  InkWell(
+                          // "Clear all" / "Mark as read" only make sense when
+                          // there is something to act on. stackCount already
+                          // streams that count, so this no longer needs its own
+                          // duplicate singleRecord query.
+                          if (stackCount >= 1)
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Container(
+                                  width: 100.0,
+                                  height: 70.0,
+                                  decoration: BoxDecoration(),
+                                  child: InkWell(
                                     splashColor: Colors.transparent,
                                     focusColor: Colors.transparent,
                                     hoverColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
-                                      await actions.markAllNotificationsAsRead(
+                                      await actions.clearAllNotifications(
                                         currentUserReference!,
                                       );
                                     },
-                                    child: Container(
-                                      width: 100.0,
-                                      height: 70.0,
-                                      decoration: BoxDecoration(),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            FFIcons.kaddFriendCopy2Svg,
-                                            color: FlutterFlowTheme.of(context)
-                                                .primary,
-                                            size: 30.0,
-                                          ),
-                                          Text(
-                                            'Mark as read',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyLarge
-                                                .override(
-                                                  font: GoogleFonts.manrope(
-                                                    fontWeight:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyLarge
-                                                            .fontWeight,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyLarge
-                                                            .fontStyle,
-                                                  ),
-                                                  letterSpacing: 0.0,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        FaIcon(
+                                          FontAwesomeIcons.ban,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primary,
+                                          size: 20.0,
+                                        ),
+                                        Text(
+                                          'clear all',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyLarge
+                                              .override(
+                                                font: GoogleFonts.manrope(
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)
@@ -325,15 +227,80 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                           .bodyLarge
                                                           .fontStyle,
                                                 ),
-                                          ),
-                                        ].divide(SizedBox(height: 4.0)),
-                                      ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                      ].divide(SizedBox(height: 4.0)),
                                     ),
                                   ),
-                                ],
-                              );
-                            },
-                          ),
+                                ),
+                                InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    await actions.markAllNotificationsAsRead(
+                                      currentUserReference!,
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 100.0,
+                                    height: 70.0,
+                                    decoration: BoxDecoration(),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          FFIcons.kaddFriendCopy2Svg,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primary,
+                                          size: 30.0,
+                                        ),
+                                        Text(
+                                          'Mark as read',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyLarge
+                                              .override(
+                                                font: GoogleFonts.manrope(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyLarge
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyLarge
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                      ].divide(SizedBox(height: 4.0)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                         ]
                             .divide(SizedBox(height: 6.0))
                             .addToStart(SizedBox(height: 20.0)),
