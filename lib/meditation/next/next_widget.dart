@@ -338,17 +338,30 @@ class _NextWidgetState extends State<NextWidget> {
                               ),
                             );
                           }
-                          return ListView.builder(
+                          final base = current + 1;
+                          return ReorderableListView.builder(
                             padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            buildDefaultDragHandles: false,
                             scrollDirection: Axis.vertical,
                             itemCount: upcoming.length,
+                            onReorder: (oldIndex, newIndex) async {
+                              // ReorderableListView reports newIndex assuming
+                              // the item is still in the list; adjust it.
+                              if (newIndex > oldIndex) {
+                                newIndex -= 1;
+                              }
+                              await handler.moveQueueItem(
+                                  base + oldIndex, base + newIndex);
+                              if (mounted) {
+                                safeSetState(() {});
+                              }
+                            },
                             itemBuilder: (context, listViewIndex) {
                               final absIndex = upcoming[listViewIndex];
                               final song = fullQueue[absIndex];
-                              final canMoveUp = listViewIndex > 0;
-                              final canMoveDown =
-                                  listViewIndex < upcoming.length - 1;
                               return Padding(
+                                key: ValueKey('queue_$absIndex'),
                                 padding: EdgeInsetsDirectional.fromSTEB(
                                     0.0, 16.0, 0.0, 0.0),
                                 child: Row(
@@ -411,52 +424,18 @@ class _NextWidgetState extends State<NextWidget> {
                                         ),
                                       ),
                                     ),
-                                    Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          padding: EdgeInsets.zero,
-                                          constraints: BoxConstraints(),
-                                          iconSize: 24.0,
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_up_rounded,
-                                            color: canMoveUp
-                                                ? FlutterFlowTheme.of(context)
-                                                    .primary
-                                                : Color(0x4DC49FC3),
-                                          ),
-                                          onPressed: canMoveUp
-                                              ? () async {
-                                                  await handler.moveQueueItem(
-                                                      absIndex, absIndex - 1);
-                                                  if (mounted) {
-                                                    safeSetState(() {});
-                                                  }
-                                                }
-                                              : null,
+                                    ReorderableDragStartListener(
+                                      index: listViewIndex,
+                                      child: Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            8.0, 0.0, 0.0, 0.0),
+                                        child: Icon(
+                                          Icons.drag_handle_rounded,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primary,
+                                          size: 28.0,
                                         ),
-                                        IconButton(
-                                          padding: EdgeInsets.zero,
-                                          constraints: BoxConstraints(),
-                                          iconSize: 24.0,
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: canMoveDown
-                                                ? FlutterFlowTheme.of(context)
-                                                    .primary
-                                                : Color(0x4DC49FC3),
-                                          ),
-                                          onPressed: canMoveDown
-                                              ? () async {
-                                                  await handler.moveQueueItem(
-                                                      absIndex, absIndex + 1);
-                                                  if (mounted) {
-                                                    safeSetState(() {});
-                                                  }
-                                                }
-                                              : null,
-                                        ),
-                                      ],
+                                      ),
                                     ),
                                   ],
                                 ),

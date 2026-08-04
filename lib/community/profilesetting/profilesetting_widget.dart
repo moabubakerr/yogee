@@ -1247,6 +1247,111 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                     ),
                                   ].divide(SizedBox(width: 10.0)),
                                 ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 12.0, 0.0, 0.0),
+                                  child: AuthUserStreamWidget(
+                                    builder: (context) {
+                                      final selectedInterests =
+                                          (currentUserDocument?.interests
+                                                  .toList() ??
+                                              []);
+                                      final suggestedInterests = <String>[
+                                        'Meditation',
+                                        'Yoga',
+                                        'Travel',
+                                        'Mindfulness',
+                                        'Music',
+                                        'Nature',
+                                        'Fitness',
+                                        'Reading',
+                                        'Art',
+                                        'Wellness',
+                                        'Journaling',
+                                        'Breathwork',
+                                      ];
+                                      return Wrap(
+                                        spacing: 8.0,
+                                        runSpacing: 8.0,
+                                        children:
+                                            suggestedInterests.map((suggestion) {
+                                          final isSelected = selectedInterests
+                                              .contains(suggestion);
+                                          return InkWell(
+                                            splashColor: Colors.transparent,
+                                            focusColor: Colors.transparent,
+                                            hoverColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () async {
+                                              await currentUserReference!
+                                                  .update({
+                                                ...mapToFirestore(
+                                                  {
+                                                    'Interests': isSelected
+                                                        ? FieldValue.arrayRemove(
+                                                            [suggestion])
+                                                        : FieldValue.arrayUnion(
+                                                            [suggestion]),
+                                                  },
+                                                ),
+                                              });
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(
+                                                      14.0, 8.0, 14.0, 8.0),
+                                              decoration: BoxDecoration(
+                                                color: isSelected
+                                                    ? Color(0x33D4B8E8)
+                                                    : Color(0xFF1B1B1B),
+                                                borderRadius:
+                                                    BorderRadius.circular(24.0),
+                                                border: Border.all(
+                                                  color: isSelected
+                                                      ? FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary
+                                                      : Color(0x33D4B8E8),
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    isSelected
+                                                        ? Icons.check_rounded
+                                                        : Icons.add_rounded,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    size: 16.0,
+                                                  ),
+                                                  SizedBox(width: 6.0),
+                                                  Text(
+                                                    suggestion,
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .bodyMedium
+                                                        .override(
+                                                          font: GoogleFonts
+                                                              .manrope(),
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryText,
+                                                          fontSize: 13.0,
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      );
+                                    },
+                                  ),
+                                ),
                                 Container(
                                   width: 250.0,
                                   decoration: BoxDecoration(),
@@ -1367,6 +1472,52 @@ class _ProfilesettingWidgetState extends State<ProfilesettingWidget> {
                                                                 color: Color(
                                                                     0xFFDAB3DC),
                                                                 fontSize: 12.0,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Align(
+                                                          alignment:
+                                                              AlignmentDirectional(
+                                                                  1.0, -1.0),
+                                                          child: InkWell(
+                                                            splashColor: Colors
+                                                                .transparent,
+                                                            focusColor: Colors
+                                                                .transparent,
+                                                            hoverColor: Colors
+                                                                .transparent,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            onTap: () async {
+                                                              await currentUserReference!
+                                                                  .update({
+                                                                ...mapToFirestore(
+                                                                  {
+                                                                    'Interests':
+                                                                        FieldValue
+                                                                            .arrayRemove([
+                                                                      interestsItem
+                                                                    ]),
+                                                                  },
+                                                                ),
+                                                              });
+                                                            },
+                                                            child: Padding(
+                                                              padding:
+                                                                  EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          0.0,
+                                                                          4.0,
+                                                                          6.0,
+                                                                          0.0),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .close_rounded,
+                                                                color: Color(
+                                                                    0xFF3A2E3B),
+                                                                size: 16.0,
                                                               ),
                                                             ),
                                                           ),
