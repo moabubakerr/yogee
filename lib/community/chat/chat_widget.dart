@@ -7,6 +7,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
+import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:aligned_dialog/aligned_dialog.dart';
@@ -59,6 +60,56 @@ class _ChatWidgetState extends State<ChatWidget> {
     super.dispose();
   }
 
+  bool _isSameDay(DateTime? a, DateTime? b) =>
+      a != null &&
+      b != null &&
+      a.year == b.year &&
+      a.month == b.month &&
+      a.day == b.day;
+
+  String _ordinalDay(int day) {
+    if (day >= 11 && day <= 13) {
+      return '${day}th';
+    }
+    switch (day % 10) {
+      case 1:
+        return '${day}st';
+      case 2:
+        return '${day}nd';
+      case 3:
+        return '${day}rd';
+      default:
+        return '${day}th';
+    }
+  }
+
+  String _formatDaySeparator(DateTime dateTime) {
+    final weekday = dateTimeFormat('EEEE', dateTime);
+    final month = dateTimeFormat('MMMM', dateTime);
+    return '$weekday ${_ordinalDay(dateTime.day)} $month';
+  }
+
+  Widget _buildDateDivider(BuildContext context, DateTime dateTime) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 16.0),
+      child: Text(
+        _formatDaySeparator(dateTime),
+        textAlign: TextAlign.center,
+        style: FlutterFlowTheme.of(context).bodyMedium.override(
+              font: GoogleFonts.manrope(
+                fontWeight: FontWeight.w500,
+                fontStyle:
+                    FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+              ),
+              color: FlutterFlowTheme.of(context).primaryText,
+              letterSpacing: 0.0,
+              fontWeight: FontWeight.w500,
+              fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -75,7 +126,7 @@ class _ChatWidgetState extends State<ChatWidget> {
             image: DecorationImage(
               fit: BoxFit.cover,
               image: Image.asset(
-                'assets/images/journal_background.png',
+                'assets/images/backgroundD.png',
               ).image,
             ),
           ),
@@ -104,16 +155,15 @@ class _ChatWidgetState extends State<ChatWidget> {
 
                   return Container(
                     width: double.infinity,
-                    height: 200.0,
                     decoration: BoxDecoration(
                       color: Colors.black,
                       boxShadow: [
                         BoxShadow(
-                          blurRadius: 0.0,
+                          blurRadius: 16.0,
                           color: FlutterFlowTheme.of(context).primary,
                           offset: Offset(
                             0.0,
-                            3.0,
+                            2.0,
                           ),
                         )
                       ],
@@ -122,15 +172,15 @@ class _ChatWidgetState extends State<ChatWidget> {
                         bottomRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: Align(
-                      alignment: AlignmentDirectional(0.0, 0.0),
+                    child: SafeArea(
+                      bottom: false,
                       child: Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(8.0, 20.0, 8.0, 0.0),
+                            EdgeInsetsDirectional.fromSTEB(8.0, 8.0, 8.0, 16.0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             FlutterFlowIconButton(
                               buttonSize: 50.0,
@@ -305,11 +355,22 @@ class _ChatWidgetState extends State<ChatWidget> {
                           reverse: true,
                           scrollDirection: Axis.vertical,
                           itemCount: listViewChatMessagesRecordList.length,
-                          separatorBuilder: (_, __) => SizedBox(height: 16.0),
+                          separatorBuilder: (_, __) => SizedBox(height: 20.0),
                           itemBuilder: (context, listViewIndex) {
                             final listViewChatMessagesRecord =
                                 listViewChatMessagesRecordList[listViewIndex];
-                            return Builder(
+                            // List is ordered newest-first and rendered
+                            // reversed, so show a day divider above the oldest
+                            // message of each day.
+                            final bool showDateHeader = (listViewIndex ==
+                                    listViewChatMessagesRecordList.length - 1) ||
+                                !_isSameDay(
+                                  listViewChatMessagesRecord.timestamp,
+                                  listViewChatMessagesRecordList[
+                                          listViewIndex + 1]
+                                      .timestamp,
+                                );
+                            final messageWidget = Builder(
                               builder: (context) {
                                 if (listViewChatMessagesRecord.user ==
                                     currentUserReference) {
@@ -359,8 +420,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                                               children: [
                                                 Padding(
                                                   padding: EdgeInsetsDirectional
-                                                      .fromSTEB(20.0, 10.0,
-                                                          20.0, 10.0),
+                                                      .fromSTEB(18.0, 12.0,
+                                                          18.0, 12.0),
                                                   child: Text(
                                                     listViewChatMessagesRecord
                                                         .text,
@@ -382,6 +443,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                                     .bodyMedium
                                                                     .fontStyle,
                                                           ),
+                                                          fontSize: 16.0,
                                                           letterSpacing: 0.0,
                                                           fontWeight:
                                                               FlutterFlowTheme.of(
@@ -491,8 +553,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                 ),
                                                 child: Padding(
                                                   padding: EdgeInsetsDirectional
-                                                      .fromSTEB(20.0, 10.0,
-                                                          20.0, 10.0),
+                                                      .fromSTEB(18.0, 12.0,
+                                                          18.0, 12.0),
                                                   child: Text(
                                                     listViewChatMessagesRecord
                                                         .text,
@@ -514,6 +576,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                                     .bodyMedium
                                                                     .fontStyle,
                                                           ),
+                                                          fontSize: 16.0,
                                                           letterSpacing: 0.0,
                                                           fontWeight:
                                                               FlutterFlowTheme.of(
@@ -565,6 +628,16 @@ class _ChatWidgetState extends State<ChatWidget> {
                                   );
                                 }
                               },
+                            );
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (showDateHeader &&
+                                    listViewChatMessagesRecord.timestamp != null)
+                                  _buildDateDivider(context,
+                                      listViewChatMessagesRecord.timestamp!),
+                                messageWidget,
+                              ],
                             );
                           },
                         );
@@ -882,6 +955,13 @@ class _ChatWidgetState extends State<ChatWidget> {
                       ),
                     ),
                   ),
+                ),
+              ),
+              wrapWithModel(
+                model: _model.navModel,
+                updateCallback: () => safeSetState(() {}),
+                child: NavWidget(
+                  pageindex: 4,
                 ),
               ),
             ],

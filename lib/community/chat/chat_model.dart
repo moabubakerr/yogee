@@ -7,6 +7,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
+import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'chat_widget.dart' show ChatWidget;
@@ -31,12 +32,18 @@ class ChatModel extends FlutterFlowModel<ChatWidget> {
   TextEditingController? textController;
   String? Function(BuildContext, String?)? textControllerValidator;
 
+  // Model for nav component.
+  late NavModel navModel;
+
   @override
-  void initState(BuildContext context) {}
+  void initState(BuildContext context) {
+    navModel = createModel(context, () => NavModel());
+  }
 
   @override
   void dispose() {
     textFieldFocusNode?.dispose();
     textController?.dispose();
+    navModel.dispose();
   }
 }
