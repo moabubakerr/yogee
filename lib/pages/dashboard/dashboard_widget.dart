@@ -175,7 +175,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                         child: Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(
                               32.0, 0.0, 32.0, 0.0),
-                          child: Column(
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              context.pushNamed(MyprofilepageWidget.routeName);
+                            },
+                            child: Column(
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Row(
@@ -239,21 +247,21 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                             'Displayname',
                                           ),
                                           style: FlutterFlowTheme.of(context)
-                                              .titleMedium
+                                              .headlineSmall
                                               .override(
-                                                font: GoogleFonts.manrope(
-                                                  fontWeight: FontWeight.w500,
+                                                font: GoogleFonts.plusJakartaSans(
+                                                  fontWeight: FontWeight.w700,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
                                                               context)
-                                                          .titleMedium
+                                                          .headlineSmall
                                                           .fontStyle,
                                                 ),
                                                 letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w500,
+                                                fontWeight: FontWeight.w700,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)
-                                                        .titleMedium
+                                                        .headlineSmall
                                                         .fontStyle,
                                               ),
                                         ),
@@ -293,53 +301,18 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                               ),
                               Align(
                                 alignment: AlignmentDirectional(-1.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      5.0, 0.0, 0.0, 0.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      // TODO(brand-stickers): replace with a
-                                      // StreamBuilder<List<BrandStickerRecord>>
-                                      // once the dynamic stickers collection
-                                      // exists in Firestore. Placeholder chips
-                                      // render the structure so the layout is
-                                      // correct ahead of backend wiring.
-                                      ...List.generate(4, (i) => Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    0.0, 0.0, 4.0, 0.0),
-                                            child: Container(
-                                              width: 28.0,
-                                              height: 28.0,
-                                              decoration: BoxDecoration(
-                                                color: Color(0xFF161616),
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                border: Border.all(
-                                                  color: Color(0x33D4B8E8),
-                                                  width: 1.0,
-                                                ),
-                                              ),
-                                            ),
-                                          )),
-                                      SizedBox(width: 6.0),
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(0.0),
-                                        child: Image.asset(
-                                          'assets/images/soverin_badge2.png',
-                                          width: 130.0,
-                                          fit: BoxFit.cover,
-                                          alignment: Alignment(-1.0, -1.0),
-                                        ),
-                                      ),
-                                    ],
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(0.0),
+                                  child: Image.asset(
+                                    'assets/images/soverin_badge2.png',
+                                    width: 230.0,
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment(-1.0, -1.0),
                                   ),
                                 ),
                               ),
                             ].divide(SizedBox(height: 8.0)),
+                            ),
                           ),
                         ),
                       ),

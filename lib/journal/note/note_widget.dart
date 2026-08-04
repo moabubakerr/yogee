@@ -167,6 +167,9 @@ class _NoteWidgetState extends State<NoteWidget> {
                                 final containerWrittenNoteRecord =
                                     snapshot.data!;
 
+                                _model.topicController ??= TextEditingController(
+                                    text: containerWrittenNoteRecord.topic);
+
                                 return Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
@@ -263,6 +266,41 @@ class _NoteWidgetState extends State<NoteWidget> {
                                                       ),
                                                 ),
                                               ),
+                                              FlutterFlowIconButton(
+                                                borderRadius: 8.0,
+                                                buttonSize: 40.0,
+                                                icon: Icon(
+                                                  Icons.save_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .info,
+                                                  size: 22.0,
+                                                ),
+                                                onPressed: () async {
+                                                  await containerWrittenNoteRecord
+                                                      .reference
+                                                      .update(
+                                                          createWrittenNoteRecordData(
+                                                    topic: _model
+                                                        .topicController.text,
+                                                  ));
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content:
+                                                          Text('Note saved'),
+                                                      duration: Duration(
+                                                          milliseconds: 2000),
+                                                      backgroundColor:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .secondary,
+                                                    ),
+                                                  );
+                                                  FocusScope.of(context)
+                                                      .unfocus();
+                                                },
+                                              ),
                                               Align(
                                                 alignment: AlignmentDirectional(
                                                     1.0, 0.0),
@@ -320,17 +358,21 @@ class _NoteWidgetState extends State<NoteWidget> {
                                           ),
                                         ),
                                       ),
-                                      Align(
-                                        alignment:
-                                            AlignmentDirectional(-1.0, 0.0),
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  24.0, 8.0, 24.0, 0.0),
-                                          child: Text(
-                                            containerWrittenNoteRecord.topic,
-                                            textAlign: TextAlign.start,
-                                            style: FlutterFlowTheme.of(context)
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            24.0, 8.0, 24.0, 24.0),
+                                        child: TextFormField(
+                                          controller: _model.topicController,
+                                          focusNode: _model.topicFocusNode,
+                                          autofocus: false,
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          obscureText: false,
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            hintText: 'Write a note',
+                                            hintStyle: FlutterFlowTheme.of(
+                                                    context)
                                                 .bodyLarge
                                                 .override(
                                                   font: GoogleFonts.manrope(
@@ -348,9 +390,40 @@ class _NoteWidgetState extends State<NoteWidget> {
                                                               context)
                                                           .bodyLarge
                                                           .fontStyle,
-                                                  lineHeight: 1.3,
                                                 ),
+                                            enabledBorder: InputBorder.none,
+                                            focusedBorder: InputBorder.none,
+                                            errorBorder: InputBorder.none,
+                                            focusedErrorBorder: InputBorder.none,
                                           ),
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyLarge
+                                              .override(
+                                                font: GoogleFonts.manrope(
+                                                  fontWeight: FontWeight.w300,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyLarge
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w300,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .fontStyle,
+                                                lineHeight: 1.3,
+                                              ),
+                                          textAlign: TextAlign.start,
+                                          maxLines: null,
+                                          minLines: 3,
+                                          cursorColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primary,
+                                          validator: _model
+                                              .topicControllerValidator
+                                              .asValidator(context),
                                         ),
                                       ),
                                     ].divide(SizedBox(height: 16.0)),

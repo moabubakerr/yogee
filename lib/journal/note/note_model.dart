@@ -14,9 +14,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class NoteModel extends FlutterFlowModel<NoteWidget> {
+  // State field(s) for the editable note body.
+  FocusNode? topicFocusNode;
+  TextEditingController? topicController;
+  String? Function(BuildContext, String?)? topicControllerValidator;
+
   @override
   void initState(BuildContext context) {}
 
   @override
-  void dispose() {}
+  void dispose() {
+    topicFocusNode?.dispose();
+    topicController?.dispose();
+  }
 }
