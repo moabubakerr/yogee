@@ -2,6 +2,7 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/custom_code/actions/init_audio_player.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -291,138 +292,176 @@ class _NextWidgetState extends State<NextWidget> {
                     maxHeight: 400.0,
                   ),
                   decoration: BoxDecoration(),
-                  child: StreamBuilder<List<SongsRecord>>(
-                    stream: querySongsRecord(
-                      queryBuilder: (songsRecord) => songsRecord.where(
-                        'num',
-                        isGreaterThan: FFAppState().songnum,
-                      ),
-                      limit: 20,
-                    ),
-                    builder: (context, snapshot) {
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SizedBox(
-                            width: 50.0,
-                            height: 50.0,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                FlutterFlowTheme.of(context).primary,
-                              ),
-                            ),
+                  child: Builder(
+                    builder: (context) {
+                      if (!AudioManager.isInitialized) {
+                        return Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                              0.0, 16.0, 0.0, 0.0),
+                          child: Text(
+                            'Nothing queued yet',
+                            style: FlutterFlowTheme.of(context)
+                                .bodyMedium
+                                .override(
+                                  font: GoogleFonts.manrope(),
+                                  color: Color(0xFFC49FC3),
+                                  letterSpacing: 0.0,
+                                ),
                           ),
                         );
                       }
-                      List<SongsRecord> listViewSongsRecordList =
-                          snapshot.data!;
-
-                      return ListView.builder(
-                        padding: EdgeInsets.zero,
-                        scrollDirection: Axis.vertical,
-                        itemCount: listViewSongsRecordList.length,
-                        itemBuilder: (context, listViewIndex) {
-                          final listViewSongsRecord =
-                              listViewSongsRecordList[listViewIndex];
-                          return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 16.0, 0.0, 0.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    valueOrDefault<String>(
-                                      listViewSongsRecord.songCoverImage,
-                                      'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
+                      return StreamBuilder<int?>(
+                        stream: AudioManager
+                            .instance.player.currentIndexStream,
+                        builder: (context, snapshot) {
+                          final handler = AudioManager.instance;
+                          final fullQueue = handler.songQueue;
+                          final current = handler.currentQueueIndex;
+                          // Absolute indices of the tracks after the one playing.
+                          final upcoming = <int>[];
+                          for (int i = current + 1; i < fullQueue.length; i++) {
+                            upcoming.add(i);
+                          }
+                          if (upcoming.isEmpty) {
+                            return Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 16.0, 0.0, 0.0),
+                              child: Text(
+                                'No upcoming songs in the queue',
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      font: GoogleFonts.manrope(),
+                                      color: Color(0xFFC49FC3),
+                                      letterSpacing: 0.0,
                                     ),
-                                    width: 60.0,
-                                    height: 60.0,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 0.0, 16.0, 0.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          listViewSongsRecord.title,
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                font: GoogleFonts.manrope(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .fontStyle,
-                                                ),
-                                                fontSize: 18.0,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.bold,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
+                              ),
+                            );
+                          }
+                          return ListView.builder(
+                            padding: EdgeInsets.zero,
+                            scrollDirection: Axis.vertical,
+                            itemCount: upcoming.length,
+                            itemBuilder: (context, listViewIndex) {
+                              final absIndex = upcoming[listViewIndex];
+                              final song = fullQueue[absIndex];
+                              final canMoveUp = listViewIndex > 0;
+                              final canMoveDown =
+                                  listViewIndex < upcoming.length - 1;
+                              return Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 16.0, 0.0, 0.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Image.network(
+                                        valueOrDefault<String>(
+                                          song.coverUrl,
+                                          'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
                                         ),
-                                        Align(
-                                          alignment:
-                                              AlignmentDirectional(-1.0, -1.0),
-                                          child: Text(
-                                            FFAppState().artist,
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  font: GoogleFonts.manrope(
-                                                    fontWeight:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontWeight,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontStyle,
+                                        width: 60.0,
+                                        height: 60.0,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: Padding(
+                                        padding:
+                                            EdgeInsetsDirectional.fromSTEB(
+                                                16.0, 0.0, 16.0, 0.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              song.songTitle,
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    font: GoogleFonts.manrope(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
-                                                  color: Color(0xFFC49FC3),
-                                                  letterSpacing: 0.0,
-                                                  fontWeight:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .fontWeight,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .fontStyle,
-                                                ),
+                                            ),
+                                            Align(
+                                              alignment: AlignmentDirectional(
+                                                  -1.0, -1.0),
+                                              child: Text(
+                                                song.authorName,
+                                                style: FlutterFlowTheme.of(
+                                                        context)
+                                                    .bodyMedium
+                                                    .override(
+                                                      font:
+                                                          GoogleFonts.manrope(),
+                                                      color: Color(0xFFC49FC3),
+                                                      letterSpacing: 0.0,
+                                                    ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints(),
+                                          iconSize: 24.0,
+                                          icon: Icon(
+                                            Icons.keyboard_arrow_up_rounded,
+                                            color: canMoveUp
+                                                ? FlutterFlowTheme.of(context)
+                                                    .primary
+                                                : Color(0x4DC49FC3),
                                           ),
+                                          onPressed: canMoveUp
+                                              ? () async {
+                                                  await handler.moveQueueItem(
+                                                      absIndex, absIndex - 1);
+                                                  if (mounted) {
+                                                    safeSetState(() {});
+                                                  }
+                                                }
+                                              : null,
+                                        ),
+                                        IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints(),
+                                          iconSize: 24.0,
+                                          icon: Icon(
+                                            Icons.keyboard_arrow_down_rounded,
+                                            color: canMoveDown
+                                                ? FlutterFlowTheme.of(context)
+                                                    .primary
+                                                : Color(0x4DC49FC3),
+                                          ),
+                                          onPressed: canMoveDown
+                                              ? () async {
+                                                  await handler.moveQueueItem(
+                                                      absIndex, absIndex + 1);
+                                                  if (mounted) {
+                                                    safeSetState(() {});
+                                                  }
+                                                }
+                                              : null,
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(0.0),
-                                  child: Image.asset(
-                                    'assets/images/Object_(8).png',
-                                    width: 30.0,
-                                    height: 30.0,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           );
                         },
                       );

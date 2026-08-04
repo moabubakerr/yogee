@@ -64,6 +64,39 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
   final ValueNotifier<bool> isShufflingNotifier = ValueNotifier<bool>(false);
   final ValueNotifier<bool> isRepeatingNotifier = ValueNotifier<bool>(false);
   List<SongData> _songDataList = [];
+  ConcatenatingAudioSource? _playlist;
+
+  /// The current playback queue (in order). Read-only snapshot.
+  List<SongData> get songQueue => List.unmodifiable(_songDataList);
+
+  /// Index of the track currently playing within [queue].
+  int get currentQueueIndex => player.currentIndex ?? 0;
+
+  /// Reorder a track in the live queue. [oldIndex]/[newIndex] are absolute
+  /// positions within [queue]. Keeps the just_audio source and the metadata
+  /// list in sync, and does not interrupt the currently-playing track.
+  Future<void> moveQueueItem(int oldIndex, int newIndex) async {
+    if (_playlist == null) return;
+    if (oldIndex < 0 ||
+        oldIndex >= _songDataList.length ||
+        newIndex < 0 ||
+        newIndex >= _songDataList.length ||
+        oldIndex == newIndex) {
+      return;
+    }
+    try {
+      await _playlist!.move(oldIndex, newIndex);
+      final item = _songDataList.removeAt(oldIndex);
+      _songDataList.insert(newIndex, item);
+    } catch (e, stack) {
+      debugPrint('moveQueueItem error: $e');
+      await FirebaseCrashlytics.instance.recordError(
+        e, stack,
+        reason: 'moveQueueItem failed — old=$oldIndex new=$newIndex',
+        fatal: false,
+      );
+    }
+  }
 
   AudioPlayerHandler() {
     player.playbackEventStream.map(_transformEvent).pipe(playbackState);
@@ -155,6 +188,7 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
       children:
           songs.map((s) => AudioSource.uri(Uri.parse(s.songUrl))).toList(),
     );
+    _playlist = playlist;
     try {
       await player.stop();
       await player.setAudioSource(
@@ -194,6 +228,7 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
     final playlist = ConcatenatingAudioSource(
       children: urls.map((url) => AudioSource.uri(Uri.parse(url))).toList(),
     );
+    _playlist = playlist;
     try {
       await player.stop();
       await player.setAudioSource(

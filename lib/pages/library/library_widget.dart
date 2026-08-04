@@ -692,7 +692,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                           ),
                                                                     ),
                                                                     Text(
-                                                                      'chew lay',
+                                                                      '${listViewPlaylistsRecord.songs.length} songs',
                                                                       style: FlutterFlowTheme.of(
                                                                               context)
                                                                           .bodyMedium
