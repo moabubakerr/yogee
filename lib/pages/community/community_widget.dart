@@ -67,8 +67,18 @@ class _CommunityWidgetState extends State<CommunityWidget>
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: Color(0xFF0B0B0B),
-        floatingActionButton: Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 10.0, 60.0),
+        floatingActionButton: AnimatedPadding(
+          duration: Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          // NavWidget is 120px tall normally and 200px once the mini player
+          // is showing, so lift the button by that extra 80px to keep it
+          // clear of the now-playing card.
+          padding: EdgeInsetsDirectional.fromSTEB(
+            0.0,
+            0.0,
+            10.0,
+            FFAppState().miniplayer ? 140.0 : 60.0,
+          ),
           child: FloatingActionButton(
             onPressed: () async {
               context.pushNamed(NewpostWidget.routeName);
