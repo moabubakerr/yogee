@@ -21,6 +21,39 @@ import 'package:provider/provider.dart';
 import 'dashboard_model.dart';
 export 'dashboard_model.dart';
 
+/// Figma: card fill is a vertical #000000 -> #181818 gradient.
+const _kCardGradient = LinearGradient(
+  begin: AlignmentDirectional(0.0, -1.0),
+  end: AlignmentDirectional(0.0, 1.0),
+  colors: [Color(0xFF000000), Color(0xFF181818)],
+);
+
+/// Figma: 2px near-white stroke on every card.
+const _kCardStroke = Color(0xFFD4D2D2);
+
+/// Figma: white -> pink sweep used on the streak card's unit labels.
+const _kAccentGradient = LinearGradient(
+  colors: [Color(0xFFFFFFFF), Color(0xFFF1B1EF)],
+  stops: [0.081, 0.606],
+);
+
+/// Paints [text] with [_kAccentGradient] instead of a flat colour.
+class _GradientText extends StatelessWidget {
+  const _GradientText(this.text, {required this.style});
+
+  final String text;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) => ShaderMask(
+        blendMode: BlendMode.srcIn,
+        shaderCallback: (bounds) => _kAccentGradient.createShader(
+          Rect.fromLTWH(0.0, 0.0, bounds.width, bounds.height),
+        ),
+        child: Text(text, style: style),
+      );
+}
+
 class DashboardWidget extends StatefulWidget {
   const DashboardWidget({super.key});
 
@@ -212,11 +245,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                           true,
                                       child: AuthUserStreamWidget(
                                         builder: (context) => Container(
-                                          width: 64.0,
-                                          height: 64.0,
+                                          width: 68.0,
+                                          height: 68.0,
                                           clipBehavior: Clip.antiAlias,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 2.0,
+                                            ),
                                           ),
                                           child: Image.network(
                                             valueOrDefault<String>(
@@ -252,16 +289,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineSmall
                                               .override(
-                                                font: GoogleFonts.plusJakartaSans(
-                                                  fontWeight: FontWeight.w700,
+                                                font: GoogleFonts.manrope(
+                                                  fontWeight: FontWeight.w600,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
                                                               context)
                                                           .headlineSmall
                                                           .fontStyle,
                                                 ),
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w700,
+                                                fontSize: 17.0,
+                                                letterSpacing: 0.25,
+                                                fontWeight: FontWeight.w600,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)
                                                         .headlineSmall
@@ -308,7 +346,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                   borderRadius: BorderRadius.circular(0.0),
                                   child: Image.asset(
                                     'assets/images/soverin_badge2.png',
-                                    width: 230.0,
+                                    width: 200.0,
                                     fit: BoxFit.cover,
                                     alignment: Alignment(-1.0, -1.0),
                                   ),
@@ -350,9 +388,9 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                       gridDelegate:
                                           SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 2,
-                                        crossAxisSpacing: 12.0,
-                                        mainAxisSpacing: 8.0,
-                                        childAspectRatio: 1.0,
+                                        crossAxisSpacing: 7.0,
+                                        mainAxisSpacing: 9.0,
+                                        childAspectRatio: 100.0 / 97.0,
                                       ),
                                       primary: false,
                                       shrinkWrap: true,
@@ -372,7 +410,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                             },
                                             child: Container(
                                               width: 100.0,
-                                              height: 100.0,
+                                              height: 97.0,
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
@@ -382,11 +420,12 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                     spreadRadius: 1.0,
                                                   ),
                                                 ],
-                                                color: Color(0xFF161616),
+                                                gradient: _kCardGradient,
                                                 borderRadius:
-                                                    BorderRadius.circular(24.0),
+                                                    BorderRadius.circular(6.0),
                                                 border: Border.all(
-                                                  color: Color(0x33D4B8E8),
+                                                  color: _kCardStroke,
+                                                  width: 2.0,
                                                 ),
                                               ),
                                               child: Column(
@@ -402,7 +441,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/mediate.png',
-                                                      width: 48.0,
+                                                      width: 35.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -415,22 +454,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                           font: GoogleFonts
                                                               .manrope(
                                                             fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
+                                                                FontWeight.w300,
                                                             fontStyle:
                                                                 FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodySmall
                                                                     .fontStyle,
                                                           ),
+                                                          fontSize: 12.0,
                                                           letterSpacing: 0.0,
                                                           fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodySmall
-                                                                  .fontWeight,
+                                                              FontWeight.w300,
                                                           fontStyle:
                                                               FlutterFlowTheme.of(
                                                                       context)
@@ -457,7 +491,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                             },
                                             child: Container(
                                               width: 100.0,
-                                              height: 100.0,
+                                              height: 97.0,
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
@@ -467,11 +501,12 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                     spreadRadius: 1.0,
                                                   ),
                                                 ],
-                                                color: Color(0xFF161616),
+                                                gradient: _kCardGradient,
                                                 borderRadius:
-                                                    BorderRadius.circular(24.0),
+                                                    BorderRadius.circular(6.0),
                                                 border: Border.all(
-                                                  color: Color(0x33D4B8E8),
+                                                  color: _kCardStroke,
+                                                  width: 2.0,
                                                 ),
                                               ),
                                               child: Column(
@@ -487,7 +522,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/jornal.png',
-                                                      width: 48.0,
+                                                      width: 30.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -500,22 +535,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                           font: GoogleFonts
                                                               .manrope(
                                                             fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
+                                                                FontWeight.w300,
                                                             fontStyle:
                                                                 FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodySmall
                                                                     .fontStyle,
                                                           ),
+                                                          fontSize: 12.0,
                                                           letterSpacing: 0.0,
                                                           fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodySmall
-                                                                  .fontWeight,
+                                                              FontWeight.w300,
                                                           fontStyle:
                                                               FlutterFlowTheme.of(
                                                                       context)
@@ -542,7 +572,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                             },
                                             child: Container(
                                               width: 100.0,
-                                              height: 100.0,
+                                              height: 97.0,
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
@@ -552,11 +582,12 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                     spreadRadius: 1.0,
                                                   ),
                                                 ],
-                                                color: Color(0xFF161616),
+                                                gradient: _kCardGradient,
                                                 borderRadius:
-                                                    BorderRadius.circular(24.0),
+                                                    BorderRadius.circular(6.0),
                                                 border: Border.all(
-                                                  color: Color(0x33D4B8E8),
+                                                  color: _kCardStroke,
+                                                  width: 2.0,
                                                 ),
                                               ),
                                               child: Column(
@@ -572,7 +603,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/community.png',
-                                                      width: 48.0,
+                                                      width: 32.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -585,22 +616,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                           font: GoogleFonts
                                                               .manrope(
                                                             fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
+                                                                FontWeight.w300,
                                                             fontStyle:
                                                                 FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodySmall
                                                                     .fontStyle,
                                                           ),
+                                                          fontSize: 12.0,
                                                           letterSpacing: 0.0,
                                                           fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodySmall
-                                                                  .fontWeight,
+                                                              FontWeight.w300,
                                                           fontStyle:
                                                               FlutterFlowTheme.of(
                                                                       context)
@@ -651,7 +677,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                             },
                                             child: Container(
                                               width: 100.0,
-                                              height: 100.0,
+                                              height: 97.0,
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
@@ -661,11 +687,12 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                     spreadRadius: 1.0,
                                                   ),
                                                 ],
-                                                color: Color(0xFF161616),
+                                                gradient: _kCardGradient,
                                                 borderRadius:
-                                                    BorderRadius.circular(24.0),
+                                                    BorderRadius.circular(6.0),
                                                 border: Border.all(
-                                                  color: Color(0x33D4B8E8),
+                                                  color: _kCardStroke,
+                                                  width: 2.0,
                                                 ),
                                               ),
                                               child: Column(
@@ -681,7 +708,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             8.0),
                                                     child: Image.asset(
                                                       'assets/images/courses.png',
-                                                      width: 48.0,
+                                                      width: 27.0,
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -694,22 +721,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                           font: GoogleFonts
                                                               .manrope(
                                                             fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
+                                                                FontWeight.w300,
                                                             fontStyle:
                                                                 FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodySmall
                                                                     .fontStyle,
                                                           ),
+                                                          fontSize: 12.0,
                                                           letterSpacing: 0.0,
                                                           fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodySmall
-                                                                  .fontWeight,
+                                                              FontWeight.w300,
                                                           fontStyle:
                                                               FlutterFlowTheme.of(
                                                                       context)
@@ -731,7 +753,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                 alignment: AlignmentDirectional(0.0, 0.0),
                                 child: Container(
                                   width: 100.0,
-                                  height: 210.0,
+                                  height: 203.0,
                                   decoration: BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
@@ -741,14 +763,38 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                         spreadRadius: 1.0,
                                       ),
                                     ],
-                                    color: Color(0xFF0F0F0F),
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    // Figma: 172.8deg translucent plum wash.
+                                    gradient: LinearGradient(
+                                      begin: AlignmentDirectional(-0.13, -1.0),
+                                      end: AlignmentDirectional(0.13, 1.0),
+                                      colors: [
+                                        Color(0x911E131E),
+                                        Color(0x916B546B)
+                                      ],
+                                      stops: [0.172, 1.0],
+                                    ),
+                                    borderRadius: BorderRadius.circular(12.0),
                                     border: Border.all(
-                                      color: Color(0x33D4B8E8),
-                                      width: 1.0,
+                                      color: Colors.white,
+                                      width: 2.0,
                                     ),
                                   ),
-                                  child: Padding(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    child: Container(
+                                      // Figma: solid #3D2C3C fading out downward.
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: AlignmentDirectional(0.0, 1.0),
+                                          end: AlignmentDirectional(0.0, -1.0),
+                                          colors: [
+                                            Color(0x003D2C3C),
+                                            Color(0xFF3D2C3C)
+                                          ],
+                                          stops: [0.118, 0.736],
+                                        ),
+                                      ),
+                                      child: Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         0.0, 4.0, 0.0, 0.0),
                                     child: Column(
@@ -772,7 +818,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               .bodySmall
                                               .override(
                                                 font: GoogleFonts.manrope(
-                                                  fontWeight: FontWeight.w500,
+                                                  fontWeight: FontWeight.w600,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
                                                               context)
@@ -780,9 +826,9 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                           .fontStyle,
                                                 ),
                                                 color: Colors.white,
-                                                fontSize: 13.0,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w500,
+                                                fontSize: 10.0,
+                                                letterSpacing: 0.15,
+                                                fontWeight: FontWeight.w600,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)
                                                         .bodySmall
@@ -823,6 +869,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                   .displaySmall
                                                                   .fontStyle,
                                                         ),
+                                                        fontSize: 38.0,
                                                         letterSpacing: 0.0,
                                                         fontWeight:
                                                             FontWeight.w800,
@@ -835,7 +882,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                       ),
                                                 ),
                                               ),
-                                              Text(
+                                              _GradientText(
                                                 'Days',
                                                 style: FlutterFlowTheme.of(
                                                         context)
@@ -850,10 +897,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                 .titleMedium
                                                                 .fontStyle,
                                                       ),
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary,
+                                                      color: Colors.white,
+                                                      fontSize: 18.0,
                                                       letterSpacing: 0.0,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -888,6 +933,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             .titleLarge
                                                             .fontStyle,
                                                   ),
+                                                  fontSize: 19.0,
                                                   letterSpacing: 0.0,
                                                   fontWeight: FontWeight.w800,
                                                   fontStyle:
@@ -903,7 +949,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            Text(
+                                            _GradientText(
                                               'Hours',
                                               style: FlutterFlowTheme.of(
                                                       context)
@@ -911,19 +957,18 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                   .override(
                                                     font: GoogleFonts.manrope(
                                                       fontWeight:
-                                                          FontWeight.normal,
+                                                          FontWeight.w500,
                                                       fontStyle:
                                                           FlutterFlowTheme.of(
                                                                   context)
                                                               .bodyMedium
                                                               .fontStyle,
                                                     ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primary,
+                                                    color: Colors.white,
+                                                    fontSize: 11.0,
                                                     letterSpacing: 0.0,
                                                     fontWeight:
-                                                        FontWeight.normal,
+                                                        FontWeight.w500,
                                                     fontStyle:
                                                         FlutterFlowTheme.of(
                                                                 context)
@@ -932,7 +977,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                     lineHeight: 1.0,
                                                   ),
                                             ),
-                                            Text(
+                                            _GradientText(
                                               'Mins',
                                               style: FlutterFlowTheme.of(
                                                       context)
@@ -940,19 +985,18 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                   .override(
                                                     font: GoogleFonts.manrope(
                                                       fontWeight:
-                                                          FontWeight.normal,
+                                                          FontWeight.w500,
                                                       fontStyle:
                                                           FlutterFlowTheme.of(
                                                                   context)
                                                               .bodyMedium
                                                               .fontStyle,
                                                     ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primary,
+                                                    color: Colors.white,
+                                                    fontSize: 11.0,
                                                     letterSpacing: 0.0,
                                                     fontWeight:
-                                                        FontWeight.normal,
+                                                        FontWeight.w500,
                                                     fontStyle:
                                                         FlutterFlowTheme.of(
                                                                 context)
@@ -964,6 +1008,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                           ],
                                         ),
                                       ],
+                                    ),
+                                  ),
                                     ),
                                   ),
                                 ),
@@ -989,9 +1035,16 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                   style: FlutterFlowTheme.of(context)
                                       .headlineSmall
                                       .override(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 22.0,
-                                        letterSpacing: -0.3,
+                                        font: GoogleFonts.manrope(
+                                          fontWeight: FontWeight.w500,
+                                          fontStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .headlineSmall
+                                                  .fontStyle,
+                                        ),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14.0,
+                                        letterSpacing: 0.2,
                                         fontStyle: FlutterFlowTheme.of(context)
                                             .headlineSmall
                                             .fontStyle,
@@ -1001,7 +1054,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                             ),
                             Container(
                                 width: double.infinity,
-                                height: 180.0,
+                                height: 140.0,
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
@@ -1047,7 +1100,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                       itemCount:
                                           listViewAlbumsRecordList.length,
                                       separatorBuilder: (_, __) =>
-                                          SizedBox(width: 2.0),
+                                          SizedBox(width: 1.0),
                                       itemBuilder: (context, listViewIndex) {
                                         final listViewAlbumsRecord =
                                             listViewAlbumsRecordList[
@@ -1074,7 +1127,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               );
                                             },
                                             child: Container(
-                                              width: 150.0,
+                                              width: 108.0,
                                               decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
@@ -1084,18 +1137,18 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                     spreadRadius: 1.0,
                                                   ),
                                                 ],
-                                                color: Color(0xFF0F0F0F),
+                                                gradient: _kCardGradient,
                                                 borderRadius:
-                                                    BorderRadius.circular(24.0),
+                                                    BorderRadius.circular(12.0),
                                                 border: Border.all(
-                                                  color: Color(0x33D4B8E8),
-                                                  width: 1.0,
+                                                  color: _kCardStroke,
+                                                  width: 2.0,
                                                 ),
                                               ),
                                               child: Padding(
                                                 padding: EdgeInsetsDirectional
                                                     .fromSTEB(
-                                                        0.0, 8.0, 0.0, 8.0),
+                                                        0.0, 7.0, 0.0, 7.0),
                                                 child: Column(
                                                   mainAxisSize:
                                                       MainAxisSize.max,
@@ -1109,10 +1162,11 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(8.0),
+                                                                .circular(7.0),
                                                         border: Border.all(
                                                           color:
-                                                              Color(0xFF666666),
+                                                              Color(0xFFFAFAFA),
+                                                          width: 2.0,
                                                         ),
                                                       ),
                                                       child: Visibility(
@@ -1132,7 +1186,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                   .coverImage,
                                                               'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/Square.jpeg?alt=media&token=6bb95a92-ae29-4638-9326-8ad36bcfaff0',
                                                             ),
-                                                            width: 95.0,
+                                                            width: 90.0,
                                                             height: 90.0,
                                                             fit: BoxFit.cover,
                                                           ),
@@ -1172,19 +1226,19 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                         .manrope(
                                                                       fontWeight:
                                                                           FontWeight
-                                                                              .w500,
+                                                                              .w600,
                                                                       fontStyle: FlutterFlowTheme.of(
                                                                               context)
                                                                           .bodySmall
                                                                           .fontStyle,
                                                                     ),
                                                                     fontSize:
-                                                                        10.0,
+                                                                        9.0,
                                                                     letterSpacing:
-                                                                        0.0,
+                                                                        0.1,
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .w500,
+                                                                            .w600,
                                                                     fontStyle: FlutterFlowTheme.of(
                                                                             context)
                                                                         .bodySmall
@@ -1222,7 +1276,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                     color: Color(
                                                                         0xFFE6BCE5),
                                                                     fontSize:
-                                                                        8.0,
+                                                                        7.0,
                                                                     letterSpacing:
                                                                         0.0,
                                                                     fontWeight:

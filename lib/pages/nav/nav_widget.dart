@@ -15,6 +15,30 @@ import 'package:provider/provider.dart';
 import 'nav_model.dart';
 export 'nav_model.dart';
 
+/// Figma: accent applied to the active tab's icon and label.
+const _kNavActive = Color(0xFFF2B5F0);
+
+/// Figma: the active tab's glyph is drawn larger than the inactive ones.
+double _navIconSize(bool active) => active ? 28.0 : 23.0;
+
+/// Figma: nav labels are Manrope Light ~11pt (13pt for the centre "Mediate").
+TextStyle _navLabelStyle(
+  BuildContext context,
+  bool active, {
+  double fontSize = 11.0,
+}) =>
+    FlutterFlowTheme.of(context).bodySmall.override(
+          font: GoogleFonts.manrope(
+            fontWeight: FontWeight.w300,
+            fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+          ),
+          color: active ? _kNavActive : Colors.white,
+          fontSize: fontSize,
+          letterSpacing: -0.1,
+          fontWeight: FontWeight.w300,
+          fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+        );
+
 class NavWidget extends StatefulWidget {
   const NavWidget({
     super.key,
@@ -55,11 +79,9 @@ class _NavWidgetState extends State<NavWidget> {
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
 
+    // Figma: the nav bar is a plain rectangle — no rounded top corners.
     return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(17.0),
-        topRight: Radius.circular(17.0),
-      ),
+      borderRadius: BorderRadius.zero,
       child: Container(
         width: double.infinity,
         height: valueOrDefault<double>(
@@ -67,10 +89,7 @@ class _NavWidgetState extends State<NavWidget> {
           200.0,
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(17.0),
-            topRight: Radius.circular(17.0),
-          ),
+          borderRadius: BorderRadius.zero,
           shape: BoxShape.rectangle,
         ),
         child: Stack(
@@ -380,8 +399,9 @@ class _NavWidgetState extends State<NavWidget> {
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
+                                      // Figma: pink haze bleeding above the bar.
                                       blurRadius: 30.0,
-                                      color: Color(0x9ED4B8E8),
+                                      color: Color(0x9EF1B2EF),
                                       offset: Offset(
                                         0.0,
                                         -85.0,
@@ -434,49 +454,18 @@ class _NavWidgetState extends State<NavWidget> {
                                                       color: widget!
                                                                   .pageindex ==
                                                               1
-                                                          ? FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary
+                                                          ? _kNavActive
                                                           : Colors.white,
-                                                      size: 20.0,
+                                                      size: _navIconSize(
+                                                          widget!.pageindex ==
+                                                              1),
                                                     ),
                                                     Text(
                                                       'Dashboard',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodySmall
-                                                              .override(
-                                                                font: GoogleFonts
-                                                                    .manrope(
-                                                                  fontWeight: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontWeight,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                color: widget!
-                                                                            .pageindex ==
-                                                                        1
-                                                                    ? FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .primary
-                                                                    : Colors
-                                                                        .white,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
-                                                                fontStyle: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontStyle,
-                                                              ),
+                                                      style: _navLabelStyle(
+                                                          context,
+                                                          widget!.pageindex ==
+                                                              1),
                                                     ),
                                                   ].divide(
                                                       SizedBox(height: 6.0)),
@@ -532,11 +521,11 @@ class _NavWidgetState extends State<NavWidget> {
                                                         color: widget!
                                                                     .pageindex ==
                                                                 2
-                                                            ? FlutterFlowTheme
-                                                                    .of(context)
-                                                                .primary
+                                                            ? _kNavActive
                                                             : Colors.white,
-                                                        size: 20.0,
+                                                        size: _navIconSize(
+                                                            widget!.pageindex ==
+                                                                2),
                                                       ),
                                                       Padding(
                                                         padding:
@@ -548,40 +537,10 @@ class _NavWidgetState extends State<NavWidget> {
                                                                     0.0),
                                                         child: Text(
                                                           'Journal',
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodySmall
-                                                              .override(
-                                                                font: GoogleFonts
-                                                                    .manrope(
-                                                                  fontWeight: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontWeight,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                color: widget!
-                                                                            .pageindex ==
-                                                                        2
-                                                                    ? FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .primary
-                                                                    : Colors
-                                                                        .white,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
-                                                                fontStyle: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontStyle,
-                                                              ),
+                                                          style: _navLabelStyle(
+                                                              context,
+                                                              widget!.pageindex ==
+                                                                  2),
                                                         ),
                                                       ),
                                                     ].divide(
@@ -639,49 +598,18 @@ class _NavWidgetState extends State<NavWidget> {
                                                         color: widget!
                                                                     .pageindex ==
                                                                 4
-                                                            ? FlutterFlowTheme
-                                                                    .of(context)
-                                                                .primary
+                                                            ? _kNavActive
                                                             : Colors.white,
-                                                        size: 20.0,
+                                                        size: _navIconSize(
+                                                            widget!.pageindex ==
+                                                                4),
                                                       ),
                                                       Text(
                                                         'Community',
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodySmall
-                                                                .override(
-                                                                  font: GoogleFonts
-                                                                      .manrope(
-                                                                    fontWeight: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmall
-                                                                        .fontWeight,
-                                                                    fontStyle: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmall
-                                                                        .fontStyle,
-                                                                  ),
-                                                                  color: widget!
-                                                                              .pageindex ==
-                                                                          4
-                                                                      ? FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .primary
-                                                                      : Colors
-                                                                          .white,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontWeight,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
+                                                        style: _navLabelStyle(
+                                                            context,
+                                                            widget!.pageindex ==
+                                                                4),
                                                       ),
                                                     ].divide(
                                                         SizedBox(height: 6.0)),
@@ -730,11 +658,11 @@ class _NavWidgetState extends State<NavWidget> {
                                                       color: widget!
                                                                   .pageindex ==
                                                               5
-                                                          ? FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary
+                                                          ? _kNavActive
                                                           : Colors.white,
-                                                      size: 20.0,
+                                                      size: _navIconSize(
+                                                          widget!.pageindex ==
+                                                              5),
                                                     ),
                                                     Padding(
                                                       padding:
@@ -746,41 +674,10 @@ class _NavWidgetState extends State<NavWidget> {
                                                                   0.0),
                                                       child: Text(
                                                         'Library',
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodySmall
-                                                                .override(
-                                                                  font: GoogleFonts
-                                                                      .manrope(
-                                                                    fontWeight: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmall
-                                                                        .fontWeight,
-                                                                    fontStyle: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmall
-                                                                        .fontStyle,
-                                                                  ),
-                                                                  color: widget!
-                                                                              .pageindex ==
-                                                                          5
-                                                                      ? FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .primary
-                                                                      : Colors
-                                                                          .white,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontWeight,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
+                                                        style: _navLabelStyle(
+                                                            context,
+                                                            widget!.pageindex ==
+                                                                5),
                                                       ),
                                                     ),
                                                   ].divide(
@@ -885,12 +782,12 @@ class _NavWidgetState extends State<NavWidget> {
                                                           AlignmentDirectional(
                                                               0.0, 0.0),
                                                       child: Container(
-                                                        width: 40.0,
-                                                        height: 40.0,
+                                                        width: 45.0,
+                                                        height: 45.0,
                                                         child: custom_widgets
                                                             .SpinningAssetImage(
-                                                          width: 40.0,
-                                                          height: 40.0,
+                                                          width: 45.0,
+                                                          height: 45.0,
                                                         ),
                                                       ),
                                                     ),
@@ -900,40 +797,11 @@ class _NavWidgetState extends State<NavWidget> {
                                             ),
                                             Text(
                                               'Mediate',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyMedium
-                                                  .override(
-                                                    font: GoogleFonts.manrope(
-                                                      fontWeight:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .fontWeight,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .fontStyle,
-                                                    ),
-                                                    color: widget!.pageindex ==
-                                                            3
-                                                        ? FlutterFlowTheme.of(
-                                                                context)
-                                                            .primary
-                                                        : Colors.white,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontWeight,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontStyle,
-                                                  ),
+                                              style: _navLabelStyle(
+                                                context,
+                                                widget!.pageindex == 3,
+                                                fontSize: 13.0,
+                                              ),
                                             ),
                                           ],
                                         ),
