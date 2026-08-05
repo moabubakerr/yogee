@@ -11,8 +11,16 @@ service cloud.firestore {
     match /posts/{document} {
       allow create: if true;
       allow read: if true;
-      allow write: if true;
-      allow delete: if false;
+      // NOTE: `write` also covers delete, and allow rules are OR'd together --
+      // so `allow write: if true` would hand every client an unrestricted
+      // delete and silently override the rule below. Update is granted
+      // explicitly instead.
+      allow update: if true;
+      // Authors may delete their own posts (delete button on the profile
+      // screen). Deleting anyone else's post is denied. Replies are cleaned
+      // up server-side by the onPostDeleted function.
+      allow delete: if request.auth != null
+        && resource.data.poster == /databases/$(database)/documents/users/$(request.auth.uid);
     }
 
     match /songs/{document} {
@@ -81,7 +89,9 @@ service cloud.firestore {
     match /notifications/{document} {
       allow create: if true;
       allow read: if true;
-      allow write: if true;
+      // Granted as `update` rather than `write`: `write` includes delete and
+      // would override the owner check below (see the posts block).
+      allow update: if true;
       // Users may clear notifications addressed to them ("clear all" on the
       // notifications screen). Deleting anyone else's is still denied.
       allow delete: if request.auth != null

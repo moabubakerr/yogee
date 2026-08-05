@@ -1,5 +1,6 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/community/deletepost/deletepost_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
@@ -1755,6 +1756,60 @@ class _MyprofilepageWidgetState extends State<MyprofilepageWidget> {
                                                                         ],
                                                                       ),
                                                                     ),
+                                                                    Spacer(),
+                                                                    // Only the author may delete a post. This list is
+                                                                    // already scoped to the signed-in user, but the
+                                                                    // owner check keeps the rule visible next to the
+                                                                    // action it guards.
+                                                                    if (listViewPostsRecord.poster ==
+                                                                        currentUserReference)
+                                                                      FlutterFlowIconButton(
+                                                                        borderRadius:
+                                                                            8.0,
+                                                                        buttonSize:
+                                                                            36.0,
+                                                                        icon:
+                                                                            Icon(
+                                                                          Icons
+                                                                              .delete_outline_rounded,
+                                                                          color: FlutterFlowTheme.of(context)
+                                                                              .secondaryText,
+                                                                          size:
+                                                                              18.0,
+                                                                        ),
+                                                                        onPressed:
+                                                                            () async {
+                                                                          final deleted =
+                                                                              await showDialog<bool>(
+                                                                            context:
+                                                                                context,
+                                                                            barrierColor:
+                                                                                Color(0x8A000000),
+                                                                            builder:
+                                                                                (dialogContext) {
+                                                                              return Dialog(
+                                                                                elevation:
+                                                                                    0,
+                                                                                insetPadding:
+                                                                                    EdgeInsets.zero,
+                                                                                backgroundColor:
+                                                                                    Colors.transparent,
+                                                                                alignment:
+                                                                                    AlignmentDirectional(0.0, 0.0).resolve(Directionality.of(context)),
+                                                                                child:
+                                                                                    DeletepostWidget(
+                                                                                  post: listViewPostsRecord.reference,
+                                                                                ),
+                                                                              );
+                                                                            },
+                                                                          );
+                                                                          if (deleted ==
+                                                                              true) {
+                                                                            safeSetState(
+                                                                                () {});
+                                                                          }
+                                                                        },
+                                                                      ),
                                                                   ],
                                                                 ),
                                                               ].divide(SizedBox(
