@@ -72,6 +72,32 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
   /// Index of the track currently playing within [queue].
   int get currentQueueIndex => player.currentIndex ?? 0;
 
+  /// True when [urls] is exactly the queue already loaded, in the same order.
+  /// Used to avoid rebuilding the audio source when the player is simply
+  /// re-opened, which would otherwise restart a paused track from zero.
+  bool _isSameQueue(List<String> urls) {
+    if (_playlist == null || _songDataList.length != urls.length) return false;
+    for (var i = 0; i < urls.length; i++) {
+      if (_songDataList[i].songUrl != urls[i]) return false;
+    }
+    return true;
+  }
+
+  /// Re-targets an already-loaded queue instead of reloading it. Returns true
+  /// when the caller can skip building a new audio source.
+  Future<bool> _reuseQueue(List<String> urls, int initialIndex) async {
+    if (!_isSameQueue(urls)) return false;
+    if (player.currentIndex != initialIndex) {
+      // Different track in the same playlist — switch to it and play.
+      await player.seek(Duration.zero, index: initialIndex);
+      play();
+    }
+    // Same track: leave transport state alone so a paused song stays paused.
+    FirebaseCrashlytics.instance
+        .log('audio: queue already loaded, reusing (index=$initialIndex)');
+    return true;
+  }
+
   /// Reorder a track in the live queue. [oldIndex]/[newIndex] are absolute
   /// positions within [queue]. Keeps the just_audio source and the metadata
   /// list in sync, and does not interrupt the currently-playing track.
@@ -183,6 +209,10 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
     if (songs.isEmpty) return;
     FirebaseCrashlytics.instance.log(
         'audio: loadPlaylistWithMetadata — ${songs.length} tracks, initialIndex=$initialIndex, first="${songs.first.songTitle}"');
+    if (await _reuseQueue(
+        songs.map((s) => s.songUrl).toList(), initialIndex)) {
+      return;
+    }
     _songDataList = songs;
     final playlist = ConcatenatingAudioSource(
       children:
@@ -214,6 +244,7 @@ class AudioPlayerHandler extends BaseAudioHandler with SeekHandler {
     if (urls.isEmpty) return;
     FirebaseCrashlytics.instance.log(
         'audio: loadPlaylist — ${urls.length} URLs, initialIndex=$initialIndex');
+    if (await _reuseQueue(urls, initialIndex)) return;
     _songDataList = urls
         .asMap()
         .entries

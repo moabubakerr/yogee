@@ -92,16 +92,6 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                       height: 170.0,
                       decoration: BoxDecoration(
                         color: Colors.black,
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 0.0,
-                            color: FlutterFlowTheme.of(context).primary,
-                            offset: Offset(
-                              0.0,
-                              5.0,
-                            ),
-                          )
-                        ],
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(40.0),
                           bottomRight: Radius.circular(40.0),
@@ -118,8 +108,8 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                               buttonSize: 50.0,
                               icon: Icon(
                                 Icons.arrow_back,
-                                color: FlutterFlowTheme.of(context).info,
-                                size: 30.0,
+                                color: Colors.white,
+                                size: 20.0,
                               ),
                               onPressed: () async {
                                 context.safePop();
@@ -127,30 +117,28 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                             ),
                             Align(
                               alignment: AlignmentDirectional(0.0, 0.0),
-                              child: Text(
+                              // Figma: white -> pink sweep, Manrope ExtraBold.
+                              child: GradientText(
                                 'Messages',
                                 style: FlutterFlowTheme.of(context)
                                     .titleLarge
                                     .override(
                                       font: GoogleFonts.manrope(
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .titleLarge
-                                            .fontWeight,
+                                        fontWeight: FontWeight.w800,
                                         fontStyle: FlutterFlowTheme.of(context)
                                             .titleLarge
                                             .fontStyle,
                                       ),
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      fontSize: 24.0,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .titleLarge
-                                          .fontWeight,
+                                      fontSize: 23.0,
+                                      letterSpacing: 0.34,
+                                      fontWeight: FontWeight.w800,
                                       fontStyle: FlutterFlowTheme.of(context)
                                           .titleLarge
                                           .fontStyle,
                                     ),
+                                colors: [Colors.white, Color(0xFFF1B1EF)],
+                                gradientDirection: GradientDirection.ltr,
+                                gradientType: GradientType.linear,
                               ),
                             ),
                             FlutterFlowIconButton(
@@ -171,7 +159,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                   ),
                   Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+                        EdgeInsetsDirectional.fromSTEB(43.0, 0.0, 43.0, 0.0),
                     child: FutureBuilder<int>(
                       future: queryChatsRecordCount(
                         queryBuilder: (chatsRecord) => chatsRecord.where(
@@ -384,14 +372,20 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                                   .start,
                                                           children: [
                                                             Container(
-                                                              width: 50.0,
-                                                              height: 50.0,
+                                                              width: 38.0,
+                                                              height: 38.0,
                                                               clipBehavior: Clip
                                                                   .antiAlias,
                                                               decoration:
                                                                   BoxDecoration(
                                                                 shape: BoxShape
                                                                     .circle,
+                                                                border:
+                                                                    Border.all(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  width: 1.4,
+                                                                ),
                                                               ),
                                                               child:
                                                                   Image.network(
@@ -435,12 +429,13 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                                             .titleMedium
                                                                             .override(
                                                                               font: GoogleFonts.manrope(
-                                                                                fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
+                                                                                fontWeight: FontWeight.w800,
                                                                                 fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
                                                                               ),
-                                                                              fontSize: 16.0,
-                                                                              letterSpacing: 0.0,
-                                                                              fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
+                                                                              color: Colors.white,
+                                                                              fontSize: 14.0,
+                                                                              letterSpacing: -0.14,
+                                                                              fontWeight: FontWeight.w800,
                                                                               fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
                                                                             ),
                                                                       ),
@@ -456,8 +451,9 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                                                 fontWeight: FontWeight.w500,
                                                                                 fontStyle: FlutterFlowTheme.of(context).labelLarge.fontStyle,
                                                                               ),
+                                                                              color: Color(0xFF4B4949),
                                                                               fontSize: 14.0,
-                                                                              letterSpacing: 0.0,
+                                                                              letterSpacing: -0.14,
                                                                               fontWeight: FontWeight.w500,
                                                                               fontStyle: FlutterFlowTheme.of(context).labelLarge.fontStyle,
                                                                             ),
@@ -503,15 +499,17 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                                           .override(
                                                                             font:
                                                                                 GoogleFonts.manrope(
-                                                                              fontWeight: FlutterFlowTheme.of(context).labelMedium.fontWeight,
+                                                                              fontWeight: FontWeight.w300,
                                                                               fontStyle: FlutterFlowTheme.of(context).labelMedium.fontStyle,
                                                                             ),
                                                                             color:
                                                                                 Color(0xFF665B5B),
+                                                                            fontSize:
+                                                                                14.0,
                                                                             letterSpacing:
-                                                                                0.0,
+                                                                                -0.14,
                                                                             fontWeight:
-                                                                                FlutterFlowTheme.of(context).labelMedium.fontWeight,
+                                                                                FontWeight.w300,
                                                                             fontStyle:
                                                                                 FlutterFlowTheme.of(context).labelMedium.fontStyle,
                                                                           ),
@@ -545,13 +543,13 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                                               textAlign: TextAlign.center,
                                                                               style: FlutterFlowTheme.of(context).titleSmall.override(
                                                                                     font: GoogleFonts.manrope(
-                                                                                      fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                      fontWeight: FontWeight.w800,
                                                                                       fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
                                                                                     ),
-                                                                                    color: Color(0xFF434343),
-                                                                                    fontSize: 14.0,
-                                                                                    letterSpacing: 0.0,
-                                                                                    fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                    color: Color(0xFF4B4949),
+                                                                                    fontSize: 11.0,
+                                                                                    letterSpacing: -0.11,
+                                                                                    fontWeight: FontWeight.w800,
                                                                                     fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
                                                                                   ),
                                                                             ),
@@ -560,7 +558,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                                             shape:
                                                                                 badges.BadgeShape.circle,
                                                                             badgeColor:
-                                                                                FlutterFlowTheme.of(context).primary,
+                                                                                Color(0xFFDAB3DC),
                                                                             elevation:
                                                                                 4.0,
                                                                             padding:

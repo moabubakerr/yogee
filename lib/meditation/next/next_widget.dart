@@ -52,13 +52,17 @@ class _NextWidgetState extends State<NextWidget> {
         decoration: BoxDecoration(
           color: Colors.black,
         ),
-        child: Padding(
+        // This sheet is scroll-controlled, so without SafeArea its header sits
+        // underneath the status bar / notch where taps never reach the close
+        // control.
+        child: SafeArea(
+          child: Padding(
           padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(16.0, 30.0, 0.0, 0.0),
+                padding: EdgeInsetsDirectional.fromSTEB(8.0, 8.0, 0.0, 0.0),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -68,22 +72,29 @@ class _NextWidgetState extends State<NextWidget> {
                       hoverColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       onTap: () async {
-                        Navigator.pop(context);
+                        Navigator.of(context).pop();
                       },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.asset(
-                          'assets/images/Object_(7).png',
-                          width: 30.0,
-                          height: 30.0,
-                          fit: BoxFit.cover,
-                          alignment: Alignment(0.0, 0.0),
+                      // A bare 30x30 image is below the minimum tap target;
+                      // pad it out to 48x48.
+                      child: Container(
+                        width: 48.0,
+                        height: 48.0,
+                        alignment: Alignment(0.0, 0.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(
+                            'assets/images/Object_(7).png',
+                            width: 30.0,
+                            height: 30.0,
+                            fit: BoxFit.cover,
+                            alignment: Alignment(0.0, 0.0),
+                          ),
                         ),
                       ),
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(30.0, 0.0, 0.0, 0.0),
+                          EdgeInsetsDirectional.fromSTEB(14.0, 0.0, 0.0, 0.0),
                       child: Text(
                         '‘Melodic Whatever’ playlist\"',
                         style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -450,6 +461,7 @@ class _NextWidgetState extends State<NextWidget> {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

@@ -1072,12 +1072,15 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Container(
-                                        width: 530.0,
+                                        // Figma: 4 columns of 103pt pills on a
+                                        // 114pt pitch, the 4th deliberately
+                                        // running off-screen.
+                                        width: 475.0,
                                         decoration: BoxDecoration(),
                                         child: Padding(
                                           padding:
                                               EdgeInsetsDirectional.fromSTEB(
-                                                  16.0, 0.0, 10.0, 10.0),
+                                                  20.0, 0.0, 10.0, 10.0),
                                           child: Builder(
                                             builder: (context) {
                                               final categories = FFAppState()
@@ -1089,9 +1092,9 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                 gridDelegate:
                                                     SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 4,
-                                                  crossAxisSpacing: 0.0,
-                                                  mainAxisSpacing: 5.0,
-                                                  childAspectRatio: 3.3,
+                                                  crossAxisSpacing: 11.0,
+                                                  mainAxisSpacing: 6.5,
+                                                  childAspectRatio: 103.0 / 26.0,
                                                 ),
                                                 primary: false,
                                                 shrinkWrap: true,
@@ -1144,8 +1147,8 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                   24.0),
                                                         ),
                                                         child: Container(
-                                                          width: 120.0,
-                                                          height: 31.0,
+                                                          width: 103.0,
+                                                          height: 26.0,
                                                           decoration:
                                                               BoxDecoration(
                                                             gradient:
@@ -1234,7 +1237,7 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                           : Color(
                                                                               0xFFDAB3DC),
                                                                       fontSize:
-                                                                          12.0,
+                                                                          10.0,
                                                                     ),
                                                                   ),
                                                                 ),

@@ -19,6 +19,12 @@ import 'package:provider/provider.dart';
 import 'chat_model.dart';
 export 'chat_model.dart';
 
+/// Figma: white -> pink sweep used on the send glyph and the header name.
+const _kSendGradient = LinearGradient(
+  colors: [Color(0xFFFFFFFF), Color(0xFFF1B1EF)],
+  stops: [0.081, 0.747],
+);
+
 class ChatWidget extends StatefulWidget {
   const ChatWidget({
     super.key,
@@ -101,7 +107,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                     FlutterFlowTheme.of(context).bodyMedium.fontStyle,
               ),
               color: FlutterFlowTheme.of(context).primaryText,
-              letterSpacing: 0.0,
+              fontSize: 12.0,
+              letterSpacing: -0.12,
               fontWeight: FontWeight.w500,
               fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
             ),
@@ -158,8 +165,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                       color: Colors.black,
                       boxShadow: [
                         BoxShadow(
-                          blurRadius: 16.0,
-                          color: FlutterFlowTheme.of(context).primary,
+                          blurRadius: 30.0,
+                          color: Color(0x59F1B2EF),
                           offset: Offset(
                             0.0,
                             2.0,
@@ -185,8 +192,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                               buttonSize: 50.0,
                               icon: Icon(
                                 Icons.arrow_back,
-                                color: FlutterFlowTheme.of(context).info,
-                                size: 30.0,
+                                color: Colors.white,
+                                size: 20.0,
                               ),
                               onPressed: () async {
                                 context.safePop();
@@ -214,11 +221,15 @@ class _ChatWidgetState extends State<ChatWidget> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      width: 60.0,
-                                      height: 60.0,
+                                      width: 55.0,
+                                      height: 55.0,
                                       clipBehavior: Clip.antiAlias,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 1.4,
+                                        ),
                                       ),
                                       child: Image.network(
                                         valueOrDefault<String>(
@@ -230,34 +241,37 @@ class _ChatWidgetState extends State<ChatWidget> {
                                     ),
                                     Align(
                                       alignment: AlignmentDirectional(0.0, 0.0),
-                                      child: Text(
-                                        containerUsersRecord.displayName,
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleLarge
-                                            .override(
-                                              font: GoogleFonts.manrope(
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleLarge
-                                                        .fontWeight,
+                                      // Figma: the name is a white -> pink sweep.
+                                      child: ShaderMask(
+                                        blendMode: BlendMode.srcIn,
+                                        shaderCallback: (bounds) =>
+                                            _kSendGradient.createShader(
+                                          Rect.fromLTWH(0.0, 0.0, bounds.width,
+                                              bounds.height),
+                                        ),
+                                        child: Text(
+                                          containerUsersRecord.displayName,
+                                          style: FlutterFlowTheme.of(context)
+                                              .titleLarge
+                                              .override(
+                                                font: GoogleFonts.manrope(
+                                                  fontWeight: FontWeight.w800,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleLarge
+                                                          .fontStyle,
+                                                ),
+                                                color: Colors.white,
+                                                fontSize: 16.0,
+                                                letterSpacing: 0.24,
+                                                fontWeight: FontWeight.w800,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)
                                                         .titleLarge
                                                         .fontStyle,
                                               ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleLarge
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleLarge
-                                                      .fontStyle,
-                                            ),
+                                        ),
                                       ),
                                     ),
                                   ].divide(SizedBox(height: 4.0)),
@@ -270,7 +284,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                 icon: Icon(
                                   Icons.keyboard_control,
                                   color: Colors.white,
-                                  size: 30.0,
+                                  size: 20.0,
                                 ),
                                 onPressed: () async {
                                   await showAlignedDialog(
@@ -386,11 +400,11 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                 '')
                                           ClipRRect(
                                             borderRadius:
-                                                BorderRadius.circular(24.0),
+                                                BorderRadius.circular(20.0),
                                             child: Image.network(
                                               listViewChatMessagesRecord.image,
-                                              width: 250.0,
-                                              height: 150.0,
+                                              width: 204.0,
+                                              height: 112.0,
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -403,15 +417,15 @@ class _ChatWidgetState extends State<ChatWidget> {
                                               maxWidth:
                                                   MediaQuery.sizeOf(context)
                                                           .width *
-                                                      0.7,
+                                                      0.66,
                                             ),
                                             decoration: BoxDecoration(
                                               color: Color(0xFF835886),
                                               borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(20.0),
-                                                topRight: Radius.circular(20.0),
+                                                topLeft: Radius.circular(22.0),
+                                                topRight: Radius.circular(22.0),
                                                 bottomLeft:
-                                                    Radius.circular(20.0),
+                                                    Radius.circular(22.0),
                                               ),
                                             ),
                                             child: Column(
@@ -419,8 +433,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                                               children: [
                                                 Padding(
                                                   padding: EdgeInsetsDirectional
-                                                      .fromSTEB(18.0, 12.0,
-                                                          18.0, 12.0),
+                                                      .fromSTEB(21.0, 12.5,
+                                                          21.0, 12.5),
                                                   child: Text(
                                                     listViewChatMessagesRecord
                                                         .text,
@@ -432,23 +446,17 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                           font: GoogleFonts
                                                               .manrope(
                                                             fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyMedium
-                                                                    .fontWeight,
+                                                                FontWeight.w500,
                                                             fontStyle:
                                                                 FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodyMedium
                                                                     .fontStyle,
                                                           ),
-                                                          fontSize: 16.0,
-                                                          letterSpacing: 0.0,
+                                                          fontSize: 12.0,
+                                                          letterSpacing: -0.12,
                                                           fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodyMedium
-                                                                  .fontWeight,
+                                                              FontWeight.w500,
                                                           fontStyle:
                                                               FlutterFlowTheme.of(
                                                                       context)
@@ -476,15 +484,17 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                   .override(
                                                     font: GoogleFonts.manrope(
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                          FontWeight.w300,
                                                       fontStyle:
                                                           FlutterFlowTheme.of(
                                                                   context)
                                                               .labelMedium
                                                               .fontStyle,
                                                     ),
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xFF665B5B),
+                                                    fontSize: 10.0,
+                                                    letterSpacing: -0.1,
+                                                    fontWeight: FontWeight.w300,
                                                     fontStyle:
                                                         FlutterFlowTheme.of(
                                                                 context)
@@ -498,8 +508,10 @@ class _ChatWidgetState extends State<ChatWidget> {
                                     ),
                                   );
                                 } else {
-                                  return Column(
-                                    mainAxisSize: MainAxisSize.max,
+                                  return Align(
+                                    alignment: AlignmentDirectional(-1.0, 0.0),
+                                    child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
@@ -509,11 +521,11 @@ class _ChatWidgetState extends State<ChatWidget> {
                                               '')
                                         ClipRRect(
                                           borderRadius:
-                                              BorderRadius.circular(24.0),
+                                              BorderRadius.circular(20.0),
                                           child: Image.network(
                                             listViewChatMessagesRecord.image,
-                                            width: 250.0,
-                                            height: 150.0,
+                                            width: 204.0,
+                                            height: 112.0,
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -534,26 +546,24 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                   maxWidth:
                                                       MediaQuery.sizeOf(context)
                                                               .width *
-                                                          0.7,
+                                                          0.66,
                                                 ),
                                                 decoration: BoxDecoration(
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .secondaryBackground,
+                                                  color: Color(0xFF2F2F2F),
                                                   borderRadius:
                                                       BorderRadius.only(
                                                     topLeft:
-                                                        Radius.circular(20.0),
+                                                        Radius.circular(22.0),
                                                     topRight:
-                                                        Radius.circular(20.0),
+                                                        Radius.circular(22.0),
                                                     bottomRight:
-                                                        Radius.circular(20.0),
+                                                        Radius.circular(22.0),
                                                   ),
                                                 ),
                                                 child: Padding(
                                                   padding: EdgeInsetsDirectional
-                                                      .fromSTEB(18.0, 12.0,
-                                                          18.0, 12.0),
+                                                      .fromSTEB(21.0, 12.5,
+                                                          21.0, 12.5),
                                                   child: Text(
                                                     listViewChatMessagesRecord
                                                         .text,
@@ -565,23 +575,17 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                           font: GoogleFonts
                                                               .manrope(
                                                             fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyMedium
-                                                                    .fontWeight,
+                                                                FontWeight.w500,
                                                             fontStyle:
                                                                 FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodyMedium
                                                                     .fontStyle,
                                                           ),
-                                                          fontSize: 16.0,
-                                                          letterSpacing: 0.0,
+                                                          fontSize: 12.0,
+                                                          letterSpacing: -0.12,
                                                           fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodyMedium
-                                                                  .fontWeight,
+                                                              FontWeight.w500,
                                                           fontStyle:
                                                               FlutterFlowTheme.of(
                                                                       context)
@@ -603,20 +607,16 @@ class _ChatWidgetState extends State<ChatWidget> {
                                             .labelMedium
                                             .override(
                                               font: GoogleFonts.manrope(
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontWeight,
+                                                fontWeight: FontWeight.w300,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)
                                                         .labelMedium
                                                         .fontStyle,
                                               ),
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontWeight,
+                                              color: Color(0xFF665B5B),
+                                              fontSize: 10.0,
+                                              letterSpacing: -0.1,
+                                              fontWeight: FontWeight.w300,
                                               fontStyle:
                                                   FlutterFlowTheme.of(context)
                                                       .labelMedium
@@ -624,12 +624,17 @@ class _ChatWidgetState extends State<ChatWidget> {
                                             ),
                                       ),
                                     ].divide(SizedBox(height: 4.0)),
+                                    ),
                                   );
                                 }
                               },
                             );
                             return Column(
                               mainAxisSize: MainAxisSize.min,
+                              // Without stretch this Column centres its
+                              // children, which pushed incoming messages into
+                              // the middle of the screen instead of the left.
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 if (showDateHeader &&
                                     listViewChatMessagesRecord.timestamp != null)
@@ -643,6 +648,14 @@ class _ChatWidgetState extends State<ChatWidget> {
                       },
                     ),
                   ),
+                ),
+              ),
+              // Figma: hairline rule separating the thread from the composer.
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(19.0, 0.0, 19.0, 0.0),
+                child: Container(
+                  height: 1.0,
+                  color: Color(0x33979797),
                 ),
               ),
               Container(
@@ -660,34 +673,79 @@ class _ChatWidgetState extends State<ChatWidget> {
                         color: Color(0xFF171717),
                         boxShadow: [
                           BoxShadow(
-                            color: Color(0xFF403641),
+                            color: Color(0x45DAB3DC),
                             offset: Offset(
-                              -6.0,
-                              -8.0,
+                              -6.4,
+                              -4.3,
                             ),
+                            spreadRadius: 1.8,
                           )
                         ],
-                        borderRadius: BorderRadius.circular(24.0),
+                        borderRadius: BorderRadius.circular(44.0),
                         border: Border.all(
-                          color: Color(0xFF737373),
+                          color: Color(0xFF979797),
                           width: 1.0,
                         ),
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (_model.isDataUploading_uploadDataUda && _model.uploadedFileUrl_uploadDataUda.isNotEmpty)
+                          // Spinner while the upload is in flight, then the
+                          // attached image. The two states are mutually
+                          // exclusive, so this must not be a single `&&`.
+                          if (_model.isDataUploading_uploadDataUda)
                             Padding(
                               padding: EdgeInsetsDirectional.fromSTEB(
                                   0.0, 10.0, 0.0, 10.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  _model.uploadedFileUrl_uploadDataUda,
-                                  width: 250.0,
-                                  height: 150.0,
-                                  fit: BoxFit.cover,
+                              child: SizedBox(
+                                width: 28.0,
+                                height: 28.0,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    FlutterFlowTheme.of(context).primary,
+                                  ),
                                 ),
+                              ),
+                            ),
+                          if (!_model.isDataUploading_uploadDataUda &&
+                              _model.uploadedFileUrl_uploadDataUda.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 10.0, 0.0, 10.0),
+                              child: Stack(
+                                alignment: AlignmentDirectional(1.0, -1.0),
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.network(
+                                      _model.uploadedFileUrl_uploadDataUda,
+                                      width: 250.0,
+                                      height: 150.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      safeSetState(() {
+                                        _model.uploadedFileUrl_uploadDataUda =
+                                            '';
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.all(6.0),
+                                      child: Icon(
+                                        Icons.cancel,
+                                        color: Colors.white,
+                                        size: 22.0,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           Padding(
@@ -701,8 +759,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                                   buttonSize: 40.0,
                                   icon: Icon(
                                     FFIcons.kinsertPictureIconSvg,
-                                    color: Color(0xFFCFCFCF),
-                                    size: 18.0,
+                                    color: Colors.white,
+                                    size: 17.0,
                                   ),
                                   onPressed: () async {
                                     final selectedMedia =
@@ -746,8 +804,13 @@ class _ChatWidgetState extends State<ChatWidget> {
                                             .map((u) => u!)
                                             .toList();
                                       } finally {
-                                        _model.isDataUploading_uploadDataUda =
-                                            false;
+                                        // Must go through setState: if the
+                                        // upload throws, nothing else rebuilds
+                                        // and the spinner would stick forever,
+                                        // permanently blocking send.
+                                        safeSetState(() => _model
+                                            .isDataUploading_uploadDataUda =
+                                            false);
                                       }
                                       if (selectedUploadedFiles.length ==
                                               selectedMedia.length &&
@@ -807,20 +870,16 @@ class _ChatWidgetState extends State<ChatWidget> {
                                             .labelMedium
                                             .override(
                                               font: GoogleFonts.manrope(
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontWeight,
+                                                fontWeight: FontWeight.w500,
                                                 fontStyle:
                                                     FlutterFlowTheme.of(context)
                                                         .labelMedium
                                                         .fontStyle,
                                               ),
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontWeight,
+                                              color: Color(0xFF4F4A4A),
+                                              fontSize: 12.0,
+                                              letterSpacing: -0.12,
+                                              fontWeight: FontWeight.w500,
                                               fontStyle:
                                                   FlutterFlowTheme.of(context)
                                                       .labelMedium
@@ -911,26 +970,78 @@ class _ChatWidgetState extends State<ChatWidget> {
                                 FlutterFlowIconButton(
                                   borderRadius: 8.0,
                                   buttonSize: 40.0,
-                                  icon: FaIcon(
-                                    FontAwesomeIcons.solidPaperPlane,
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    size: 18.0,
+                                  // Figma: send glyph is a white -> pink sweep.
+                                  icon: ShaderMask(
+                                    blendMode: BlendMode.srcIn,
+                                    shaderCallback: (bounds) =>
+                                        _kSendGradient.createShader(
+                                      Rect.fromLTWH(0.0, 0.0, bounds.width,
+                                          bounds.height),
+                                    ),
+                                    child: FaIcon(
+                                      FontAwesomeIcons.solidPaperPlane,
+                                      color: Colors.white,
+                                      size: 16.0,
+                                    ),
                                   ),
                                   onPressed: () async {
+                                    // Sending mid-upload would persist an
+                                    // empty image URL and silently drop the
+                                    // attachment.
+                                    if (_model
+                                        .isDataUploading_uploadDataUda) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Still uploading your image — one moment.',
+                                            style: TextStyle(
+                                              color: FlutterFlowTheme.of(
+                                                      context)
+                                                  .primaryText,
+                                            ),
+                                          ),
+                                          duration:
+                                              Duration(milliseconds: 2500),
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    final messageText =
+                                        _model.textController.text.trim();
+                                    final imageUrl =
+                                        _model.uploadedFileUrl_uploadDataUda;
+                                    if (messageText.isEmpty &&
+                                        imageUrl.isEmpty) {
+                                      return;
+                                    }
+
+                                    // Clear the composer up front so a second
+                                    // tap cannot resend the same attachment.
+                                    safeSetState(() {
+                                      _model.textController?.clear();
+                                      _model.uploadedFileUrl_uploadDataUda = '';
+                                    });
+
                                     await ChatMessagesRecord.collection
                                         .doc()
                                         .set(createChatMessagesRecordData(
                                           user: currentUserReference,
                                           chat: widget!.chat,
-                                          text: _model.textController.text,
+                                          text: messageText,
                                           timestamp: getCurrentTimestamp,
-                                          image: _model
-                                              .uploadedFileUrl_uploadDataUda,
+                                          image: imageUrl,
                                         ));
 
                                     await widget!.chat!.update({
                                       ...createChatsRecordData(
-                                        lastMessage: _model.textController.text,
+                                        lastMessage: messageText.isNotEmpty
+                                            ? messageText
+                                            : 'Photo',
                                         lastMessageTime: getCurrentTimestamp,
                                       ),
                                       ...mapToFirestore(
@@ -941,9 +1052,6 @@ class _ChatWidgetState extends State<ChatWidget> {
                                               FieldValue.increment(1),
                                         },
                                       ),
-                                    });
-                                    safeSetState(() {
-                                      _model.textController?.clear();
                                     });
                                   },
                                 ),

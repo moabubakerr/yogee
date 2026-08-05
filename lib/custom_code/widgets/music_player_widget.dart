@@ -77,13 +77,19 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
   void _initPlayer() {
     if (widget.playlist.isEmpty || _audio == null) return;
 
+    // FFAppState().songnum can point past the end of a filtered playlist.
+    final startIndex =
+        widget.initialIndex.clamp(0, widget.playlist.length - 1);
+
     setState(() {
-      _currentSong = widget.playlist[widget.initialIndex];
+      _currentSong = widget.playlist[startIndex];
     });
 
-    // Load the full playlist so prev/next work
+    // Load the full playlist so prev/next work. If this exact queue is already
+    // loaded the handler reuses it, so re-opening the player does not restart
+    // a paused track.
     final urls = widget.playlist.map((s) => s.songUrl).toList();
-    _audio!.loadPlaylist(urls, initialIndex: widget.initialIndex);
+    _audio!.loadPlaylist(urls, initialIndex: startIndex);
 
     // Update the displayed song when the track changes
     _indexSubscription?.cancel();
