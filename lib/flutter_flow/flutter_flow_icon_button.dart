@@ -42,8 +42,12 @@ class FlutterFlowIconButton extends StatefulWidget {
 
 class _FlutterFlowIconButtonState extends State<FlutterFlowIconButton> {
   bool loading = false;
-  late double? iconSize;
-  late Color? iconColor;
+  // Not `late`: a caller may pass any Widget as `icon` (e.g. an Icon wrapped
+  // in a ShaderMask), in which case the branch below never runs and reading a
+  // `late` field during build throws LateInitializationError — which renders
+  // as an opaque ErrorWidget box with a dead tap target in release builds.
+  double? iconSize;
+  Color? iconColor;
   late Widget effectiveIcon;
 
   @override

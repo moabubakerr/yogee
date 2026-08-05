@@ -708,44 +708,73 @@ class _ChatWidgetState extends State<ChatWidget> {
                                 ),
                               ),
                             ),
+                          // A compact chip, not a full-bleed preview: a
+                          // 250x150 image swallows the composer and pushes the
+                          // input row off the bottom of the bar.
                           if (!_model.isDataUploading_uploadDataUda &&
                               _model.uploadedFileUrl_uploadDataUda.isNotEmpty)
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 10.0, 0.0, 10.0),
-                              child: Stack(
-                                alignment: AlignmentDirectional(1.0, -1.0),
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.network(
-                                      _model.uploadedFileUrl_uploadDataUda,
-                                      width: 250.0,
-                                      height: 150.0,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  InkWell(
-                                    splashColor: Colors.transparent,
-                                    focusColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onTap: () async {
-                                      safeSetState(() {
-                                        _model.uploadedFileUrl_uploadDataUda =
-                                            '';
-                                      });
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.all(6.0),
-                                      child: Icon(
-                                        Icons.cancel,
-                                        color: Colors.white,
-                                        size: 22.0,
+                            Align(
+                              alignment: AlignmentDirectional(-1.0, 0.0),
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 10.0, 16.0, 2.0),
+                                child: SizedBox(
+                                  width: 64.0,
+                                  height: 64.0,
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(6.0),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          child: Image.network(
+                                            _model
+                                                .uploadedFileUrl_uploadDataUda,
+                                            width: 52.0,
+                                            height: 52.0,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      Align(
+                                        alignment:
+                                            AlignmentDirectional(1.0, -1.0),
+                                        child: InkWell(
+                                          splashColor: Colors.transparent,
+                                          focusColor: Colors.transparent,
+                                          hoverColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () async {
+                                            safeSetState(() {
+                                              _model.uploadedFileUrl_uploadDataUda =
+                                                  '';
+                                            });
+                                          },
+                                          child: Container(
+                                            width: 20.0,
+                                            height: 20.0,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFF171717),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Color(0xFF979797),
+                                                width: 1.0,
+                                              ),
+                                            ),
+                                            alignment: Alignment(0.0, 0.0),
+                                            child: Icon(
+                                              Icons.close_rounded,
+                                              color: Colors.white,
+                                              size: 13.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           Padding(
@@ -967,24 +996,16 @@ class _ChatWidgetState extends State<ChatWidget> {
                                     ),
                                   ),
                                 ),
-                                FlutterFlowIconButton(
-                                  borderRadius: 8.0,
-                                  buttonSize: 40.0,
-                                  // Figma: send glyph is a white -> pink sweep.
-                                  icon: ShaderMask(
-                                    blendMode: BlendMode.srcIn,
-                                    shaderCallback: (bounds) =>
-                                        _kSendGradient.createShader(
-                                      Rect.fromLTWH(0.0, 0.0, bounds.width,
-                                          bounds.height),
-                                    ),
-                                    child: FaIcon(
-                                      FontAwesomeIcons.solidPaperPlane,
-                                      color: Colors.white,
-                                      size: 16.0,
-                                    ),
-                                  ),
-                                  onPressed: () async {
+                                // Deliberately not a FlutterFlowIconButton:
+                                // that widget reads `size`/`color` off an Icon
+                                // and blows up on a wrapped child like the
+                                // ShaderMask this gradient glyph needs.
+                                InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
                                     // Sending mid-upload would persist an
                                     // empty image URL and silently drop the
                                     // attachment.
@@ -1054,6 +1075,25 @@ class _ChatWidgetState extends State<ChatWidget> {
                                       ),
                                     });
                                   },
+                                  // Figma: send glyph is a white -> pink sweep.
+                                  child: Container(
+                                    width: 40.0,
+                                    height: 40.0,
+                                    alignment: Alignment(0.0, 0.0),
+                                    child: ShaderMask(
+                                      blendMode: BlendMode.srcIn,
+                                      shaderCallback: (bounds) =>
+                                          _kSendGradient.createShader(
+                                        Rect.fromLTWH(0.0, 0.0, bounds.width,
+                                            bounds.height),
+                                      ),
+                                      child: FaIcon(
+                                        FontAwesomeIcons.solidPaperPlane,
+                                        color: Colors.white,
+                                        size: 16.0,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ].divide(SizedBox(width: 4.0)),
                             ),
