@@ -21,6 +21,52 @@ import 'package:provider/provider.dart';
 import 'dashboard_model.dart';
 export 'dashboard_model.dart';
 
+/// Figma: page base fill, #000000 -> #181818 top to bottom.
+const _kPageBase = LinearGradient(
+  begin: AlignmentDirectional(0.0, -1.0),
+  end: AlignmentDirectional(0.0, 1.0),
+  colors: [Color(0xFF000000), Color(0xFF181818)],
+);
+
+/// Figma: 49% plum vignette — dark through the middle, lifting at both edges.
+const _kPageVignette = LinearGradient(
+  begin: AlignmentDirectional(0.0, -1.0),
+  end: AlignmentDirectional(0.0, 1.0),
+  colors: [
+    Color(0x7DC7A4C9),
+    Color(0x6D957B97),
+    Color(0x5E645265),
+    Color(0x4E322932),
+    Color(0x3E000000),
+    Color(0x4E322932),
+    Color(0x5E645265),
+    Color(0x6D957B97),
+    Color(0x7DC7A4C9),
+  ],
+  stops: [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0],
+);
+
+/// Figma: 239.5deg "shade" layer that blacks the artwork out except for a
+/// narrow diagonal window. This is what keeps the swirl from reading as a
+/// pale haze behind the content.
+const _kPageShade = LinearGradient(
+  begin: AlignmentDirectional(1.0, -0.59),
+  end: AlignmentDirectional(-1.0, 0.59),
+  colors: [
+    Color(0xFF000000),
+    Color(0xFF000000),
+    Color(0xDE000000),
+    Color(0x8B000000),
+    Color(0x05000000),
+    Color(0x3A000000),
+    Color(0x43000000),
+    Color(0xF0000000),
+    Color(0xFF000000),
+    Color(0xFF000000),
+  ],
+  stops: [0.0, 0.099, 0.155, 0.242, 0.293, 0.424, 0.582, 0.81, 0.919, 1.0],
+);
+
 /// Figma: card fill is a vertical #000000 -> #181818 gradient.
 const _kCardGradient = LinearGradient(
   begin: AlignmentDirectional(0.0, -1.0),
@@ -128,16 +174,30 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         body: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.black,
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: Image.asset(
-                'assets/images/Background2.png',
-              ).image,
-            ),
+            gradient: _kPageBase,
           ),
           child: Stack(
             children: [
+              // Figma mirrors the swirl/net artwork horizontally.
+              Positioned.fill(
+                child: Transform.scale(
+                  scaleX: -1.0,
+                  child: Image.asset(
+                    'assets/images/Background2.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(gradient: _kPageVignette),
+                ),
+              ),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(gradient: _kPageShade),
+                ),
+              ),
               Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 90.0),
                 child: SingleChildScrollView(
@@ -250,10 +310,6 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                           clipBehavior: Clip.antiAlias,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 2.0,
-                                            ),
                                           ),
                                           child: Image.network(
                                             valueOrDefault<String>(
@@ -367,20 +423,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Flexible(
-                                child: Container(
+                                child: SizedBox(
                                   width: 210.0,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 40.0,
-                                        color: Color(0x22FFFFFF),
-                                        offset: Offset(
-                                          0.0,
-                                          2.0,
-                                        ),
-                                      )
-                                    ],
-                                  ),
                                   child: Align(
                                     alignment: AlignmentDirectional(0.0, 0.0),
                                     child: GridView(

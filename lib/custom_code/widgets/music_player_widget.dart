@@ -16,6 +16,14 @@ import '/app_state.dart';
 import 'dart:async';
 import '/custom_code/actions/init_audio_player.dart';
 
+/// Figma: elapsed / remaining timestamps, Manrope Light in plain white.
+const _kTimeStyle = TextStyle(
+  color: Colors.white,
+  fontSize: 12,
+  fontWeight: FontWeight.w300,
+  letterSpacing: 0.17,
+);
+
 class MusicPlayerWidget extends StatefulWidget {
   final List<SongsRecord> playlist;
   final int initialIndex;
@@ -107,11 +115,9 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
     // FIX 2: Show a loading state while the audio service initialises.
     // This prevents any access to uninitialised variables.
     if (_audio == null || _currentSong == null) {
-      return Container(
+      return SizedBox(
         width: widget.width,
         height: widget.height,
-        // FIX 3: dark background so white/purple text is visible
-        color: const Color(0xFF1A0033),
         child: const Center(
           child: CircularProgressIndicator(color: Color(0xFFE0A4F0)),
         ),
@@ -124,9 +130,8 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
     return Container(
       width: widget.width,
       height: widget.height,
-      // FIX 3: dark background so white/purple text is visible
-      color: const Color(0xFF1A0033),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      // Figma: the player sits directly on the page background.
+      padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -134,73 +139,51 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
           Text(
             currentSong.title,
             style: const TextStyle(
-                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              color: Colors.white,
+              fontSize: 27,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.4,
+              height: 1.1,
+            ),
           ),
           Text(
             currentSong.artist,
-            style: TextStyle(color: _primaryColor.withOpacity(0.7)),
-          ),
-
-          const SizedBox(height: 20),
-
-          // TAGS
-          SizedBox(
-            height: 30,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: currentSong.tags.length,
-              itemBuilder: (context, index) {
-                final tagName = currentSong.tags[index];
-                return Container(
-                  width: 90,
-                  height: 25,
-                  margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      image: const NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/capsule.png?alt=media&token=b46d4b47-a800-4959-af1c-dcf0118ec5c0'),
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topLeft,
-                      colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.3), BlendMode.darken),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      tagName,
-                      style: TextStyle(
-                        color: _primaryColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                );
-              },
+            style: const TextStyle(
+              color: Color(0xFFC39FC2),
+              fontSize: 14,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 0.2,
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          // ALBUM ART
+          // ALBUM ART — Figma: a square with a 1.4px near-white stroke.
           Expanded(
             child: Align(
               alignment: Alignment.center,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Image.network(
-                  // FIX: songCoverImage can be "" (empty string), not just null.
-                  // "" bypasses ?? so we must also check isNotEmpty.
-                  (currentSong.songCoverImage?.isNotEmpty == true)
-                      ? currentSong.songCoverImage!
-                      : pyramidImageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Image.network(
-                    pyramidImageUrl,
+              child: AspectRatio(
+                aspectRatio: 1.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: const Color(0xFFFFF6F6),
+                      width: 1.4,
+                    ),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.network(
+                    // FIX: songCoverImage can be "" (empty string), not just null.
+                    // "" bypasses ?? so we must also check isNotEmpty.
+                    (currentSong.songCoverImage?.isNotEmpty == true)
+                        ? currentSong.songCoverImage!
+                        : pyramidImageUrl,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.network(
+                      pyramidImageUrl,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -232,15 +215,15 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
                     child: Stack(
                       alignment: Alignment.centerLeft,
                       children: [
-                        // Background track
+                        // Figma: #292929 pill with a hairline #979797 stroke.
                         Container(
-                          height: 6,
+                          height: 3,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3),
+                            color: const Color(0xFF292929),
+                            borderRadius: BorderRadius.circular(62),
                             border: Border.all(
-                                color: Colors.white.withOpacity(0.4),
-                                width: 0.5),
+                                color: const Color(0xFF979797), width: 0.5),
                           ),
                           child: FractionallySizedBox(
                             alignment: Alignment.centerLeft,
@@ -273,8 +256,8 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
                             alignment: Alignment(alignX.clamp(-1.0, 1.0), 0.0),
                             child: Image.network(
                               pyramidImageUrl,
-                              width: 32,
-                              height: 32,
+                              width: 47,
+                              height: 47,
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
@@ -287,20 +270,14 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
                       ],
                     ),
                   ),
-                  // Time labels
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(_formatDuration(pos),
-                            style: const TextStyle(
-                                color: Colors.white38, fontSize: 12)),
-                        Text("-${_formatDuration(dur - pos)}",
-                            style: const TextStyle(
-                                color: Colors.white38, fontSize: 12)),
-                      ],
-                    ),
+                  // Time labels — Figma: white Manrope Light, flush with the track.
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_formatDuration(pos), style: _kTimeStyle),
+                      Text("-${_formatDuration(dur - pos)}",
+                          style: _kTimeStyle),
+                    ],
                   ),
                 ],
               );

@@ -1,6 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -31,6 +30,13 @@ class _LibraryWidgetState extends State<LibraryWidget>
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Design tokens taken from Figma "Library/playlists" & "Library/favs".
+  static const _lavender = Color(0xFFC39FC2);
+  static const _iconLavender = Color(0xFFC5A2C7);
+  static const _accentPink = Color(0xFFFDC2FE);
+  static const _pillBorder = Color(0xC2D4D2D2);
+  static const _cardGlow = Color(0x3DCAA6CC);
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +57,216 @@ class _LibraryWidgetState extends State<LibraryWidget>
 
     super.dispose();
   }
+
+  TextStyle _manrope(
+    BuildContext context, {
+    required double size,
+    required FontWeight weight,
+    Color? color,
+    double letterSpacing = 0.0,
+  }) =>
+      FlutterFlowTheme.of(context).bodyMedium.override(
+            font: GoogleFonts.manrope(
+              fontWeight: weight,
+              fontStyle: FontStyle.normal,
+            ),
+            color: color,
+            fontSize: size,
+            letterSpacing: letterSpacing,
+            fontWeight: weight,
+            fontStyle: FontStyle.normal,
+          );
+
+  Widget _tabCard(
+    BuildContext context, {
+    required int index,
+    required IconData icon,
+    required double iconSize,
+    required String label,
+  }) {
+    final selected = _model.tabBarCurrentIndex == index;
+    return InkWell(
+      splashColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () async {
+        safeSetState(() {
+          _model.tabBarController!.animateTo(
+            index,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.ease,
+          );
+        });
+      },
+      child: Container(
+        width: 72.0,
+        height: 72.0,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: selected
+                ? [Color(0xFFD8B7DA), Color(0xFFBE96C0)]
+                : [Color(0x69000000), Color(0x69181818)],
+            stops: [0.0, 1.0],
+            begin: AlignmentDirectional(0.0, -1.0),
+            end: AlignmentDirectional(0, 1.0),
+          ),
+          borderRadius: BorderRadius.circular(9.0),
+          border: Border.all(
+            color: selected ? Color(0xFFD4D2D2) : Color(0x70D4D2D2),
+          ),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: _cardGlow,
+                    blurRadius: 40.0,
+                  )
+                ]
+              : null,
+        ),
+        child: Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(4.0, 8.0, 4.0, 6.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional(0.0, 0.0),
+                  child: Icon(
+                    icon,
+                    color: selected ? Colors.black : _iconLavender,
+                    size: iconSize,
+                  ),
+                ),
+              ),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: _manrope(
+                  context,
+                  size: 10.0,
+                  weight: FontWeight.w800,
+                  color: selected ? Colors.black : Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _actionPill(
+    BuildContext context, {
+    required IconData icon,
+    required double iconSize,
+    required String label,
+    required Future<void> Function() onTap,
+  }) {
+    return Container(
+      width: 148.0,
+      height: 37.0,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFF3A2F3B),
+            Color(0xFF0B0B0C),
+            Color(0xFF181818),
+            Color(0xFF3A2F3B)
+          ],
+          stops: [0.0, 0.3, 0.7, 1.0],
+          begin: AlignmentDirectional(0.0, -1.0),
+          end: AlignmentDirectional(0, 1.0),
+        ),
+        borderRadius: BorderRadius.circular(9.0),
+        border: Border.all(
+          color: _pillBorder,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _cardGlow,
+            blurRadius: 65.0,
+          )
+        ],
+      ),
+      child: InkWell(
+        splashColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: onTap,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: _accentPink,
+              size: iconSize,
+            ),
+            Text(
+              label,
+              style: _manrope(
+                context,
+                size: 12.0,
+                weight: FontWeight.w600,
+                color: Colors.white,
+                letterSpacing: 0.44,
+              ),
+            ),
+          ].divide(SizedBox(width: 8.0)),
+        ),
+      ),
+    );
+  }
+
+  Widget _moreButton() => InkWell(
+        splashColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: () {},
+        child: Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(10.0, 10.0, 0.0, 10.0),
+          child: Icon(
+            Icons.more_horiz,
+            color: Color(0xFFD9D9D9),
+            size: 14.0,
+          ),
+        ),
+      );
+
+  Widget _emptyState(BuildContext context, String message) => Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 200.0),
+            child: Text(
+              message,
+              style: _manrope(
+                context,
+                size: 14.0,
+                weight: FontWeight.w600,
+                color: Color(0xFF5E5E5E),
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget _loader(BuildContext context) => Center(
+        child: SizedBox(
+          width: 50.0,
+          height: 50.0,
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              FlutterFlowTheme.of(context).primary,
+            ),
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -80,372 +296,63 @@ class _LibraryWidgetState extends State<LibraryWidget>
                 alignment: AlignmentDirectional(0.0, 0.0),
                 child: Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(30.0, 54.0, 12.0, 0.0),
+                      EdgeInsetsDirectional.fromSTEB(40.0, 54.0, 28.0, 0.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Align(
                         alignment: AlignmentDirectional(1.0, 0.0),
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 10.0, 0.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.asset(
-                              'assets/images/Objectl.png',
-                              width: 200.0,
-                              fit: BoxFit.cover,
-                            ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(
+                            'assets/images/Objectl.png',
+                            width: 173.0,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
                       Padding(
-                        padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Align(
-                              alignment: AlignmentDirectional(-1.0, 0.0),
-                              child: Text(
-                                'Library',
-                                style: FlutterFlowTheme.of(context)
-                                    .headlineSmall
-                                    .override(
-                                      font: GoogleFonts.plusJakartaSans(
-                                        fontWeight: FontWeight.w500,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .headlineSmall
-                                            .fontStyle,
-                                      ),
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.w500,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .headlineSmall
-                                          .fontStyle,
-                                    ),
-                              ),
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            0.0, 16.0, 0.0, 12.0),
+                        child: Align(
+                          alignment: AlignmentDirectional(-1.0, 0.0),
+                          child: Text(
+                            'Library',
+                            style: _manrope(
+                              context,
+                              size: 21.0,
+                              weight: FontWeight.w500,
+                              color: Color(0xBDFFFFFF),
                             ),
-                          ].divide(SizedBox(width: 12.0)),
+                          ),
                         ),
                       ),
                       Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              safeSetState(() {
-                                _model.tabBarController!.animateTo(
-                                  0,
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.ease,
-                                );
-                              });
-                            },
-                            child: Container(
-                              width: 75.0,
-                              height: 75.0,
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xA9FFFFFF),
-                                    offset: Offset(
-                                      -0.5,
-                                      -0.5,
-                                    ),
-                                  )
-                                ],
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color(0xFF6E5D6F),
-                                    _model.tabBarCurrentIndex == 0
-                                        ? Color(0xFFCDA8CF)
-                                        : Colors.black
-                                  ],
-                                  stops: [0.0, 1.0],
-                                  begin: AlignmentDirectional(0.0, -1.0),
-                                  end: AlignmentDirectional(0, 1.0),
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: Stack(
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                children: [
-                                  if (_model.tabBarCurrentIndex != 0)
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.asset(
-                                        'assets/images/tab_back.png',
-                                        width: 75.0,
-                                        fit: BoxFit.fill,
-                                        alignment: Alignment(0.0, 1.0),
-                                      ),
-                                    ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        FFIcons.kmmmmmmmmmmmmm,
-                                        color: valueOrDefault<Color>(
-                                          _model.tabBarCurrentIndex == 0
-                                              ? Colors.black
-                                              : FlutterFlowTheme.of(context)
-                                                  .primary,
-                                          FlutterFlowTheme.of(context).primary,
-                                        ),
-                                        size: 30.0,
-                                      ),
-                                      Text(
-                                        'Playlists',
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleSmall
-                                            .override(
-                                              font: GoogleFonts.manrope(
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleSmall
-                                                        .fontStyle,
-                                              ),
-                                              color: valueOrDefault<Color>(
-                                                _model.tabBarCurrentIndex == 0
-                                                    ? Colors.black
-                                                    : FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                FlutterFlowTheme.of(context)
-                                                    .primaryText,
-                                              ),
-                                              fontSize: 12.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleSmall
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(height: 4.0)),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          _tabCard(
+                            context,
+                            index: 0,
+                            icon: FFIcons.kmmmmmmmmmmmmm,
+                            iconSize: 29.0,
+                            label: 'Playlists',
                           ),
-                          InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              safeSetState(() {
-                                _model.tabBarController!.animateTo(
-                                  1,
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.ease,
-                                );
-                              });
-                            },
-                            child: Container(
-                              width: 75.0,
-                              height: 75.0,
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xA9FFFFFF),
-                                    offset: Offset(
-                                      -0.5,
-                                      -0.5,
-                                    ),
-                                  )
-                                ],
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color(0xFF6E5D6F),
-                                    _model.tabBarCurrentIndex == 1
-                                        ? Color(0xFFCDA8CF)
-                                        : Colors.black
-                                  ],
-                                  stops: [0.0, 1.0],
-                                  begin: AlignmentDirectional(0.0, -1.0),
-                                  end: AlignmentDirectional(0, 1.0),
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: Stack(
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                children: [
-                                  if (_model.tabBarCurrentIndex != 1)
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.asset(
-                                        'assets/images/tab_back.png',
-                                        width: 75.0,
-                                        fit: BoxFit.fill,
-                                        alignment: Alignment(0.0, 1.0),
-                                      ),
-                                    ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.favorite,
-                                        color: valueOrDefault<Color>(
-                                          _model.tabBarCurrentIndex == 1
-                                              ? Colors.black
-                                              : FlutterFlowTheme.of(context)
-                                                  .primary,
-                                          FlutterFlowTheme.of(context).primary,
-                                        ),
-                                        size: 30.0,
-                                      ),
-                                      Text(
-                                        'Favorite',
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleSmall
-                                            .override(
-                                              font: GoogleFonts.manrope(
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleSmall
-                                                        .fontStyle,
-                                              ),
-                                              color: valueOrDefault<Color>(
-                                                _model.tabBarCurrentIndex == 1
-                                                    ? Colors.black
-                                                    : FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                FlutterFlowTheme.of(context)
-                                                    .primaryText,
-                                              ),
-                                              fontSize: 12.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleSmall
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(height: 4.0)),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          _tabCard(
+                            context,
+                            index: 1,
+                            icon: Icons.favorite,
+                            iconSize: 27.0,
+                            label: 'Favourites',
                           ),
-                          InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              safeSetState(() {
-                                _model.tabBarController!.animateTo(
-                                  _model.tabBarController!.length - 1,
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.ease,
-                                );
-                              });
-                            },
-                            child: Container(
-                              width: 75.0,
-                              height: 75.0,
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xA9FFFFFF),
-                                    offset: Offset(
-                                      -0.5,
-                                      -0.5,
-                                    ),
-                                  )
-                                ],
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color(0xFF6E5D6F),
-                                    _model.tabBarCurrentIndex == 2
-                                        ? Color(0xFFCDA8CF)
-                                        : Colors.black
-                                  ],
-                                  stops: [0.0, 1.0],
-                                  begin: AlignmentDirectional(0.0, -1.0),
-                                  end: AlignmentDirectional(0, 1.0),
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: Stack(
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                children: [
-                                  if (_model.tabBarCurrentIndex != 2)
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.asset(
-                                        'assets/images/tab_back.png',
-                                        width: 75.0,
-                                        fit: BoxFit.fill,
-                                        alignment: Alignment(0.0, 1.0),
-                                      ),
-                                    ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.download_sharp,
-                                        color: valueOrDefault<Color>(
-                                          _model.tabBarCurrentIndex == 2
-                                              ? Colors.black
-                                              : FlutterFlowTheme.of(context)
-                                                  .primary,
-                                          FlutterFlowTheme.of(context).primary,
-                                        ),
-                                        size: 38.0,
-                                      ),
-                                      Text(
-                                        'Downloads',
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleSmall
-                                            .override(
-                                              font: GoogleFonts.manrope(
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleSmall
-                                                        .fontStyle,
-                                              ),
-                                              color: valueOrDefault<Color>(
-                                                _model.tabBarCurrentIndex == 2
-                                                    ? Colors.black
-                                                    : FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                FlutterFlowTheme.of(context)
-                                                    .primaryText,
-                                              ),
-                                              fontSize: 12.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleSmall
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                          _tabCard(
+                            context,
+                            index: 2,
+                            icon: Icons.download_sharp,
+                            iconSize: 23.0,
+                            label: 'Downloads',
                           ),
-                        ].divide(SizedBox(width: 14.0)),
+                        ].divide(SizedBox(width: 12.0)),
                       ),
                       Expanded(
                         child: Column(
@@ -524,19 +431,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                     builder: (context, snapshot) {
                                       // Customize what your widget looks like when it's loading.
                                       if (!snapshot.hasData) {
-                                        return Center(
-                                          child: SizedBox(
-                                            width: 50.0,
-                                            height: 50.0,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                FlutterFlowTheme.of(context)
-                                                    .primary,
-                                              ),
-                                            ),
-                                          ),
-                                        );
+                                        return _loader(context);
                                       }
                                       int conditionalBuilderCount =
                                           snapshot.data!;
@@ -562,22 +457,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                 builder: (context, snapshot) {
                                                   // Customize what your widget looks like when it's loading.
                                                   if (!snapshot.hasData) {
-                                                    return Center(
-                                                      child: SizedBox(
-                                                        width: 50.0,
-                                                        height: 50.0,
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          valueColor:
-                                                              AlwaysStoppedAnimation<
-                                                                  Color>(
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primary,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
+                                                    return _loader(context);
                                                   }
                                                   List<PlaylistsRecord>
                                                       listViewPlaylistsRecordList =
@@ -589,7 +469,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                       0,
                                                       0,
                                                       0,
-                                                      90.0,
+                                                      16.0,
                                                     ),
                                                     scrollDirection:
                                                         Axis.vertical,
@@ -597,7 +477,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                         listViewPlaylistsRecordList
                                                             .length,
                                                     separatorBuilder: (_, __) =>
-                                                        SizedBox(height: 12.0),
+                                                        SizedBox(height: 16.0),
                                                     itemBuilder: (context,
                                                         listViewIndex) {
                                                       final listViewPlaylistsRecord =
@@ -627,97 +507,89 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                             }.withoutNulls,
                                                           );
                                                         },
-                                                        child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        0.0),
-                                                          ),
-                                                          child: Align(
-                                                            alignment:
-                                                                AlignmentDirectional(
-                                                                    0.0, 0.0),
-                                                            child: Row(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .max,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              0.0),
-                                                                  child: Image
-                                                                      .asset(
-                                                                    'assets/images/playlists.png',
-                                                                    width: 70.0,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
+                                                        child: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Container(
+                                                              width: 48.0,
+                                                              height: 48.0,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Color(
+                                                                    0xFF0B0B0B),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            6.0),
+                                                                border:
+                                                                    Border.all(
+                                                                  color: Color(
+                                                                      0xFFAC8EB9),
                                                                 ),
-                                                                Column(
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .max,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Text(
-                                                                      listViewPlaylistsRecord
-                                                                          .playlistName,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .start,
-                                                                      style: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .titleMedium
-                                                                          .override(
-                                                                            font:
-                                                                                GoogleFonts.manrope(
-                                                                              fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
-                                                                              fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                            ),
-                                                                            letterSpacing:
-                                                                                0.0,
-                                                                            fontWeight:
-                                                                                FlutterFlowTheme.of(context).titleMedium.fontWeight,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                          ),
-                                                                    ),
-                                                                    Text(
-                                                                      '${listViewPlaylistsRecord.songs.length} songs',
-                                                                      style: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .bodyMedium
-                                                                          .override(
-                                                                            font:
-                                                                                GoogleFonts.manrope(
-                                                                              fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                                                                              fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                                                                            ),
-                                                                            color:
-                                                                                FlutterFlowTheme.of(context).primary,
-                                                                            letterSpacing:
-                                                                                0.0,
-                                                                            fontWeight:
-                                                                                FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                                                                          ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ].divide(SizedBox(
-                                                                  width: 20.0)),
+                                                              ),
+                                                              alignment:
+                                                                  AlignmentDirectional(
+                                                                      0.0, 0.0),
+                                                              child: Icon(
+                                                                FFIcons
+                                                                    .kmmmmmmmmmmmmm,
+                                                                color: Color(
+                                                                    0xFFC3A0C5),
+                                                                size: 29.0,
+                                                              ),
                                                             ),
-                                                          ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    listViewPlaylistsRecord
+                                                                        .playlistName,
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .start,
+                                                                    maxLines: 1,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style:
+                                                                        _manrope(
+                                                                      context,
+                                                                      size:
+                                                                          13.0,
+                                                                      weight: FontWeight
+                                                                          .w800,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    '${listViewPlaylistsRecord.songs.length} songs',
+                                                                    style:
+                                                                        _manrope(
+                                                                      context,
+                                                                      size:
+                                                                          11.0,
+                                                                      weight: FontWeight
+                                                                          .w300,
+                                                                      color:
+                                                                          _lavender,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ].divide(SizedBox(
+                                                              width: 14.0)),
                                                         ),
                                                       );
                                                     },
@@ -726,52 +598,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                               ),
                                             );
                                           } else {
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 0.0, 0.0, 200.0),
-                                                  child: Text(
-                                                    'No playlists yet',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .titleSmall
-                                                        .override(
-                                                          font: GoogleFonts
-                                                              .manrope(
-                                                            fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleSmall
-                                                                    .fontWeight,
-                                                            fontStyle:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleSmall
-                                                                    .fontStyle,
-                                                          ),
-                                                          color:
-                                                              Color(0xFF5E5E5E),
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmall
-                                                                  .fontWeight,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmall
-                                                                  .fontStyle,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
+                                            return _emptyState(
+                                                context, 'No playlists yet');
                                           }
                                         },
                                       );
@@ -788,19 +616,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                     builder: (context, snapshot) {
                                       // Customize what your widget looks like when it's loading.
                                       if (!snapshot.hasData) {
-                                        return Center(
-                                          child: SizedBox(
-                                            width: 50.0,
-                                            height: 50.0,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                FlutterFlowTheme.of(context)
-                                                    .primary,
-                                              ),
-                                            ),
-                                          ),
-                                        );
+                                        return _loader(context);
                                       }
                                       int conditionalBuilderCount =
                                           snapshot.data!;
@@ -813,69 +629,129 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                   .fromSTEB(
                                                       0.0, 0.0, 0.0, 90.0),
                                               child: Column(
-                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisSize: MainAxisSize.max,
                                                 children: [
                                                   Padding(
                                                     padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 0.0,
-                                                                0.0, 16.0),
+                                                                0.0, 24.0),
                                                     child: Row(
                                                       mainAxisSize:
                                                           MainAxisSize.max,
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
-                                                              .spaceBetween,
+                                                              .start,
                                                       children: [
-                                                        Align(
-                                                          alignment:
-                                                              AlignmentDirectional(
-                                                                  0.0, 0.0),
-                                                          child: Container(
-                                                            width: 170.0,
-                                                            height: 50.0,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              gradient:
-                                                                  LinearGradient(
-                                                                colors: [
-                                                                  Color(
-                                                                      0x4BF1B2F0),
-                                                                  Color(
-                                                                      0x3114181B),
-                                                                  Color(
-                                                                      0x3C14181B),
-                                                                  Color(
-                                                                      0x48F1B2F0)
-                                                                ],
-                                                                stops: [
-                                                                  0.0,
-                                                                  0.4,
-                                                                  0.7,
-                                                                  1.0
-                                                                ],
-                                                                begin:
-                                                                    AlignmentDirectional(
-                                                                        0.0,
-                                                                        -1.0),
-                                                                end:
-                                                                    AlignmentDirectional(
-                                                                        0, 1.0),
-                                                              ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8.0),
-                                                              border:
-                                                                  Border.all(
-                                                                color: Color(
-                                                                    0xFF6D6D6D),
-                                                              ),
-                                                            ),
-                                                            alignment:
-                                                                AlignmentDirectional(
-                                                                    0.0, 0.0),
-                                                            child: InkWell(
+                                                        _actionPill(
+                                                          context,
+                                                          icon: Icons
+                                                              .play_arrow_rounded,
+                                                          iconSize: 19.0,
+                                                          label: 'Play All',
+                                                          onTap: () async {
+                                                            FFAppState()
+                                                                .isPlaying =
+                                                                true;
+                                                            FFAppState()
+                                                                .isSongPlaying =
+                                                                true;
+                                                            safeSetState(() {});
+                                                            await showModalBottomSheet(
+                                                              isScrollControlled:
+                                                                  true,
+                                                              backgroundColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              context: context,
+                                                              builder:
+                                                                  (context) {
+                                                                return GestureDetector(
+                                                                  onTap: () {
+                                                                    FocusScope.of(
+                                                                            context)
+                                                                        .unfocus();
+                                                                    FocusManager
+                                                                        .instance
+                                                                        .primaryFocus
+                                                                        ?.unfocus();
+                                                                  },
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: MediaQuery
+                                                                        .viewInsetsOf(
+                                                                            context),
+                                                                    child:
+                                                                        AudioplayerWidget(),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ).then((value) =>
+                                                                safeSetState(
+                                                                    () {}));
+                                                          },
+                                                        ),
+                                                        _actionPill(
+                                                          context,
+                                                          icon: Icons
+                                                              .file_download_outlined,
+                                                          iconSize: 14.0,
+                                                          label: 'All',
+                                                          onTap: () async {},
+                                                        ),
+                                                      ].divide(
+                                                          SizedBox(width: 10.0)),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: StreamBuilder<
+                                                        List<SongsRecord>>(
+                                                      stream: querySongsRecord(
+                                                        queryBuilder:
+                                                            (songsRecord) =>
+                                                                songsRecord
+                                                                    .where(
+                                                          'liked_by',
+                                                          arrayContains:
+                                                              currentUserReference,
+                                                        ),
+                                                        limit: 50,
+                                                      ),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        // Customize what your widget looks like when it's loading.
+                                                        if (!snapshot.hasData) {
+                                                          return _loader(
+                                                              context);
+                                                        }
+                                                        List<SongsRecord>
+                                                            listViewSongsRecordList =
+                                                            snapshot.data!;
+
+                                                        return ListView
+                                                            .separated(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                            0,
+                                                            0,
+                                                            0,
+                                                            16.0,
+                                                          ),
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          itemCount:
+                                                              listViewSongsRecordList
+                                                                  .length,
+                                                          separatorBuilder: (_,
+                                                                  __) =>
+                                                              SizedBox(
+                                                                  height: 16.0),
+                                                          itemBuilder: (context,
+                                                              listViewIndex) {
+                                                            final listViewSongsRecord =
+                                                                listViewSongsRecordList[
+                                                                    listViewIndex];
+                                                            return InkWell(
                                                               splashColor: Colors
                                                                   .transparent,
                                                               focusColor: Colors
@@ -892,6 +768,9 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                 FFAppState()
                                                                         .isSongPlaying =
                                                                     true;
+                                                                FFAppState()
+                                                                        .songnum =
+                                                                    listViewIndex;
                                                                 safeSetState(
                                                                     () {});
                                                                 await showModalBottomSheet(
@@ -900,6 +779,356 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                   backgroundColor:
                                                                       Colors
                                                                           .transparent,
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) {
+                                                                    return GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        FocusScope.of(context)
+                                                                            .unfocus();
+                                                                        FocusManager
+                                                                            .instance
+                                                                            .primaryFocus
+                                                                            ?.unfocus();
+                                                                      },
+                                                                      child:
+                                                                          Padding(
+                                                                        padding:
+                                                                            MediaQuery.viewInsetsOf(context),
+                                                                        child:
+                                                                            SecondaudioplayerWidget(
+                                                                          songs:
+                                                                              (currentUserDocument?.favsongs.toList() ?? []),
+                                                                        ),
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                ).then((value) =>
+                                                                    safeSetState(
+                                                                        () {}));
+                                                              },
+                                                              child: Row(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .max,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Container(
+                                                                    width: 53.0,
+                                                                    height:
+                                                                        53.0,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              6.0),
+                                                                      border: Border
+                                                                          .all(
+                                                                        color: Color(
+                                                                            0xFF979797),
+                                                                      ),
+                                                                    ),
+                                                                    child:
+                                                                        ClipRRect(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5.0),
+                                                                      child: Image
+                                                                          .network(
+                                                                        listViewSongsRecord
+                                                                            .songCoverImage,
+                                                                        width:
+                                                                            53.0,
+                                                                        height:
+                                                                            53.0,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Expanded(
+                                                                    child:
+                                                                        Column(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .min,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          listViewSongsRecord
+                                                                              .title,
+                                                                          textAlign:
+                                                                              TextAlign.start,
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style: _manrope(
+                                                                            context,
+                                                                            size:
+                                                                                15.0,
+                                                                            weight:
+                                                                                FontWeight.w800,
+                                                                            color:
+                                                                                Colors.white,
+                                                                          ),
+                                                                        ),
+                                                                        Text(
+                                                                          listViewSongsRecord
+                                                                              .artist,
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style: _manrope(
+                                                                            context,
+                                                                            size:
+                                                                                12.5,
+                                                                            weight:
+                                                                                FontWeight.w300,
+                                                                            color:
+                                                                                _lavender,
+                                                                          ),
+                                                                        ),
+                                                                        Text(
+                                                                          listViewSongsRecord
+                                                                              .duration,
+                                                                          style: _manrope(
+                                                                            context,
+                                                                            size:
+                                                                                10.0,
+                                                                            weight:
+                                                                                FontWeight.w300,
+                                                                            color:
+                                                                                Color(0x99FFFFFF),
+                                                                          ),
+                                                                        ),
+                                                                      ].divide(SizedBox(
+                                                                          height:
+                                                                              2.0)),
+                                                                    ),
+                                                                  ),
+                                                                  _moreButton(),
+                                                                ].divide(SizedBox(
+                                                                    width:
+                                                                        14.0)),
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          } else {
+                                            return _emptyState(
+                                                context, 'No likes yet');
+                                          }
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  FutureBuilder<int>(
+                                    future: queryDownloadsRecordCount(
+                                      queryBuilder: (downloadsRecord) =>
+                                          downloadsRecord.where(
+                                        'user',
+                                        isEqualTo: currentUserReference,
+                                      ),
+                                    ),
+                                    builder: (context, snapshot) {
+                                      // Customize what your widget looks like when it's loading.
+                                      if (!snapshot.hasData) {
+                                        return _loader(context);
+                                      }
+                                      int conditionalBuilderCount =
+                                          snapshot.data!;
+
+                                      return Builder(
+                                        builder: (context) {
+                                          if (conditionalBuilderCount >= 1) {
+                                            return Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(
+                                                      0.0, 0.0, 0.0, 90.0),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .fromSTEB(0.0, 0.0,
+                                                                0.0, 24.0),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        _actionPill(
+                                                          context,
+                                                          icon: Icons
+                                                              .play_arrow_rounded,
+                                                          iconSize: 19.0,
+                                                          label: 'Play All',
+                                                          onTap: () async {
+                                                            FFAppState()
+                                                                .isPlaying =
+                                                                true;
+                                                            FFAppState()
+                                                                .isSongPlaying =
+                                                                true;
+                                                            safeSetState(() {});
+                                                            await showModalBottomSheet(
+                                                              isScrollControlled:
+                                                                  true,
+                                                              backgroundColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              context: context,
+                                                              builder:
+                                                                  (context) {
+                                                                return GestureDetector(
+                                                                  onTap: () {
+                                                                    FocusScope.of(
+                                                                            context)
+                                                                        .unfocus();
+                                                                    FocusManager
+                                                                        .instance
+                                                                        .primaryFocus
+                                                                        ?.unfocus();
+                                                                  },
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: MediaQuery
+                                                                        .viewInsetsOf(
+                                                                            context),
+                                                                    child:
+                                                                        AudioplayerWidget(),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ).then((value) =>
+                                                                safeSetState(
+                                                                    () {}));
+                                                          },
+                                                        ),
+                                                        _actionPill(
+                                                          context,
+                                                          icon: Icons
+                                                              .file_download_outlined,
+                                                          iconSize: 14.0,
+                                                          label: 'All',
+                                                          onTap: () async {},
+                                                        ),
+                                                      ].divide(
+                                                          SizedBox(width: 10.0)),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: StreamBuilder<
+                                                        List<DownloadsRecord>>(
+                                                      stream:
+                                                          queryDownloadsRecord(
+                                                        queryBuilder:
+                                                            (downloadsRecord) =>
+                                                                downloadsRecord
+                                                                    .where(
+                                                          'user',
+                                                          isEqualTo:
+                                                              currentUserReference,
+                                                        ),
+                                                      ),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        // Customize what your widget looks like when it's loading.
+                                                        if (!snapshot.hasData) {
+                                                          return _loader(
+                                                              context);
+                                                        }
+                                                        List<DownloadsRecord>
+                                                            listViewDownloadsRecordList =
+                                                            snapshot.data!;
+
+                                                        return ListView
+                                                            .separated(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                            0,
+                                                            0,
+                                                            0,
+                                                            16.0,
+                                                          ),
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          itemCount:
+                                                              listViewDownloadsRecordList
+                                                                  .length,
+                                                          separatorBuilder: (_,
+                                                                  __) =>
+                                                              SizedBox(
+                                                                  height: 16.0),
+                                                          itemBuilder: (context,
+                                                              listViewIndex) {
+                                                            final listViewDownloadsRecord =
+                                                                listViewDownloadsRecordList[
+                                                                    listViewIndex];
+                                                            return InkWell(
+                                                              splashColor: Colors
+                                                                  .transparent,
+                                                              focusColor: Colors
+                                                                  .transparent,
+                                                              hoverColor: Colors
+                                                                  .transparent,
+                                                              highlightColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              onTap: () async {
+                                                                FFAppState()
+                                                                        .title =
+                                                                    listViewDownloadsRecord
+                                                                        .songName;
+                                                                FFAppState()
+                                                                        .songurl =
+                                                                    listViewDownloadsRecord
+                                                                        .songUrl;
+                                                                FFAppState()
+                                                                        .coverImage =
+                                                                    listViewDownloadsRecord
+                                                                        .songImage;
+                                                                FFAppState()
+                                                                        .isPlaying =
+                                                                    true;
+                                                                FFAppState()
+                                                                        .PosterImage =
+                                                                    listViewDownloadsRecord
+                                                                        .coverimage;
+                                                                FFAppState()
+                                                                        .isSongPlaying =
+                                                                    true;
+                                                                FFAppState()
+                                                                        .songnum =
+                                                                    listViewDownloadsRecord
+                                                                        .num;
+                                                                safeSetState(
+                                                                    () {});
+                                                                await showModalBottomSheet(
+                                                                  isScrollControlled:
+                                                                      true,
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .transparent,
+                                                                  enableDrag:
+                                                                      false,
                                                                   context:
                                                                       context,
                                                                   builder:
@@ -935,408 +1164,115 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                     MainAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Padding(
-                                                                    padding: EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            30.0,
-                                                                            0.0,
-                                                                            0.0,
-                                                                            0.0),
+                                                                  Container(
+                                                                    width: 53.0,
+                                                                    height:
+                                                                        53.0,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              6.0),
+                                                                      border: Border
+                                                                          .all(
+                                                                        color: Color(
+                                                                            0xFF979797),
+                                                                      ),
+                                                                    ),
                                                                     child:
                                                                         ClipRRect(
                                                                       borderRadius:
                                                                           BorderRadius.circular(
-                                                                              8.0),
+                                                                              5.0),
                                                                       child: Image
-                                                                          .asset(
-                                                                        'assets/images/Object.png',
+                                                                          .network(
+                                                                        listViewDownloadsRecord
+                                                                            .coverimage,
                                                                         width:
-                                                                            32.0,
+                                                                            53.0,
+                                                                        height:
+                                                                            53.0,
                                                                         fit: BoxFit
                                                                             .cover,
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                  Align(
-                                                                    alignment:
-                                                                        AlignmentDirectional(
-                                                                            0.0,
-                                                                            0.0),
-                                                                    child: Text(
-                                                                      'Play all',
-                                                                      style: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .titleSmall
-                                                                          .override(
-                                                                            font:
-                                                                                GoogleFonts.manrope(
-                                                                              fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
-                                                                              fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
-                                                                            ),
-                                                                            letterSpacing:
-                                                                                0.0,
-                                                                            fontWeight:
-                                                                                FlutterFlowTheme.of(context).titleSmall.fontWeight,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                                                  Expanded(
+                                                                    child:
+                                                                        Column(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .min,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          listViewDownloadsRecord
+                                                                              .songName,
+                                                                          textAlign:
+                                                                              TextAlign.start,
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style: _manrope(
+                                                                            context,
+                                                                            size:
+                                                                                15.0,
+                                                                            weight:
+                                                                                FontWeight.w800,
+                                                                            color:
+                                                                                Colors.white,
                                                                           ),
+                                                                        ),
+                                                                        Text(
+                                                                          listViewDownloadsRecord
+                                                                              .artist,
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style: _manrope(
+                                                                            context,
+                                                                            size:
+                                                                                12.5,
+                                                                            weight:
+                                                                                FontWeight.w300,
+                                                                            color:
+                                                                                _lavender,
+                                                                          ),
+                                                                        ),
+                                                                        Row(
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.min,
+                                                                          children: [
+                                                                            Icon(
+                                                                              Icons.arrow_circle_down,
+                                                                              color: _lavender,
+                                                                              size: 10.0,
+                                                                            ),
+                                                                            Text(
+                                                                              listViewDownloadsRecord.duration,
+                                                                              style: _manrope(
+                                                                                context,
+                                                                                size: 10.0,
+                                                                                weight: FontWeight.w300,
+                                                                                color: Color(0x99FFFFFF),
+                                                                              ),
+                                                                            ),
+                                                                          ].divide(SizedBox(
+                                                                              width: 5.0)),
+                                                                        ),
+                                                                      ].divide(SizedBox(
+                                                                          height:
+                                                                              2.0)),
                                                                     ),
                                                                   ),
+                                                                  _moreButton(),
                                                                 ].divide(SizedBox(
                                                                     width:
-                                                                        10.0)),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              AlignmentDirectional(
-                                                                  0.0, 0.0),
-                                                          child: Container(
-                                                            width: 170.0,
-                                                            height: 50.0,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              gradient:
-                                                                  LinearGradient(
-                                                                colors: [
-                                                                  Color(
-                                                                      0x4BF1B2F0),
-                                                                  Color(
-                                                                      0x3114181B),
-                                                                  Color(
-                                                                      0x3C14181B),
-                                                                  Color(
-                                                                      0x48F1B2F0)
-                                                                ],
-                                                                stops: [
-                                                                  0.0,
-                                                                  0.4,
-                                                                  0.7,
-                                                                  1.0
-                                                                ],
-                                                                begin:
-                                                                    AlignmentDirectional(
-                                                                        0.0,
-                                                                        -1.0),
-                                                                end:
-                                                                    AlignmentDirectional(
-                                                                        0, 1.0),
-                                                              ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8.0),
-                                                              border:
-                                                                  Border.all(
-                                                                color: Color(
-                                                                    0xFF6D6D6D),
-                                                              ),
-                                                            ),
-                                                            alignment:
-                                                                AlignmentDirectional(
-                                                                    0.0, 0.0),
-                                                            child: Row(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .max,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Icon(
-                                                                  Icons
-                                                                      .file_download_outlined,
-                                                                  color: Color(
-                                                                      0xFFC491C3),
-                                                                  size: 30.0,
-                                                                ),
-                                                                Align(
-                                                                  alignment:
-                                                                      AlignmentDirectional(
-                                                                          0.0,
-                                                                          0.0),
-                                                                  child: Text(
-                                                                    'All',
-                                                                    style: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .titleSmall
-                                                                        .override(
-                                                                          font:
-                                                                              GoogleFonts.manrope(
-                                                                            fontWeight:
-                                                                                FlutterFlowTheme.of(context).titleSmall.fontWeight,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).titleSmall.fontStyle,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.0,
-                                                                          fontWeight: FlutterFlowTheme.of(context)
-                                                                              .titleSmall
-                                                                              .fontWeight,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .titleSmall
-                                                                              .fontStyle,
-                                                                        ),
-                                                                  ),
-                                                                ),
-                                                              ].divide(SizedBox(
-                                                                  width: 10.0)),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ].divide(
-                                                          SizedBox(width: 2.0)),
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    height: 400.0,
-                                                    decoration: BoxDecoration(),
-                                                    child: StreamBuilder<
-                                                        List<SongsRecord>>(
-                                                      stream: querySongsRecord(
-                                                        queryBuilder:
-                                                            (songsRecord) =>
-                                                                songsRecord
-                                                                    .where(
-                                                          'liked_by',
-                                                          arrayContains:
-                                                              currentUserReference,
-                                                        ),
-                                                        limit: 50,
-                                                      ),
-                                                      builder:
-                                                          (context, snapshot) {
-                                                        // Customize what your widget looks like when it's loading.
-                                                        if (!snapshot.hasData) {
-                                                          return Center(
-                                                            child: SizedBox(
-                                                              width: 50.0,
-                                                              height: 50.0,
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                valueColor:
-                                                                    AlwaysStoppedAnimation<
-                                                                        Color>(
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primary,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                        List<SongsRecord>
-                                                            listViewSongsRecordList =
-                                                            snapshot.data!;
-
-                                                        return ListView
-                                                            .separated(
-                                                          padding: EdgeInsets
-                                                              .fromLTRB(
-                                                            0,
-                                                            0,
-                                                            0,
-                                                            130.0,
-                                                          ),
-                                                          scrollDirection:
-                                                              Axis.vertical,
-                                                          itemCount:
-                                                              listViewSongsRecordList
-                                                                  .length,
-                                                          separatorBuilder: (_,
-                                                                  __) =>
-                                                              SizedBox(
-                                                                  height: 8.0),
-                                                          itemBuilder: (context,
-                                                              listViewIndex) {
-                                                            final listViewSongsRecord =
-                                                                listViewSongsRecordList[
-                                                                    listViewIndex];
-                                                            return Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            0.0),
-                                                              ),
-                                                              child: Align(
-                                                                alignment:
-                                                                    AlignmentDirectional(
-                                                                        0.0,
-                                                                        0.0),
-                                                                child: InkWell(
-                                                                  splashColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  focusColor: Colors
-                                                                      .transparent,
-                                                                  hoverColor: Colors
-                                                                      .transparent,
-                                                                  highlightColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  onTap:
-                                                                      () async {
-                                                                    FFAppState()
-                                                                            .isPlaying =
-                                                                        true;
-                                                                    FFAppState()
-                                                                            .isSongPlaying =
-                                                                        true;
-                                                                    FFAppState()
-                                                                            .songnum =
-                                                                        listViewIndex;
-                                                                    safeSetState(
-                                                                        () {});
-                                                                    await showModalBottomSheet(
-                                                                      isScrollControlled:
-                                                                          true,
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .transparent,
-                                                                      context:
-                                                                          context,
-                                                                      builder:
-                                                                          (context) {
-                                                                        return GestureDetector(
-                                                                          onTap:
-                                                                              () {
-                                                                            FocusScope.of(context).unfocus();
-                                                                            FocusManager.instance.primaryFocus?.unfocus();
-                                                                          },
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                MediaQuery.viewInsetsOf(context),
-                                                                            child:
-                                                                                SecondaudioplayerWidget(
-                                                                              songs: (currentUserDocument?.favsongs?.toList() ?? []),
-                                                                            ),
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    ).then((value) =>
-                                                                        safeSetState(
-                                                                            () {}));
-                                                                  },
-                                                                  child: Row(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .max,
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      ClipRRect(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(0.0),
-                                                                        child: Image
-                                                                            .network(
-                                                                          listViewSongsRecord
-                                                                              .songCoverImage,
-                                                                          width:
-                                                                              80.0,
-                                                                          height:
-                                                                              80.0,
-                                                                          fit: BoxFit
-                                                                              .cover,
-                                                                        ),
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                                                            8.0,
-                                                                            0.0,
-                                                                            8.0,
-                                                                            0.0),
-                                                                        child:
-                                                                            Container(
-                                                                          width:
-                                                                              210.0,
-                                                                          decoration:
-                                                                              BoxDecoration(),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisSize:
-                                                                                MainAxisSize.max,
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children:
-                                                                                [
-                                                                              Text(
-                                                                                listViewSongsRecord.title,
-                                                                                textAlign: TextAlign.start,
-                                                                                style: FlutterFlowTheme.of(context).titleMedium.override(
-                                                                                      font: GoogleFonts.manrope(
-                                                                                        fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
-                                                                                        fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                                      ),
-                                                                                      letterSpacing: 0.0,
-                                                                                      fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
-                                                                                      fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                                    ),
-                                                                              ),
-                                                                              Text(
-                                                                                listViewSongsRecord.artist,
-                                                                                style: FlutterFlowTheme.of(context).bodySmall.override(
-                                                                                      font: GoogleFonts.manrope(
-                                                                                        fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
-                                                                                        fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                      ),
-                                                                                      color: FlutterFlowTheme.of(context).primary,
-                                                                                      letterSpacing: 0.0,
-                                                                                      fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
-                                                                                      fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                    ),
-                                                                              ),
-                                                                              Row(
-                                                                                mainAxisSize: MainAxisSize.max,
-                                                                                children: [
-                                                                                  Text(
-                                                                                    listViewSongsRecord.duration,
-                                                                                    style: FlutterFlowTheme.of(context).labelSmall.override(
-                                                                                          font: GoogleFonts.manrope(
-                                                                                            fontWeight: FlutterFlowTheme.of(context).labelSmall.fontWeight,
-                                                                                            fontStyle: FlutterFlowTheme.of(context).labelSmall.fontStyle,
-                                                                                          ),
-                                                                                          letterSpacing: 0.0,
-                                                                                          fontWeight: FlutterFlowTheme.of(context).labelSmall.fontWeight,
-                                                                                          fontStyle: FlutterFlowTheme.of(context).labelSmall.fontStyle,
-                                                                                        ),
-                                                                                  ),
-                                                                                ].divide(SizedBox(width: 4.0)),
-                                                                              ),
-                                                                            ].divide(SizedBox(height: 4.0)),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      FlutterFlowIconButton(
-                                                                        borderRadius:
-                                                                            8.0,
-                                                                        buttonSize:
-                                                                            54.0,
-                                                                        icon:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .keyboard_control_outlined,
-                                                                          color:
-                                                                              FlutterFlowTheme.of(context).info,
-                                                                          size:
-                                                                              24.0,
-                                                                        ),
-                                                                        onPressed:
-                                                                            () {
-                                                                          print(
-                                                                              'IconButton pressed ...');
-                                                                        },
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
+                                                                        14.0)),
                                                               ),
                                                             );
                                                           },
@@ -1344,589 +1280,12 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                       },
                                                     ),
                                                   ),
-                                                ].divide(
-                                                    SizedBox(height: 16.0)),
+                                                ],
                                               ),
                                             );
                                           } else {
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 0.0, 0.0, 200.0),
-                                                  child: Text(
-                                                    'No likes yet',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .titleSmall
-                                                        .override(
-                                                          font: GoogleFonts
-                                                              .manrope(
-                                                            fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleSmall
-                                                                    .fontWeight,
-                                                            fontStyle:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleSmall
-                                                                    .fontStyle,
-                                                          ),
-                                                          color:
-                                                              Color(0xFF5E5E5E),
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmall
-                                                                  .fontWeight,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmall
-                                                                  .fontStyle,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  FutureBuilder<int>(
-                                    future: queryDownloadsRecordCount(
-                                      queryBuilder: (downloadsRecord) =>
-                                          downloadsRecord.where(
-                                        'user',
-                                        isEqualTo: currentUserReference,
-                                      ),
-                                    ),
-                                    builder: (context, snapshot) {
-                                      // Customize what your widget looks like when it's loading.
-                                      if (!snapshot.hasData) {
-                                        return Center(
-                                          child: SizedBox(
-                                            width: 50.0,
-                                            height: 50.0,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                FlutterFlowTheme.of(context)
-                                                    .primary,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                      int conditionalBuilderCount =
-                                          snapshot.data!;
-
-                                      return Builder(
-                                        builder: (context) {
-                                          if (conditionalBuilderCount >= 1) {
-                                            return Padding(
-                                              padding: EdgeInsetsDirectional
-                                                  .fromSTEB(
-                                                      0.0, 0.0, 0.0, 90.0),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  Align(
-                                                    alignment:
-                                                        AlignmentDirectional(
-                                                            -1.0, 0.0),
-                                                    child: Container(
-                                                      width: 170.0,
-                                                      height: 50.0,
-                                                      decoration: BoxDecoration(
-                                                        gradient:
-                                                            LinearGradient(
-                                                          colors: [
-                                                            Color(0x4BF1B2F0),
-                                                            Color(0x3114181B),
-                                                            Color(0x3C14181B),
-                                                            Color(0x48F1B2F0)
-                                                          ],
-                                                          stops: [
-                                                            0.0,
-                                                            0.4,
-                                                            0.7,
-                                                            1.0
-                                                          ],
-                                                          begin:
-                                                              AlignmentDirectional(
-                                                                  0.0, -1.0),
-                                                          end:
-                                                              AlignmentDirectional(
-                                                                  0, 1.0),
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                        border: Border.all(
-                                                          color:
-                                                              Color(0xFF6D6D6D),
-                                                        ),
-                                                      ),
-                                                      alignment:
-                                                          AlignmentDirectional(
-                                                              0.0, 0.0),
-                                                      child: InkWell(
-                                                        splashColor:
-                                                            Colors.transparent,
-                                                        focusColor:
-                                                            Colors.transparent,
-                                                        hoverColor:
-                                                            Colors.transparent,
-                                                        highlightColor:
-                                                            Colors.transparent,
-                                                        onTap: () async {
-                                                          FFAppState()
-                                                              .isPlaying = true;
-                                                          FFAppState()
-                                                                  .isSongPlaying =
-                                                              true;
-                                                          safeSetState(() {});
-                                                          await showModalBottomSheet(
-                                                            isScrollControlled:
-                                                                true,
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .transparent,
-                                                            context: context,
-                                                            builder: (context) {
-                                                              return GestureDetector(
-                                                                onTap: () {
-                                                                  FocusScope.of(
-                                                                          context)
-                                                                      .unfocus();
-                                                                  FocusManager
-                                                                      .instance
-                                                                      .primaryFocus
-                                                                      ?.unfocus();
-                                                                },
-                                                                child: Padding(
-                                                                  padding: MediaQuery
-                                                                      .viewInsetsOf(
-                                                                          context),
-                                                                  child:
-                                                                      AudioplayerWidget(),
-                                                                ),
-                                                              );
-                                                            },
-                                                          ).then((value) =>
-                                                              safeSetState(
-                                                                  () {}));
-                                                        },
-                                                        child: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.max,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Padding(
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          30.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              child: ClipRRect(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8.0),
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/images/Object.png',
-                                                                  width: 32.0,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Align(
-                                                              alignment:
-                                                                  AlignmentDirectional(
-                                                                      0.0, 0.0),
-                                                              child: Text(
-                                                                'Play all',
-                                                                style: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleSmall
-                                                                    .override(
-                                                                      font: GoogleFonts
-                                                                          .manrope(
-                                                                        fontWeight: FlutterFlowTheme.of(context)
-                                                                            .titleSmall
-                                                                            .fontWeight,
-                                                                        fontStyle: FlutterFlowTheme.of(context)
-                                                                            .titleSmall
-                                                                            .fontStyle,
-                                                                      ),
-                                                                      letterSpacing:
-                                                                          0.0,
-                                                                      fontWeight: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .titleSmall
-                                                                          .fontWeight,
-                                                                      fontStyle: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .titleSmall
-                                                                          .fontStyle,
-                                                                    ),
-                                                              ),
-                                                            ),
-                                                          ].divide(SizedBox(
-                                                              width: 10.0)),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    height: 400.0,
-                                                    decoration: BoxDecoration(),
-                                                    child: StreamBuilder<
-                                                        List<DownloadsRecord>>(
-                                                      stream:
-                                                          queryDownloadsRecord(
-                                                        queryBuilder:
-                                                            (downloadsRecord) =>
-                                                                downloadsRecord
-                                                                    .where(
-                                                          'user',
-                                                          isEqualTo:
-                                                              currentUserReference,
-                                                        ),
-                                                      ),
-                                                      builder:
-                                                          (context, snapshot) {
-                                                        // Customize what your widget looks like when it's loading.
-                                                        if (!snapshot.hasData) {
-                                                          return Center(
-                                                            child: SizedBox(
-                                                              width: 50.0,
-                                                              height: 50.0,
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                valueColor:
-                                                                    AlwaysStoppedAnimation<
-                                                                        Color>(
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primary,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                        List<DownloadsRecord>
-                                                            listViewDownloadsRecordList =
-                                                            snapshot.data!;
-
-                                                        return ListView
-                                                            .separated(
-                                                          padding: EdgeInsets
-                                                              .fromLTRB(
-                                                            0,
-                                                            0,
-                                                            0,
-                                                            130.0,
-                                                          ),
-                                                          scrollDirection:
-                                                              Axis.vertical,
-                                                          itemCount:
-                                                              listViewDownloadsRecordList
-                                                                  .length,
-                                                          separatorBuilder: (_,
-                                                                  __) =>
-                                                              SizedBox(
-                                                                  height: 8.0),
-                                                          itemBuilder: (context,
-                                                              listViewIndex) {
-                                                            final listViewDownloadsRecord =
-                                                                listViewDownloadsRecordList[
-                                                                    listViewIndex];
-                                                            return Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            0.0),
-                                                              ),
-                                                              child: Align(
-                                                                alignment:
-                                                                    AlignmentDirectional(
-                                                                        0.0,
-                                                                        0.0),
-                                                                child: InkWell(
-                                                                  splashColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  focusColor: Colors
-                                                                      .transparent,
-                                                                  hoverColor: Colors
-                                                                      .transparent,
-                                                                  highlightColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  onTap:
-                                                                      () async {
-                                                                    FFAppState()
-                                                                            .title =
-                                                                        listViewDownloadsRecord
-                                                                            .songName;
-                                                                    FFAppState()
-                                                                            .songurl =
-                                                                        listViewDownloadsRecord
-                                                                            .songUrl;
-                                                                    FFAppState()
-                                                                            .coverImage =
-                                                                        listViewDownloadsRecord
-                                                                            .songImage;
-                                                                    FFAppState()
-                                                                            .isPlaying =
-                                                                        true;
-                                                                    FFAppState()
-                                                                            .PosterImage =
-                                                                        listViewDownloadsRecord
-                                                                            .coverimage;
-                                                                    FFAppState()
-                                                                            .isSongPlaying =
-                                                                        true;
-                                                                    FFAppState()
-                                                                            .songnum =
-                                                                        listViewDownloadsRecord
-                                                                            .num;
-                                                                    safeSetState(
-                                                                        () {});
-                                                                    await showModalBottomSheet(
-                                                                      isScrollControlled:
-                                                                          true,
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .transparent,
-                                                                      enableDrag:
-                                                                          false,
-                                                                      context:
-                                                                          context,
-                                                                      builder:
-                                                                          (context) {
-                                                                        return GestureDetector(
-                                                                          onTap:
-                                                                              () {
-                                                                            FocusScope.of(context).unfocus();
-                                                                            FocusManager.instance.primaryFocus?.unfocus();
-                                                                          },
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                MediaQuery.viewInsetsOf(context),
-                                                                            child:
-                                                                                AudioplayerWidget(),
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    ).then((value) =>
-                                                                        safeSetState(
-                                                                            () {}));
-                                                                  },
-                                                                  child: Row(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .max,
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      ClipRRect(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(0.0),
-                                                                        child: Image
-                                                                            .network(
-                                                                          listViewDownloadsRecord
-                                                                              .coverimage,
-                                                                          width:
-                                                                              70.0,
-                                                                          height:
-                                                                              70.0,
-                                                                          fit: BoxFit
-                                                                              .cover,
-                                                                        ),
-                                                                      ),
-                                                                      Padding(
-                                                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                                                            8.0,
-                                                                            0.0,
-                                                                            8.0,
-                                                                            0.0),
-                                                                        child:
-                                                                            Container(
-                                                                          width:
-                                                                              220.0,
-                                                                          decoration:
-                                                                              BoxDecoration(),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisSize:
-                                                                                MainAxisSize.max,
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children:
-                                                                                [
-                                                                              Text(
-                                                                                listViewDownloadsRecord.songName,
-                                                                                textAlign: TextAlign.start,
-                                                                                style: FlutterFlowTheme.of(context).titleMedium.override(
-                                                                                      font: GoogleFonts.manrope(
-                                                                                        fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
-                                                                                        fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                                      ),
-                                                                                      letterSpacing: 0.0,
-                                                                                      fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
-                                                                                      fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                                    ),
-                                                                              ),
-                                                                              Text(
-                                                                                listViewDownloadsRecord.artist,
-                                                                                style: FlutterFlowTheme.of(context).bodySmall.override(
-                                                                                      font: GoogleFonts.manrope(
-                                                                                        fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
-                                                                                        fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                      ),
-                                                                                      letterSpacing: 0.0,
-                                                                                      fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
-                                                                                      fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                    ),
-                                                                              ),
-                                                                              Row(
-                                                                                mainAxisSize: MainAxisSize.max,
-                                                                                children: [
-                                                                                  Row(
-                                                                                    mainAxisSize: MainAxisSize.max,
-                                                                                    children: [
-                                                                                      Icon(
-                                                                                        Icons.download_for_offline_sharp,
-                                                                                        color: FlutterFlowTheme.of(context).primary,
-                                                                                        size: 24.0,
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  Text(
-                                                                                    listViewDownloadsRecord.duration,
-                                                                                    style: FlutterFlowTheme.of(context).bodySmall.override(
-                                                                                          font: GoogleFonts.manrope(
-                                                                                            fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
-                                                                                            fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                          ),
-                                                                                          letterSpacing: 0.0,
-                                                                                          fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
-                                                                                          fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
-                                                                                        ),
-                                                                                  ),
-                                                                                ].divide(SizedBox(width: 8.0)),
-                                                                              ),
-                                                                            ].divide(SizedBox(height: 4.0)),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      Align(
-                                                                        alignment: AlignmentDirectional(
-                                                                            1.0,
-                                                                            0.0),
-                                                                        child:
-                                                                            FlutterFlowIconButton(
-                                                                          borderRadius:
-                                                                              8.0,
-                                                                          buttonSize:
-                                                                              54.0,
-                                                                          icon:
-                                                                              Icon(
-                                                                            Icons.keyboard_control_outlined,
-                                                                            color:
-                                                                                FlutterFlowTheme.of(context).info,
-                                                                            size:
-                                                                                24.0,
-                                                                          ),
-                                                                          onPressed:
-                                                                              () {
-                                                                            print('IconButton pressed ...');
-                                                                          },
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                ].divide(
-                                                    SizedBox(height: 16.0)),
-                                              ),
-                                            );
-                                          } else {
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 0.0, 0.0, 200.0),
-                                                  child: Text(
-                                                    'No Downloads yet',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .titleSmall
-                                                        .override(
-                                                          font: GoogleFonts
-                                                              .manrope(
-                                                            fontWeight:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleSmall
-                                                                    .fontWeight,
-                                                            fontStyle:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .titleSmall
-                                                                    .fontStyle,
-                                                          ),
-                                                          color:
-                                                              Color(0xFF5E5E5E),
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmall
-                                                                  .fontWeight,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmall
-                                                                  .fontStyle,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
+                                            return _emptyState(
+                                                context, 'No Downloads yet');
                                           }
                                         },
                                       );

@@ -96,14 +96,27 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                       alignment: AlignmentDirectional(1.0, -1.0),
                       child: Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
-                            0.0, 20.0, 20.0, 0.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            'assets/images/Logo.png',
-                            width: 100.0,
-                            height: 100.0,
-                            fit: BoxFit.cover,
+                            0.0, 20.0, 14.0, 0.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            // Figma: 0 2px 104px #C39FC2 halo behind the badge.
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 37.0,
+                                color: Color(0x8CC39FC2),
+                                offset: Offset(0.0, 1.0),
+                              ),
+                            ],
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.asset(
+                              'assets/images/Logo.png',
+                              width: 91.0,
+                              height: 91.0,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
@@ -124,10 +137,11 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                       alignment: AlignmentDirectional(0.0, 1.0),
                       child: Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
-                            0.0, 20.0, 0.0, 0.0),
+                            42.0, 20.0, 42.0, 0.0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          // Figma: transport spreads across the full width.
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Column(
@@ -151,7 +165,7 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                             BorderRadius.circular(0.0),
                                         child: Image.asset(
                                           'assets/images/shuffle.png',
-                                          height: 20.0,
+                                          height: 21.0,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -172,7 +186,7 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                       borderRadius: BorderRadius.circular(0.0),
                                       child: Image.asset(
                                         'assets/images/shuffle.png',
-                                        height: 20.0,
+                                        height: 21.0,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -192,7 +206,7 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: Image.asset(
                                   'assets/images/Back.png',
-                                  height: 50.0,
+                                  height: 47.0,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -212,8 +226,8 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Image.asset(
                                     'assets/images/pause.png',
-                                    width: 60.0,
-                                    height: 60.0,
+                                    width: 68.0,
+                                    height: 68.0,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -233,8 +247,8 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Image.asset(
                                     'assets/images/play.png',
-                                    width: 60.0,
-                                    height: 60.0,
+                                    width: 68.0,
+                                    height: 68.0,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -252,7 +266,7 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: Image.asset(
                                   'assets/images/next2.png',
-                                  height: 50.0,
+                                  height: 47.0,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -278,7 +292,7 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                             BorderRadius.circular(0.0),
                                         child: Image.asset(
                                           'assets/images/shuffle2.png',
-                                          height: 20.0,
+                                          height: 19.0,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -299,14 +313,14 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                       borderRadius: BorderRadius.circular(0.0),
                                       child: Image.asset(
                                         'assets/images/shuffle2.png',
-                                        height: 20.0,
+                                        height: 19.0,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
                               ],
                             ),
-                          ].divide(SizedBox(width: 35.0)),
+                          ],
                         ),
                       ),
                     ),
@@ -352,14 +366,15 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 FlutterFlowIconButton(
-                                  borderColor: Color(0xFF5A5A5A),
-                                  borderRadius: 8.0,
-                                  buttonSize: 36.0,
-                                  fillColor: Colors.black,
+                                  borderColor: Color(0xC2D4D2D2),
+                                  borderRadius: 5.0,
+                                  borderWidth: 2.0,
+                                  buttonSize: 35.0,
+                                  fillColor: Color(0xFF0F0F0F),
                                   icon: Icon(
                                     Icons.download,
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    size: 18.0,
+                                    color: Color(0xFFFDC2FE),
+                                    size: 15.0,
                                   ),
                                   onPressed: () async {
                                     await DownloadsRecord.collection
@@ -393,15 +408,15 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                         .contains(currentUserReference) ==
                                     false)
                                   FlutterFlowIconButton(
-                                    borderColor: Color(0xFF5A5A5A),
-                                    borderRadius: 8.0,
-                                    buttonSize: 36.0,
-                                    fillColor: Colors.black,
+                                    borderColor: Color(0xC2D4D2D2),
+                                    borderRadius: 5.0,
+                                    borderWidth: 2.0,
+                                    buttonSize: 35.0,
+                                    fillColor: Color(0xFF0F0F0F),
                                     icon: Icon(
                                       Icons.favorite_border,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 18.0,
+                                      color: Color(0xFFFDC2FE),
+                                      size: 15.0,
                                     ),
                                     onPressed: () async {
                                       await FFAppState().activeSongRef!.update({
@@ -427,15 +442,15 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                         .contains(currentUserReference) ==
                                     true)
                                   FlutterFlowIconButton(
-                                    borderColor: Color(0xFF5A5A5A),
-                                    borderRadius: 8.0,
-                                    buttonSize: 36.0,
-                                    fillColor: Colors.black,
+                                    borderColor: Color(0xC2D4D2D2),
+                                    borderRadius: 5.0,
+                                    borderWidth: 2.0,
+                                    buttonSize: 35.0,
+                                    fillColor: Color(0xFF0F0F0F),
                                     icon: Icon(
                                       Icons.favorite_sharp,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 18.0,
+                                      color: Color(0xFFFDC2FE),
+                                      size: 15.0,
                                     ),
                                     onPressed: () async {
                                       await FFAppState().activeSongRef!.update({
@@ -458,14 +473,15 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                     },
                                   ),
                                 FlutterFlowIconButton(
-                                  borderColor: Color(0xFF5A5A5A),
-                                  borderRadius: 8.0,
-                                  buttonSize: 36.0,
-                                  fillColor: Colors.black,
+                                  borderColor: Color(0xC2D4D2D2),
+                                  borderRadius: 5.0,
+                                  borderWidth: 2.0,
+                                  buttonSize: 35.0,
+                                  fillColor: Color(0xFF0F0F0F),
                                   icon: Icon(
                                     Icons.queue_music,
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    size: 18.0,
+                                    color: Color(0xFFFDC2FE),
+                                    size: 15.0,
                                   ),
                                   onPressed: () async {
                                     await showModalBottomSheet(
@@ -485,7 +501,7 @@ class _AudioplayerWidgetState extends State<AudioplayerWidget> {
                                     ).then((value) => safeSetState(() {}));
                                   },
                                 ),
-                              ].divide(SizedBox(width: 16.0)),
+                              ].divide(SizedBox(width: 11.0)),
                             );
                           },
                         ),
