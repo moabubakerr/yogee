@@ -68,20 +68,26 @@ const kCardStrokeGradient = LinearGradient(
 /// to reproduce the child inset that Border.all used to apply. A fixed-size
 /// child such as an icon button skips the padding and keeps its own size.
 class GradientStroke extends Decoration {
-  const GradientStroke({required this.radius});
+  const GradientStroke({required this.radius, this.width = kCardStrokeWidth});
 
   /// Outer corner radius, matching the container's own borderRadius.
   final double radius;
 
+  /// Ring thickness. Defaults to [kCardStrokeWidth]; small tiles can ask for a
+  /// finer line so the stroke does not read as heavy against little artwork.
+  /// Pair it with a matching `padding: EdgeInsets.all(...)` at the call site.
+  final double width;
+
   @override
   BoxPainter createBoxPainter([VoidCallback? onChanged]) =>
-      _GradientStrokePainter(radius);
+      _GradientStrokePainter(radius, width);
 }
 
 class _GradientStrokePainter extends BoxPainter {
-  _GradientStrokePainter(this.radius);
+  _GradientStrokePainter(this.radius, this.width);
 
   final double radius;
+  final double width;
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
@@ -91,14 +97,14 @@ class _GradientStrokePainter extends BoxPainter {
     // Stroke straddles the path, so inset by half its width to keep the ring
     // fully inside the container - the same place Border.all drew it.
     final ring = RRect.fromRectAndRadius(
-      bounds.deflate(kCardStrokeWidth / 2),
-      Radius.circular(radius - kCardStrokeWidth / 2),
+      bounds.deflate(width / 2),
+      Radius.circular(radius - width / 2),
     );
     canvas.drawRRect(
       ring,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = kCardStrokeWidth
+        ..strokeWidth = width
         ..shader = kCardStrokeGradient.createShader(bounds),
     );
   }

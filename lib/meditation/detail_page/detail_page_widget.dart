@@ -3,6 +3,7 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_audio_player.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/custom_code/tag_pill.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/meditation/albumsongoptions/albumsongoptions_widget.dart';
@@ -163,7 +164,8 @@ class _DetailPageWidgetState extends State<DetailPageWidget> {
                                             style: FlutterFlowTheme.of(context)
                                                 .headlineMedium
                                                 .override(
-                                                  font: GoogleFonts.plusJakartaSans(
+                                                  font: GoogleFonts
+                                                      .plusJakartaSans(
                                                     fontWeight:
                                                         FlutterFlowTheme.of(
                                                                 context)
@@ -289,89 +291,7 @@ class _DetailPageWidgetState extends State<DetailPageWidget> {
                                                   alignment:
                                                       AlignmentDirectional(
                                                           -1.0, -1.0),
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      topLeft:
-                                                          Radius.circular(24.0),
-                                                      topRight:
-                                                          Radius.circular(24.0),
-                                                      bottomLeft:
-                                                          Radius.circular(24.0),
-                                                      bottomRight:
-                                                          Radius.circular(24.0),
-                                                    ),
-                                                    child: Container(
-                                                      width: 120.0,
-                                                      height: 28.0,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            Color(0xFF707070),
-                                                        image: DecorationImage(
-                                                          fit: BoxFit.cover,
-                                                          alignment:
-                                                              AlignmentDirectional(
-                                                                  -1.0, -1.0),
-                                                          image: Image.asset(
-                                                            'assets/images/choiceback.png',
-                                                          ).image,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  24.0),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  24.0),
-                                                          bottomLeft:
-                                                              Radius.circular(
-                                                                  24.0),
-                                                          bottomRight:
-                                                              Radius.circular(
-                                                                  24.0),
-                                                        ),
-                                                      ),
-                                                      child: Align(
-                                                        alignment:
-                                                            AlignmentDirectional(
-                                                                0.0, 0.0),
-                                                        child: Text(
-                                                          tagsItem,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodySmall
-                                                              .override(
-                                                                font: GoogleFonts
-                                                                    .manrope(
-                                                                  fontWeight: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontWeight,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                                color: Color(
-                                                                    0xFFF9C7F8),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                fontWeight: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontWeight,
-                                                                fontStyle: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmall
-                                                                    .fontStyle,
-                                                              ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                  child: TagPill(tagsItem),
                                                 );
                                               }).divide(SizedBox(width: 6.0)),
                                             ),

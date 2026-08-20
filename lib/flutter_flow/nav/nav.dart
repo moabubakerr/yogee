@@ -15,6 +15,7 @@ import '/flutter_flow/lat_lng.dart';
 import '/flutter_flow/place.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'serialization_util.dart';
+import '/custom_code/ui_preview.dart';
 
 import '/index.dart';
 
@@ -79,7 +80,10 @@ class AppStateNotifier extends ChangeNotifier {
 }
 
 GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
-      initialLocation: '/',
+      // kUiPreview boots straight to the dashboard with no user, so a hosted
+      // simulator can be pointed at the layout without signing in to the live
+      // project. Compile-time const: false in every normal build.
+      initialLocation: kUiPreview ? DashboardWidget.routePath : '/',
       debugLogDiagnostics: true,
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,

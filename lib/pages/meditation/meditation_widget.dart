@@ -18,6 +18,65 @@ import 'package:text_search/text_search.dart';
 import 'meditation_model.dart';
 export 'meditation_model.dart';
 
+/// Gap between the "Healing Frequencies" / "Nature Sounds" / "Hypnosis" chips.
+///
+/// Three 115pt chips plus two gaps has to fit 328pt on a 360dp phone once the
+/// page's 16pt side padding is off, so this trades directly against how much
+/// of the third chip is visible before the row starts scrolling: 345 + 2 * gap
+/// against 328. At 4 the row already scrolled; wider simply scrolls sooner.
+const double _kFeatureChipGap = 12.0;
+
+// ---------------------------------------------------------------------------
+// Album grid metrics
+//
+// A card's height does not follow its width: the cover art inside is a fixed
+// square and both labels are single lines, so a card needs the same vertical
+// space on a 320pt phone as on a 430pt one.
+//
+// childAspectRatio ties height TO width, which is why the grid used to leave
+// dead space under the caption on wide screens and clip it on narrow ones.
+// mainAxisExtent states the height directly instead, so the cards stay the
+// same shape at every screen size and only the gaps between columns move.
+// ---------------------------------------------------------------------------
+
+/// Cover art inside an album card, square.
+const double _kAlbumCoverSize = 150.0;
+
+/// Padding above and below the cover art, from its (12, 10, 12, 8) inset.
+const double _kAlbumCoverPadTop = 10.0;
+const double _kAlbumCoverPadBottom = 8.0;
+
+/// The card and the frame around the art each draw a 1pt border a side.
+const double _kAlbumBorder = 1.0;
+
+/// Padding under the labels, inside the card.
+const double _kAlbumCardBottomPad = 8.0;
+
+/// Padding around each card, inside its cell.
+const double _kAlbumCellPad = 4.0;
+
+/// Label sizes: theme labelSmall for the artist, an override for the title.
+const double _kAlbumArtistFontSize = 12.0;
+const double _kAlbumTitleFontSize = 15.0;
+
+/// Manrope reports roughly 1.4em per line and neither label sets a height
+/// factor, so a line is its font size times this.
+///
+/// ponytail: approximate on purpose -- measuring exactly means a TextPainter
+/// pass per build. Both labels are capped at one line and the extent below
+/// carries a little slack, so the estimate only has to be close.
+const double _kAlbumLineHeightFactor = 1.4;
+
+/// Height of one grid cell, summed from the parts above.
+const double _kAlbumCellExtent = _kAlbumCellPad * 2 +
+    _kAlbumBorder * 2 +
+    _kAlbumCoverPadTop +
+    _kAlbumCoverSize +
+    _kAlbumBorder * 2 +
+    _kAlbumCoverPadBottom +
+    (_kAlbumArtistFontSize + _kAlbumTitleFontSize) * _kAlbumLineHeightFactor +
+    _kAlbumCardBottomPad;
+
 class MeditationWidget extends StatefulWidget {
   const MeditationWidget({super.key});
 
@@ -347,9 +406,10 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                       // to distribute and the row overflowed.
                                       //
                                       // Keep the chips at their design width,
-                                      // give them a uniform 4pt gap, centre the
-                                      // group when there is room, and scroll
-                                      // horizontally when there is not.
+                                      // give them a uniform _kFeatureChipGap,
+                                      // centre the group when there is room,
+                                      // and scroll horizontally when it does
+                                      // not fit.
                                       child: LayoutBuilder(
                                         builder: (context, constraints) =>
                                             SingleChildScrollView(
@@ -1099,7 +1159,7 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                     ],
                                                   ),
                                                 ].divide(
-                                                    const SizedBox(width: 4.0)),
+                                                    const SizedBox(width: _kFeatureChipGap)),
                                               ),
                                             ),
                                           ),
@@ -1366,12 +1426,10 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                               crossAxisCount: 2,
                                               crossAxisSpacing: 6.0,
                                               mainAxisSpacing: 6.0,
-                                              // Cell height is width/ratio, but
-                                              // the cover image inside is a
-                                              // fixed 150x150, so a low ratio
-                                              // leaves dead space under the
-                                              // caption on wider screens.
-                                              childAspectRatio: 0.76,
+                                              // Height stated outright, not
+                                              // derived from the width -- see
+                                              // the note on _kAlbumCellExtent.
+                                              mainAxisExtent: _kAlbumCellExtent,
                                             ),
                                             primary: false,
                                             shrinkWrap: true,
@@ -1523,10 +1581,8 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                             .coverImage,
                                                                         'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
                                                                       ),
-                                                                      width:
-                                                                          150.0,
-                                                                      height:
-                                                                          150.0,
+                                                                      width: _kAlbumCoverSize,
+                                                                      height: _kAlbumCoverSize,
                                                                       fit: BoxFit
                                                                           .cover,
                                                                     ),
@@ -1553,6 +1609,9 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                 textAlign:
                                                                     TextAlign
                                                                         .start,
+                                                                maxLines: 1,
+                                                                overflow: TextOverflow
+                                                                    .ellipsis,
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
                                                                     .labelSmall
@@ -1655,12 +1714,10 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                               crossAxisCount: 2,
                                               crossAxisSpacing: 10.0,
                                               mainAxisSpacing: 10.0,
-                                              // Cell height is width/ratio, but
-                                              // the cover image inside is a
-                                              // fixed 150x150, so a low ratio
-                                              // leaves dead space under the
-                                              // caption on wider screens.
-                                              childAspectRatio: 0.76,
+                                              // Height stated outright, not
+                                              // derived from the width -- see
+                                              // the note on _kAlbumCellExtent.
+                                              mainAxisExtent: _kAlbumCellExtent,
                                             ),
                                             primary: false,
                                             shrinkWrap: true,
@@ -1809,10 +1866,8 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                           .coverImage,
                                                                       'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
                                                                     ),
-                                                                    width:
-                                                                        150.0,
-                                                                    height:
-                                                                        150.0,
+                                                                    width: _kAlbumCoverSize,
+                                                                      height: _kAlbumCoverSize,
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   ),
@@ -1838,6 +1893,9 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                 textAlign:
                                                                     TextAlign
                                                                         .start,
+                                                                maxLines: 1,
+                                                                overflow: TextOverflow
+                                                                    .ellipsis,
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
                                                                     .labelSmall

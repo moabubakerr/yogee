@@ -11,7 +11,10 @@ workflows:
       - name: pub get
         script: flutter pub get
       - name: build simulator app
-        script: flutter build ios --simulator
+        # UI_PREVIEW boots straight to the dashboard with no signed-in user.
+        # The plist in this repo points at production, so without it any
+        # login on Appetize writes a permanent account to live data.
+        script: flutter build ios --simulator --dart-define=UI_PREVIEW=true
       - name: zip bundle
         script: ditto -c -k --sequesterRsrc --keepParent build/ios/iphonesimulator/Runner.app Runner.zip
     artifacts:

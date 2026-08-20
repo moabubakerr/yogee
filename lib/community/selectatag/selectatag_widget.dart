@@ -1,5 +1,6 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/custom_code/tag_pill.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
@@ -124,11 +125,10 @@ class _SelectatagWidgetState extends State<SelectatagWidget> {
                         mainAxisSize: MainAxisSize.max,
                         children: List.generate(tags.length, (tagsIndex) {
                           final tagsItem = tags[tagsIndex];
-                          return InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
+                          return TagPill(
+                            tagsItem,
+                            selected:
+                                FFAppState().selectedtags.contains(tagsItem),
                             onTap: () async {
                               if (FFAppState()
                                   .selectedtags
@@ -140,72 +140,6 @@ class _SelectatagWidgetState extends State<SelectatagWidget> {
                                 safeSetState(() {});
                               }
                             },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(24.0),
-                                topRight: Radius.circular(24.0),
-                                bottomLeft: Radius.circular(24.0),
-                                bottomRight: Radius.circular(24.0),
-                              ),
-                              child: Container(
-                                width: 120.0,
-                                height: 31.0,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFFDEB6E0),
-                                      Color(0xFF887189)
-                                    ],
-                                    stops: [0.0, 1.0],
-                                    begin: AlignmentDirectional(1.0, 0.0),
-                                    end: AlignmentDirectional(-1.0, 0),
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(24.0),
-                                    topRight: Radius.circular(24.0),
-                                    bottomLeft: Radius.circular(24.0),
-                                    bottomRight: Radius.circular(24.0),
-                                  ),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    if (!FFAppState()
-                                        .selectedtags
-                                        .contains(tagsItem))
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: Image.asset(
-                                          'assets/images/choiceback.png',
-                                          width: 200.0,
-                                          height: 200.0,
-                                          fit: BoxFit.fitHeight,
-                                          alignment: Alignment(-1.0, -1.0),
-                                        ),
-                                      ),
-                                    Align(
-                                      alignment: AlignmentDirectional(0.0, 0.0),
-                                      child: Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            2.0, 0.0, 2.0, 0.0),
-                                        child: Text(
-                                          tagsItem,
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.roboto(
-                                            color: FFAppState()
-                                                    .selectedtags
-                                                    .contains(tagsItem)
-                                                ? Colors.black
-                                                : Color(0xFFDAB3DC),
-                                            fontSize: 12.0,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
                           );
                         }).divide(SizedBox(height: 12.0)),
                       );
