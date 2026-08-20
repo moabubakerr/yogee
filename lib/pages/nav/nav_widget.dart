@@ -353,7 +353,7 @@ class _NavWidgetState extends State<NavWidget> {
                                       ),
                                     Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
-                                          12.0, 0.0, 0.0, 0.0),
+                                          8.0, 0.0, 0.0, 0.0),
                                       child: InkWell(
                                         splashColor: Colors.transparent,
                                         focusColor: Colors.transparent,
@@ -364,14 +364,24 @@ class _NavWidgetState extends State<NavWidget> {
                                           FFAppState().miniplayer = false;
                                           safeSetState(() {});
                                         },
+                                        // Artwork, not Icons.close_rounded: the
+                                        // white Material glyph was the only
+                                        // control in this row not drawn from an
+                                        // asset, next to play.png and
+                                        // pause.png above.
+                                        //
+                                        // Container stays at 32 so the tap
+                                        // target does not shrink with the
+                                        // smaller glyph.
                                         child: Container(
                                           width: 32.0,
                                           height: 32.0,
                                           alignment: Alignment.center,
-                                          child: Icon(
-                                            Icons.close_rounded,
-                                            color: Colors.white,
-                                            size: 30.0,
+                                          child: Image.asset(
+                                            'assets/images/crossplayer.png',
+                                            width: 25.0,
+                                            height: 25.0,
+                                            fit: BoxFit.contain,
                                           ),
                                         ),
                                       ),
