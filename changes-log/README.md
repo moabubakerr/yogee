@@ -9,7 +9,7 @@ Written and updated by the `changes-log` skill
 
 | Date | Entry | Covers |
 |---|---|---|
-| 2026-08-20 | [Dashboard & Meditate UI pass, iOS simulator CI](2026-08-20-dashboard-meditation-ui.md) | Shortcut block scaling, carousel height, album grid cell extent, `AlbumCard` + `TagPill` extraction, `UI_PREVIEW` build, Codemagic iOS |
+| 2026-08-20 | [Dashboard & Meditate UI pass, iOS simulator CI](2026-08-20-dashboard-meditation-ui.md) | Shortcut block scaling, carousel height, album grid cell extent, `AlbumCard` + `TagPill` (incl. `selectatag` fold), `UI_PREVIEW` build, Codemagic iOS |
 
 ## Conventions
 

@@ -252,6 +252,64 @@ And clearing a chip sets `_model.filter = null`, which Firestore reads as
 
 ---
 
+---
+
+## Session 2 — `selectatag` folded into `TagPill`
+
+`lib/custom_code/tag_pill.dart`, `lib/community/selectatag/selectatag_widget.dart`
+
+The pill was extracted for the detail page first and deliberately left as a
+one-caller widget until the Select-a-tag sheet's selected state was thought
+through. Folded in now.
+
+**`selected` is the discriminator.** Null means a label pill (detail page);
+true/false means a selectable one (tag sheet). The two modes are visually
+distinct by design, and both are preserved exactly as their call sites drew
+them:
+
+| | Label pill | Selectable pill |
+|---|---|---|
+| Height | 28 | 31 |
+| Base | none | plum gradient `#DEB6E0 -> #887189` |
+| Artwork | `BoxFit.cover`, half opacity | full strength, hidden once selected |
+| Text | theme `bodySmall` Manrope, `#F9C7F8` | Roboto 12, black when selected else `#DAB3DC` |
+
+The artwork is what marks a tag as **not** chosen, so `fillOpacity` is ignored
+in selectable mode — halving it there would have read as a third state.
+
+**One oddity carried over rather than fixed.** The tag sheet renders the
+artwork as a 200x200 `Image.asset` with `fitHeight` and a top-left alignment
+inside a 120x31 box, which paints the source square at the pill's height and
+leaves the gradient showing to its right. The label pill fills with the same
+asset via `BoxFit.cover`. It looks more like a FlutterFlow accident than a
+decision, but changing it is a visual call that wants eyes on a device, so it
+is preserved and marked `ponytail:` in the code.
+
+**Also folded away.** The outer `ClipRRect` at both call sites, replaced with
+`clipBehavior: Clip.antiAlias` on the Container — a `BoxDecoration` clips its
+own image, so at the label site that wrapper had been clipping nothing.
+
+Both labels now carry `maxLines: 1` + ellipsis. The tag sheet previously had
+neither, so a long tag wrapped or overflowed its fixed 120pt width. Its text
+padding went 2 -> 8 to match.
+
+Net: 71 lines out of `selectatag_widget.dart`, 84 out of
+`detail_page_widget.dart`.
+
+Three sites still draw the same artwork and were not touched:
+`newpost_widget.dart:544`, `profilesetting_widget.dart:1456`,
+`meditation_widget.dart:1340`.
+
+### Verification
+
+`flutter analyze` clean on `tag_pill.dart`, `selectatag_widget.dart` and
+`detail_page_widget.dart` — no errors. The `flutter_flow_widgets` unused-import
+warning on `selectatag_widget.dart` pre-dates this change (`FFButtonWidget`
+appears zero times in `HEAD` too).
+
+**Not seen on a screen.** Both pill modes are reasoned from the original
+widget trees, not observed rendering.
+
 ## Verification status
 
 `flutter analyze` clean on every file touched — no errors. Remaining warnings
