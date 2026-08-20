@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/notification_type.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
@@ -1706,9 +1707,8 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                 );
                                               }
                                               final page = snapshot.data!;
-                                              final hasMore =
-                                                  page.length >=
-                                                      _model.postsPageSize;
+                                              final hasMore = page.length >=
+                                                  _model.postsPageSize;
                                               // Posts with no `poster` cannot
                                               // render their author row and
                                               // would crash on `poster!`
@@ -1791,8 +1791,7 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                                 shape: BoxShape
                                                                     .circle,
                                                               ),
-                                                              child:
-                                                                  NetImage(
+                                                              child: NetImage(
                                                                 valueOrDefault<
                                                                     String>(
                                                                   containerUsersRecord
@@ -1947,7 +1946,8 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                                           ClipRRect(
                                                                         borderRadius:
                                                                             BorderRadius.circular(20.0),
-                                                                        child: NetImage(
+                                                                        child:
+                                                                            NetImage(
                                                                           listViewPostsRecord
                                                                               .image,
                                                                           width:
@@ -2010,15 +2010,26 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                                                                               ),
                                                                             });
 
-                                                                            await NotificationsRecord.collection.doc().set(createNotificationsRecordData(
-                                                                                  isread: false,
-                                                                                  ispost: true,
-                                                                                  isLike: true,
-                                                                                  postref: listViewPostsRecord.reference,
-                                                                                  madeby: currentUserReference,
-                                                                                  madeto: listViewPostsRecord.poster,
-                                                                                  timestamp: getCurrentTimestamp,
-                                                                                ));
+                                                                            // Self-notify guard, matching the one every
+                                                                            // other like site already has (community:860,
+                                                                            // :1300, :1424 · replies:503, :1272). Without
+                                                                            // it, liking your own post from another
+                                                                            // user's profile notifies you -- cosmetic
+                                                                            // in-app, but as push it wakes your phone
+                                                                            // for your own tap.
+                                                                            if (listViewPostsRecord.poster !=
+                                                                                currentUserReference) {
+                                                                              await NotificationsRecord.collection.doc().set(createNotificationsRecordData(
+                                                                                    isread: false,
+                                                                                    ispost: true,
+                                                                                    isLike: true,
+                                                                                    type: NotificationType.likePost,
+                                                                                    postref: listViewPostsRecord.reference,
+                                                                                    madeby: currentUserReference,
+                                                                                    madeto: listViewPostsRecord.poster,
+                                                                                    timestamp: getCurrentTimestamp,
+                                                                                  ));
+                                                                            }
                                                                           }
                                                                         },
                                                                         value: listViewPostsRecord

@@ -26,10 +26,11 @@
     "emulators": "cd .. && firebase emulators:start --project demo-yoogee --only auth,firestore,storage",
     "seed": "node seed.mjs",
     "seed:dev": "node seed.mjs --cloud",
-    "serve": "firebase -P yoogeeapp emulators:start --only functions",
-    "shell": "firebase -P yoogeeapp functions:shell",
+    "serve": "firebase -P yogee-e62e2 emulators:start --only functions",
+    "shell": "firebase -P yogee-e62e2 functions:shell",
     "start": "npm run shell",
-    "logs": "firebase -P yoogeeapp functions:log",
+    "logs": "firebase -P yogee-e62e2 functions:log",
+    "logs:prod": "firebase -P yoogeeapp functions:log",
     "compile": "cp ../../tsconfig.template.json ./tsconfig-compile.json && tsc --project tsconfig-compile.json"
   },
   "engines": {

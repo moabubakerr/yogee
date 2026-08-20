@@ -60,7 +60,7 @@ Three projects exist. **On Android the platform files decide which one you hit, 
 
 | Project | Reached by | Notes |
 |---|---|---|
-| `yoogeeapp` | **release** builds (`android/app/google-services.json`) | **PRODUCTION. Live user data.** |
+| `yoogeeapp` | **release** builds (`android/app/google-services.json`) | **Staging / test.** Owner states (2026-08-20) this is not a live end-user project, despite the name and the `release` build type. Its rules are still wide open and `allow delete: if false`, so writes are permanent — but they are not end-user data. |
 | `yogee-e62e2` | **debug** builds (`android/app/src/debug/google-services.json`) | Dev project, safe to write to |
 | `demo-yoogee` | `--dart-define=USE_FIREBASE_EMULATOR=true` | Local emulator, wiped on restart |
 
@@ -109,7 +109,10 @@ Generated page widgets are deeply nested with very long `build()` methods (`dash
 
 - `firebase/firestore.rules` currently grants `allow read: if true` and `allow write: if true` on most collections. Anyone with the public API key can read and write production data. Verified by unauthenticated REST call.
 - `allow delete: if false` on every collection except `posts`. **Anything written to production is permanent and no client can remove it.**
-- Never write to `yoogeeapp` without the owner's involvement. Use the dev project or the emulator.
+- `yoogeeapp` is staging/test per the owner, so writing to it is acceptable for
+  testing. Two things still hold: `allow delete: if false` means anything
+  written there is permanent, and it is the project a shipped release build
+  points at — so treat it as shared, not scratch.
 - Never commit a service-account key, `android/key.properties`, or a `.jks`. All are gitignored. Pass key paths via `GOOGLE_APPLICATION_CREDENTIALS`, never paste contents.
 - The Firebase API keys in `google-services.json` / `GoogleService-Info.plist` are client identifiers that ship in every binary — not secrets, and not worth rotating. The wide-open rules are the actual exposure.
 

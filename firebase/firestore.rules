@@ -8,6 +8,22 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Device tokens for push (docs/fcm-push-plan.md, Issue 3).
+    //
+    // A subcollection, NOT a field on the user document: /users above is
+    // `allow read: if true` and `allow write: if true`, so a token stored there
+    // would be readable by anyone holding the public API key and wipeable by
+    // any unauthenticated caller -- which kills delivery silently, with no
+    // error anywhere. A subcollection is not covered by the parent's match, so
+    // this is a genuine tightening rather than a rule the parent overrides.
+    //
+    // Document id is the token itself, which makes registration idempotent and
+    // lets the Cloud Function delete a dead token with a plain delete instead
+    // of an arrayRemove read-modify-write.
+    match /users/{uid}/fcm_tokens/{token} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
     match /posts/{document} {
       allow create: if true;
       allow read: if true;
@@ -87,11 +103,53 @@ service cloud.firestore {
     }
 
     match /notifications/{document} {
-      allow create: if true;
-      allow read: if true;
+      // Was `if true` (docs/fcm-push-plan.md, Issue 4). Survivable while these
+      // documents only rendered in-app; once a Cloud Function delivers them as
+      // push, `if true` is a "push any user" endpoint -- an unauthenticated
+      // caller writes a document with any madeto and any madeby and the
+      // function faithfully delivers it.
+      //
+      // madeby is always the acting user at all seven write sites
+      // (community_widget.dart:865, :1428 · replies_widget.dart:509, :906,
+      // :1278 · othersprofile_widget.dart:2014 · addfriend_widget.dart:156);
+      // they all pass currentUserReference.
+      allow create: if request.auth != null
+        && request.resource.data.madeby ==
+           /databases/$(database)/documents/users/$(request.auth.uid);
+      // Recipient only. Was `if true`, which published the whole social graph
+      // -- who follows, likes and replies to whom -- to anyone holding the
+      // public API key from the app binary.
+      //
+      // Rules are NOT filters: a query is rejected outright unless its own
+      // constraints prove the rule. This is safe only because every read site
+      // already filters on madeto:
+      //   notifications_widget.dart:65, :321
+      //   myprofilepage_widget.dart:220
+      //   community_widget.dart:226
+      // Any new query that lists notifications WITHOUT a
+      // `where('madeto', isEqualTo: currentUserReference)` will fail with
+      // permission-denied, not return a filtered subset.
+      allow read: if request.auth != null
+        && resource.data.madeto ==
+           /databases/$(database)/documents/users/$(request.auth.uid);
       // Granted as `update` rather than `write`: `write` includes delete and
       // would override the owner check below (see the posts block).
-      allow update: if true;
+      //
+      // Was `if true`, which let anyone rewrite any notification -- including
+      // its `type` or `madeto`. That produces no push (the trigger is
+      // onCreate, which updates do not fire) but is free data corruption.
+      //
+      // Two conditions: the caller is the recipient, and `isread` is the only
+      // field being touched. All three update sites
+      // (notifications_widget.dart:402, :662, :683) write exactly
+      // `createNotificationsRecordData(isread: true)`, so the payload is a
+      // single key. An update that touches anything else is a bug or an
+      // attack; either way it should fail loudly.
+      allow update: if request.auth != null
+        && resource.data.madeto ==
+           /databases/$(database)/documents/users/$(request.auth.uid)
+        && request.resource.data.diff(resource.data)
+             .affectedKeys().hasOnly(['isread']);
       // Users may clear notifications addressed to them ("clear all" on the
       // notifications screen). Deleting anyone else's is still denied.
       allow delete: if request.auth != null
@@ -106,3 +164,4 @@ service cloud.firestore {
     }
   }
 }
+

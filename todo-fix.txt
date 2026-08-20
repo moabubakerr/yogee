@@ -20,17 +20,25 @@ the device; pubspec.yaml has no push package. Delivery is added on top of the
 documents already being written - no create site has to change for push to
 work.
 
-Four things in that document are worth doing whether or not push ever ships:
+Groundwork DONE (2026-08-20). The four items worth doing regardless:
 
-  - firestore.rules:4-9  users is `allow read: if true` AND
-    `allow write: if true`, so device tokens must not be stored on the user
-    document. Use a users/{uid}/fcm_tokens/{token} subcollection.
-  - firestore.rules:89-91  `allow create: if true` on notifications turns into
-    a "push any user" endpoint the moment a function delivers them.
-  - othersprofile_widget.dart:2014 has no self-notify guard, and the guard at
-    replies_widget.dart:900 checks a different reference than the recipient.
-  - functions/package.json points serve/logs/shell at -P yoogeeapp, which is
-    PRODUCTION.
+  - firestore.rules  users/{uid}/fcm_tokens/{token} subcollection added, and
+    notifications `allow create` now requires madeby == the authenticated user.
+    WRITTEN LOCALLY, NOT DEPLOYED - live rules are unchanged until
+    `firebase deploy --only firestore:rules` runs.
+  - othersprofile_widget.dart self-notify guard added; the replies_widget.dart
+    guard now checks the recipient (widget!.userref) instead of the post author.
+  - functions/package.json serve/logs/shell now point at yogee-e62e2; the
+    production log command is kept as logs:prod.
+  - notifications.type field added at all seven create sites, with
+    lib/custom_code/notification_type.dart + test/notification_type_test.dart.
+
+NEXT: android/app/src/debug/google-services.json is missing, so debug builds
+fall through to yoogeeapp. Per the owner (2026-08-20) yoogeeapp is a
+STAGING/TEST project despite the name and the `release` build type - so this is
+a testing inconvenience, not a live-data hazard: debug and release reach the
+same backend and cannot be told apart. Restore it from the yogee-e62e2 console
+to separate them. See docs/fcm-push-plan.md Issue 11.
 
 Note for anyone working from older copies of this file: the ispost/is_like
 encoding has FOUR states, not the three previously listed here. ispost=false

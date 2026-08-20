@@ -4,6 +4,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/notification_type.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
@@ -442,8 +443,8 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                             // page off the unfiltered count.
                                             List<PostsRecord>
                                                 listViewPostsRecordList = page
-                                                    .where((p) =>
-                                                        p.poster != null)
+                                                    .where(
+                                                        (p) => p.poster != null)
                                                     .toList();
 
                                             return ListView.separated(
@@ -872,6 +873,7 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                                   isread: false,
                                                                                   ispost: true,
                                                                                   isLike: true,
+                                                                                  type: NotificationType.likePost,
                                                                                   postref: listViewPostsRecord.reference,
                                                                                   madeby: currentUserReference,
                                                                                   madeto: listViewPostsRecord.poster,
@@ -1143,9 +1145,12 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                         primary: false,
                                                         scrollDirection:
                                                             Axis.vertical,
-                                                        itemCount: listViewPostsRecordList
-                                                                .length +
-                                                            (hasMore ? 1 : 0),
+                                                        itemCount:
+                                                            listViewPostsRecordList
+                                                                    .length +
+                                                                (hasMore
+                                                                    ? 1
+                                                                    : 0),
                                                         separatorBuilder:
                                                             (_, __) => SizedBox(
                                                                 height: 16.0),
@@ -1435,6 +1440,7 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                                               isread: false,
                                                                                               ispost: true,
                                                                                               isLike: true,
+                                                                                              type: NotificationType.likePost,
                                                                                               postref: listViewPostsRecord.reference,
                                                                                               madeby: currentUserReference,
                                                                                               madeto: listViewPostsRecord.poster,

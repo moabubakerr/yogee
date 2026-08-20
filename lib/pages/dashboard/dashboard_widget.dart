@@ -185,6 +185,31 @@ const double _kCarouselCoverInset = kAlbumCoverInset + 2.5;
 /// purpose -- it is a placeholder, not a layout constraint.
 const double _kCarouselLoadingHeight = 154.0;
 
+/// The column every top-level block on this page sits in.
+///
+/// Full width up to [_kShortcutRowMaxWidth], then centred. The header row and
+/// the shortcut block both use it, which is what keeps the avatar's left edge
+/// on the first shortcut card's left edge: the shortcut block is capped and
+/// centred, so a header that merely padded by the same amount would line up on
+/// a phone and drift apart on anything wider than 512pt (480 + 2 * 16).
+///
+/// Pair it with the same horizontal padding at both call sites.
+class _PageColumn extends StatelessWidget {
+  const _PageColumn({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) => Center(
+          child: SizedBox(
+            width: constraints.maxWidth.clamp(0.0, _kShortcutRowMaxWidth),
+            child: child,
+          ),
+        ),
+      );
+}
+
 /// Paints [text] with [_kAccentGradient] instead of a flat colour.
 class _GradientText extends StatelessWidget {
   const _GradientText(this.text, {required this.style});
@@ -377,90 +402,106 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                       Align(
                         alignment: AlignmentDirectional(0.0, 0.0),
                         child: Padding(
+                          // 16, matching the shortcut block below, not the 24
+                          // this used to carry: the avatar's left edge has to
+                          // land on the first shortcut card's.
                           padding: EdgeInsetsDirectional.fromSTEB(
-                              24.0, 0.0, 24.0, 0.0),
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              context.pushNamed(MyprofilepageWidget.routeName);
-                            },
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurRadius: 30.0,
-                                            color: Color(0x8DF1B2F0),
-                                            offset: Offset(
-                                              0.0,
-                                              0.0,
-                                            ),
-                                          )
-                                        ],
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Visibility(
-                                        visible: functions
-                                                .isValidUrl(currentUserPhoto) ??
-                                            true,
-                                        child: AuthUserStreamWidget(
-                                          builder: (context) => Container(
-                                            width: _kAvatarSize,
-                                            height: _kAvatarSize,
-                                            clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: NetImage(
-                                              valueOrDefault<String>(
-                                                currentUserPhoto,
-                                                'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                              16.0, 0.0, 16.0, 0.0),
+                          child: _PageColumn(
+                            child: InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context
+                                    .pushNamed(MyprofilepageWidget.routeName);
+                              },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              blurRadius: 30.0,
+                                              color: Color(0x8DF1B2F0),
+                                              offset: Offset(
+                                                0.0,
+                                                0.0,
                                               ),
-                                              // Matches the 68x68 Container
-                                              // above. Stated explicitly so the
-                                              // decode cap is derived from the
-                                              // real size, not the fallback
-                                              // ceiling.
+                                            )
+                                          ],
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Visibility(
+                                          visible: functions.isValidUrl(
+                                                  currentUserPhoto) ??
+                                              true,
+                                          child: AuthUserStreamWidget(
+                                            builder: (context) => Container(
                                               width: _kAvatarSize,
                                               height: _kAvatarSize,
+                                              clipBehavior: Clip.antiAlias,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: NetImage(
+                                                valueOrDefault<String>(
+                                                  currentUserPhoto,
+                                                  'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                                                ),
+                                                // Matches the 68x68 Container
+                                                // above. Stated explicitly so the
+                                                // decode cap is derived from the
+                                                // real size, not the fallback
+                                                // ceiling.
+                                                width: _kAvatarSize,
+                                                height: _kAvatarSize,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(0.0),
+                                            child: Image.asset(
+                                              'assets/images/ppppppp.png',
+                                              width: 80.0,
                                               fit: BoxFit.cover,
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(0.0),
-                                          child: Image.asset(
-                                            'assets/images/ppppppp.png',
-                                            width: 80.0,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        AuthUserStreamWidget(
-                                          builder: (context) => Text(
-                                            valueOrDefault<String>(
-                                              currentUserDisplayName,
-                                              'Displayname',
-                                            ),
-                                            style: FlutterFlowTheme.of(context)
-                                                .headlineSmall
-                                                .override(
-                                                  font: GoogleFonts.manrope(
+                                          AuthUserStreamWidget(
+                                            builder: (context) => Text(
+                                              valueOrDefault<String>(
+                                                currentUserDisplayName,
+                                                'Displayname',
+                                              ),
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .headlineSmall
+                                                  .override(
+                                                    font: GoogleFonts.manrope(
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontStyle:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .headlineSmall
+                                                              .fontStyle,
+                                                    ),
+                                                    fontSize: 17.0,
+                                                    letterSpacing: 0.25,
                                                     fontWeight: FontWeight.w800,
                                                     fontStyle:
                                                         FlutterFlowTheme.of(
@@ -468,29 +509,32 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             .headlineSmall
                                                             .fontStyle,
                                                   ),
-                                                  fontSize: 17.0,
-                                                  letterSpacing: 0.25,
-                                                  fontWeight: FontWeight.w800,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .headlineSmall
-                                                          .fontStyle,
-                                                ),
-                                          ),
-                                        ),
-                                        AuthUserStreamWidget(
-                                          builder: (context) => Text(
-                                            valueOrDefault<String>(
-                                              valueOrDefault(
-                                                  currentUserDocument?.username,
-                                                  ''),
-                                              'Username',
                                             ),
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodySmall
-                                                .override(
-                                                  font: GoogleFonts.manrope(
+                                          ),
+                                          AuthUserStreamWidget(
+                                            builder: (context) => Text(
+                                              valueOrDefault<String>(
+                                                valueOrDefault(
+                                                    currentUserDocument
+                                                        ?.username,
+                                                    ''),
+                                                'Username',
+                                              ),
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodySmall
+                                                  .override(
+                                                    font: GoogleFonts.manrope(
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontStyle:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .bodySmall
+                                                              .fontStyle,
+                                                    ),
+                                                    color: Color(0xFFC8A2C8),
+                                                    letterSpacing: 0.0,
                                                     fontWeight: FontWeight.w300,
                                                     fontStyle:
                                                         FlutterFlowTheme.of(
@@ -498,34 +542,26 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             .bodySmall
                                                             .fontStyle,
                                                   ),
-                                                  color: Color(0xFFC8A2C8),
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.w300,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodySmall
-                                                          .fontStyle,
-                                                ),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ].divide(SizedBox(width: 8.0)),
-                                ),
-                                Align(
-                                  alignment: AlignmentDirectional(-1.0, 0.0),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(0.0),
-                                    child: Image.asset(
-                                      'assets/images/soverin_badge2.png',
-                                      width: 230.0,
-                                      fit: BoxFit.cover,
-                                      alignment: Alignment(-1.0, -1.0),
+                                        ],
+                                      ),
+                                    ].divide(SizedBox(width: 8.0)),
+                                  ),
+                                  Align(
+                                    alignment: AlignmentDirectional(-1.0, 0.0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(0.0),
+                                      child: Image.asset(
+                                        'assets/images/soverin_badge2.png',
+                                        width: 230.0,
+                                        fit: BoxFit.cover,
+                                        alignment: Alignment(-1.0, -1.0),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ].divide(SizedBox(height: 6.0)),
+                                ].divide(SizedBox(height: 6.0)),
+                              ),
                             ),
                           ),
                         ),
@@ -560,132 +596,119 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                           // childAspectRatio, so the card always matches the
                           // grid beside it instead of the hand-tuned 203 it
                           // used to carry.
-                          child: LayoutBuilder(
-                            builder: (context, constraints) => Center(
-                              // A fixed-size design cannot absorb a 2x system
-                              // font scale; clamp it so the cell labels stay
-                              // inside their cards.
-                              // ponytail: clamp at 1.3, revisit if a real user
-                              // needs larger -- that means a reflowing layout.
-                              child: MediaQuery.withClampedTextScaling(
-                                maxScaleFactor: 1.3,
+                          child: _PageColumn(
+                            child:
+                                // A fixed-size design cannot absorb a 2x system
+                                // font scale; clamp it so the cell labels stay
+                                // inside their cards.
+                                // ponytail: clamp at 1.3, revisit if a real user
+                                // needs larger -- that means a reflowing layout.
+                                MediaQuery.withClampedTextScaling(
+                              maxScaleFactor: 1.3,
+                              child: FittedBox(
+                                // fitWidth, not scaleDown: it scales up as
+                                // well, so wide screens get a bigger block
+                                // rather than a small one adrift in margin.
+                                fit: BoxFit.fitWidth,
                                 child: SizedBox(
-                                  width: constraints.maxWidth
-                                      .clamp(0.0, _kShortcutRowMaxWidth),
-                                  child: FittedBox(
-                                    // fitWidth, not scaleDown: it scales up as
-                                    // well, so wide screens get a bigger block
-                                    // rather than a small one adrift in margin.
-                                    fit: BoxFit.fitWidth,
-                                    child: SizedBox(
-                                      width: _kShortcutRowWidth,
-                                      height: _kShortcutRowHeight,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        // Bounded height above, so the card is
-                                        // stretched to match the grid exactly.
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          SizedBox(
-                                            width: _kShortcutGridWidth,
-                                            child: GridView(
-                                              padding: EdgeInsets.zero,
-                                              gridDelegate:
-                                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                crossAxisSpacing:
-                                                    _kCellCrossSpacing,
-                                                mainAxisSpacing:
-                                                    _kCellMainSpacing,
-                                                childAspectRatio: _kCellAspect,
-                                              ),
-                                              primary: false,
-                                              shrinkWrap: true,
-                                              // The height is exact, so the grid must
-                                              // not also become a scrollable that
-                                              // competes with the page.
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              scrollDirection: Axis.vertical,
-                                              children: [
-                                                Align(
-                                                  alignment:
-                                                      AlignmentDirectional(
-                                                          0.0, 0.0),
-                                                  child: InkWell(
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    focusColor:
-                                                        Colors.transparent,
-                                                    hoverColor:
-                                                        Colors.transparent,
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    onTap: () async {
-                                                      context.pushNamed(
-                                                          MeditationWidget
-                                                              .routeName);
-                                                    },
-                                                    child: Container(
-                                                      width:
-                                                          _kShortcutCardWidth,
-                                                      height:
-                                                          _kShortcutCardHeight,
-                                                      decoration: BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            blurRadius: 24.0,
-                                                            color: Color(
-                                                                0x33D4B8E8),
-                                                            offset: Offset(
-                                                                0.0, 0.0),
-                                                            spreadRadius: 1.0,
-                                                          ),
-                                                        ],
-                                                        gradient:
-                                                            _kCardGradient,
+                                  width: _kShortcutRowWidth,
+                                  height: _kShortcutRowHeight,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    // Bounded height above, so the card is
+                                    // stretched to match the grid exactly.
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      SizedBox(
+                                        width: _kShortcutGridWidth,
+                                        child: GridView(
+                                          padding: EdgeInsets.zero,
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                            crossAxisSpacing:
+                                                _kCellCrossSpacing,
+                                            mainAxisSpacing: _kCellMainSpacing,
+                                            childAspectRatio: _kCellAspect,
+                                          ),
+                                          primary: false,
+                                          shrinkWrap: true,
+                                          // The height is exact, so the grid must
+                                          // not also become a scrollable that
+                                          // competes with the page.
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          scrollDirection: Axis.vertical,
+                                          children: [
+                                            Align(
+                                              alignment: AlignmentDirectional(
+                                                  0.0, 0.0),
+                                              child: InkWell(
+                                                splashColor: Colors.transparent,
+                                                focusColor: Colors.transparent,
+                                                hoverColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () async {
+                                                  context.pushNamed(
+                                                      MeditationWidget
+                                                          .routeName);
+                                                },
+                                                child: Container(
+                                                  width: _kShortcutCardWidth,
+                                                  height: _kShortcutCardHeight,
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        blurRadius: 24.0,
+                                                        color:
+                                                            Color(0x33D4B8E8),
+                                                        offset:
+                                                            Offset(0.0, 0.0),
+                                                        spreadRadius: 1.0,
+                                                      ),
+                                                    ],
+                                                    gradient: _kCardGradient,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6.0),
+                                                  ),
+                                                  foregroundDecoration:
+                                                      const GradientStroke(
+                                                          radius: 6.0),
+                                                  padding: const EdgeInsets.all(
+                                                      kCardStrokeWidth),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(6.0),
+                                                                .circular(8.0),
+                                                        child: Image.asset(
+                                                          'assets/images/mediate.png',
+                                                          width: 35.0 *
+                                                              _kShortcutContentScale,
+                                                          fit: BoxFit.cover,
+                                                        ),
                                                       ),
-                                                      foregroundDecoration:
-                                                          const GradientStroke(
-                                                              radius: 6.0),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              kCardStrokeWidth),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8.0),
-                                                            child: Image.asset(
-                                                              'assets/images/mediate.png',
-                                                              width: 35.0 *
-                                                                  _kShortcutContentScale,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            'Meditations',
-                                                            // Fixed-width cell: one line, never wrap.
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
+                                                      Text(
+                                                        'Meditations',
+                                                        // Fixed-width cell: one line, never wrap.
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
                                                                 .bodySmall
                                                                 .override(
                                                                   font: GoogleFonts
@@ -710,68 +733,464 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                       .bodySmall
                                                                       .fontStyle,
                                                                 ),
-                                                          ),
-                                                        ].divide(SizedBox(
-                                                            height: 4.0)),
                                                       ),
-                                                    ),
+                                                    ].divide(
+                                                        SizedBox(height: 4.0)),
                                                   ),
                                                 ),
-                                                Align(
-                                                  alignment:
-                                                      AlignmentDirectional(
-                                                          0.0, 0.0),
-                                                  child: InkWell(
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    focusColor:
-                                                        Colors.transparent,
-                                                    hoverColor:
-                                                        Colors.transparent,
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    onTap: () async {
-                                                      context.pushNamed(
-                                                          JournalWidget
-                                                              .routeName);
-                                                    },
-                                                    child: Container(
-                                                      width:
-                                                          _kShortcutCardWidth,
-                                                      height:
-                                                          _kShortcutCardHeight,
-                                                      decoration: BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            blurRadius: 24.0,
-                                                            color: Color(
-                                                                0x33D4B8E8),
-                                                            offset: Offset(
-                                                                0.0, 0.0),
-                                                            spreadRadius: 1.0,
-                                                          ),
-                                                        ],
-                                                        gradient:
-                                                            _kCardGradient,
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: AlignmentDirectional(
+                                                  0.0, 0.0),
+                                              child: InkWell(
+                                                splashColor: Colors.transparent,
+                                                focusColor: Colors.transparent,
+                                                hoverColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () async {
+                                                  context.pushNamed(
+                                                      JournalWidget.routeName);
+                                                },
+                                                child: Container(
+                                                  width: _kShortcutCardWidth,
+                                                  height: _kShortcutCardHeight,
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        blurRadius: 24.0,
+                                                        color:
+                                                            Color(0x33D4B8E8),
+                                                        offset:
+                                                            Offset(0.0, 0.0),
+                                                        spreadRadius: 1.0,
+                                                      ),
+                                                    ],
+                                                    gradient: _kCardGradient,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6.0),
+                                                  ),
+                                                  foregroundDecoration:
+                                                      const GradientStroke(
+                                                          radius: 6.0),
+                                                  padding: const EdgeInsets.all(
+                                                      kCardStrokeWidth),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(6.0),
+                                                                .circular(8.0),
+                                                        child: Image.asset(
+                                                          'assets/images/jornal.png',
+                                                          width: 30.0 *
+                                                              _kShortcutContentScale,
+                                                          fit: BoxFit.cover,
+                                                        ),
                                                       ),
-                                                      foregroundDecoration:
-                                                          const GradientStroke(
-                                                              radius: 6.0),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              kCardStrokeWidth),
+                                                      Text(
+                                                        'Journal',
+                                                        // Fixed-width cell: one line, never wrap.
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .override(
+                                                                  font: GoogleFonts
+                                                                      .manrope(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodySmall
+                                                                        .fontStyle,
+                                                                  ),
+                                                                  fontSize: 12.0 *
+                                                                      _kShortcutContentScale,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300,
+                                                                  fontStyle: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodySmall
+                                                                      .fontStyle,
+                                                                ),
+                                                      ),
+                                                    ].divide(
+                                                        SizedBox(height: 4.0)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: AlignmentDirectional(
+                                                  0.0, 0.0),
+                                              child: InkWell(
+                                                splashColor: Colors.transparent,
+                                                focusColor: Colors.transparent,
+                                                hoverColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () async {
+                                                  context.pushNamed(
+                                                      CommunityWidget
+                                                          .routeName);
+                                                },
+                                                child: Container(
+                                                  width: _kShortcutCardWidth,
+                                                  height: _kShortcutCardHeight,
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        blurRadius: 24.0,
+                                                        color:
+                                                            Color(0x33D4B8E8),
+                                                        offset:
+                                                            Offset(0.0, 0.0),
+                                                        spreadRadius: 1.0,
+                                                      ),
+                                                    ],
+                                                    gradient: _kCardGradient,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6.0),
+                                                  ),
+                                                  foregroundDecoration:
+                                                      const GradientStroke(
+                                                          radius: 6.0),
+                                                  padding: const EdgeInsets.all(
+                                                      kCardStrokeWidth),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                        child: Image.asset(
+                                                          'assets/images/community.png',
+                                                          width: 32.0 *
+                                                              _kShortcutContentScale,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'Community',
+                                                        // Fixed-width cell: one line, never wrap.
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .override(
+                                                                  font: GoogleFonts
+                                                                      .manrope(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodySmall
+                                                                        .fontStyle,
+                                                                  ),
+                                                                  fontSize: 12.0 *
+                                                                      _kShortcutContentScale,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300,
+                                                                  fontStyle: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodySmall
+                                                                      .fontStyle,
+                                                                ),
+                                                      ),
+                                                    ].divide(
+                                                        SizedBox(height: 4.0)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: AlignmentDirectional(
+                                                  0.0, 0.0),
+                                              child: InkWell(
+                                                splashColor: Colors.transparent,
+                                                focusColor: Colors.transparent,
+                                                hoverColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () async {
+                                                  await showModalBottomSheet(
+                                                    isScrollControlled: true,
+                                                    backgroundColor:
+                                                        Color(0x81000000),
+                                                    barrierColor:
+                                                        Color(0x7E000000),
+                                                    enableDrag: false,
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return GestureDetector(
+                                                        onTap: () {
+                                                          FocusScope.of(context)
+                                                              .unfocus();
+                                                          FocusManager.instance
+                                                              .primaryFocus
+                                                              ?.unfocus();
+                                                        },
+                                                        child: Padding(
+                                                          padding: MediaQuery
+                                                              .viewInsetsOf(
+                                                                  context),
+                                                          child:
+                                                              CoursesWidget(),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ).then((value) =>
+                                                      safeSetState(() {}));
+                                                },
+                                                child: Container(
+                                                  width: _kShortcutCardWidth,
+                                                  height: _kShortcutCardHeight,
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        blurRadius: 24.0,
+                                                        color:
+                                                            Color(0x33D4B8E8),
+                                                        offset:
+                                                            Offset(0.0, 0.0),
+                                                        spreadRadius: 1.0,
+                                                      ),
+                                                    ],
+                                                    gradient: _kCardGradient,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6.0),
+                                                  ),
+                                                  foregroundDecoration:
+                                                      const GradientStroke(
+                                                          radius: 6.0),
+                                                  padding: const EdgeInsets.all(
+                                                      kCardStrokeWidth),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                        child: Image.asset(
+                                                          'assets/images/courses.png',
+                                                          width: 27.0 *
+                                                              _kShortcutContentScale,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'Courses',
+                                                        // Fixed-width cell: one line, never wrap.
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .override(
+                                                                  font: GoogleFonts
+                                                                      .manrope(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodySmall
+                                                                        .fontStyle,
+                                                                  ),
+                                                                  fontSize: 12.0 *
+                                                                      _kShortcutContentScale,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300,
+                                                                  fontStyle: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodySmall
+                                                                      .fontStyle,
+                                                                ),
+                                                      ),
+                                                    ].divide(
+                                                        SizedBox(height: 4.0)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: _kStreakCardWidth,
+                                        child: Container(
+                                          // Height comes from the Row's stretch,
+                                          // i.e. rowHeight above -- derived from
+                                          // the grid's aspect ratio rather than
+                                          // the hand-tuned 203 this used to
+                                          // hard-code.
+                                          decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 32.0,
+                                                color: Color(0x66D4B8E8),
+                                                offset: Offset(0.0, 0.0),
+                                                spreadRadius: 1.0,
+                                              ),
+                                            ],
+                                            // Figma: 172.8deg translucent plum wash.
+                                            gradient: LinearGradient(
+                                              begin: AlignmentDirectional(
+                                                  -0.13, -1.0),
+                                              end: AlignmentDirectional(
+                                                  0.13, 1.0),
+                                              colors: [
+                                                Color(0x911E131E),
+                                                Color(0x916B546B)
+                                              ],
+                                              stops: [0.172, 1.0],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12.0),
+                                          ),
+                                          foregroundDecoration:
+                                              const GradientStroke(
+                                                  radius: 12.0),
+                                          padding: const EdgeInsets.all(
+                                              kCardStrokeWidth),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            child: Container(
+                                              // Figma (streakcard_gradient.png):
+                                              // #0C8185 and #0D7F83, both at
+                                              // 0.01% opacity, ramping into
+                                              // solid #3D2C3C. The teals are
+                                              // invisible in themselves but
+                                              // steer the interpolation, so
+                                              // the fade carries a cool cast
+                                              // rather than being plum all
+                                              // the way down, which is what
+                                              // this used to paint.
+                                              //
+                                              // Caveat, if this reads too
+                                              // green on device: Flutter
+                                              // interpolates gradient stops
+                                              // UNPREMULTIPLIED (Skia's
+                                              // kInterpolateColorsInPremul is
+                                              // not set by ui.Gradient), so a
+                                              // 0-alpha stop still tints the
+                                              // midtones. Figma and CSS
+                                              // interpolate premultiplied,
+                                              // where it contributes no hue
+                                              // at all. Same numbers, two
+                                              // different pictures. Revert to
+                                              // Color(0x003D2C3C) as the
+                                              // first stop to get the old
+                                              // plum-to-plum ramp back.
+                                              //
+                                              // The second teal is dropped:
+                                              // the panel gives stop opacity,
+                                              // not position, and at the same
+                                              // hue and alpha as the first it
+                                              // has nothing to add.
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: AlignmentDirectional(
+                                                      0.0, 1.0),
+                                                  end: AlignmentDirectional(
+                                                      0.0, -1.0),
+                                                  colors: [
+                                                    Color(0x000C8185),
+                                                    Color(0xFF3D2C3C)
+                                                  ],
+                                                  stops: [0.118, 0.736],
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(0.0, 4.0, 0.0,
+                                                        _kStreakCardBottomPad),
+                                                // Bottom padding 14, not 0: the mockup leaves
+                                                // about that much room under "Hours"/"Mins".
+                                                // It sits OUTSIDE the FittedBox, so it is real
+                                                // space rather than something the scale-down
+                                                // eats -- the content shrinks slightly to make
+                                                // room instead of running to the card's edge.
+                                                //
+                                                // The contents used to fit this card by
+                                                // about four pixels, and the ClipRRect
+                                                // above silently sliced off anything
+                                                // over -- which is why "Hours"/"Mins"
+                                                // appeared cut in half instead of
+                                                // showing an overflow warning.
+                                                // scaleDown shrinks the whole block
+                                                // uniformly only when it does not fit,
+                                                // so the design's internal proportions
+                                                // survive and nothing is ever clipped.
+                                                child: LayoutBuilder(
+                                                  builder: (context,
+                                                          cardConstraints) =>
+                                                      FittedBox(
+                                                    fit: BoxFit.scaleDown,
+                                                    // FittedBox hands its child
+                                                    // unbounded constraints. The
+                                                    // SizedBox restores a real width so
+                                                    // the spaceEvenly Row below still
+                                                    // distributes across the card
+                                                    // instead of collapsing onto itself.
+                                                    child: SizedBox(
+                                                      width: cardConstraints
+                                                          .maxWidth,
                                                       child: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
+                                                                .start,
                                                         children: [
                                                           ClipRRect(
                                                             borderRadius:
@@ -779,19 +1198,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                     .circular(
                                                                         8.0),
                                                             child: Image.asset(
-                                                              'assets/images/jornal.png',
-                                                              width: 30.0 *
-                                                                  _kShortcutContentScale,
+                                                              'assets/images/cube2.png',
+                                                              width:
+                                                                  _kStreakCubeWidth,
                                                               fit: BoxFit.cover,
+                                                              alignment:
+                                                                  Alignment(0.0,
+                                                                      -1.0),
                                                             ),
                                                           ),
                                                           Text(
-                                                            'Journal',
-                                                            // Fixed-width cell: one line, never wrap.
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                            'You Meditated',
                                                             style: FlutterFlowTheme
                                                                     .of(context)
                                                                 .bodySmall
@@ -800,650 +1217,247 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                                       .manrope(
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .w300,
+                                                                            .w600,
                                                                     fontStyle: FlutterFlowTheme.of(
                                                                             context)
                                                                         .bodySmall
                                                                         .fontStyle,
                                                                   ),
-                                                                  fontSize: 12.0 *
-                                                                      _kShortcutContentScale,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize:
+                                                                      10.0,
                                                                   letterSpacing:
-                                                                      0.0,
+                                                                      0.15,
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w300,
+                                                                          .w600,
                                                                   fontStyle: FlutterFlowTheme.of(
                                                                           context)
                                                                       .bodySmall
                                                                       .fontStyle,
                                                                 ),
                                                           ),
-                                                        ].divide(SizedBox(
-                                                            height: 4.0)),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Align(
-                                                  alignment:
-                                                      AlignmentDirectional(
-                                                          0.0, 0.0),
-                                                  child: InkWell(
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    focusColor:
-                                                        Colors.transparent,
-                                                    hoverColor:
-                                                        Colors.transparent,
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    onTap: () async {
-                                                      context.pushNamed(
-                                                          CommunityWidget
-                                                              .routeName);
-                                                    },
-                                                    child: Container(
-                                                      width:
-                                                          _kShortcutCardWidth,
-                                                      height:
-                                                          _kShortcutCardHeight,
-                                                      decoration: BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            blurRadius: 24.0,
-                                                            color: Color(
-                                                                0x33D4B8E8),
-                                                            offset: Offset(
-                                                                0.0, 0.0),
-                                                            spreadRadius: 1.0,
-                                                          ),
-                                                        ],
-                                                        gradient:
-                                                            _kCardGradient,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(6.0),
-                                                      ),
-                                                      foregroundDecoration:
-                                                          const GradientStroke(
-                                                              radius: 6.0),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              kCardStrokeWidth),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8.0),
-                                                            child: Image.asset(
-                                                              'assets/images/community.png',
-                                                              width: 32.0 *
-                                                                  _kShortcutContentScale,
-                                                              fit: BoxFit.cover,
+                                                          Padding(
+                                                            padding:
+                                                                EdgeInsetsDirectional
+                                                                    .fromSTEB(
+                                                                        0.0,
+                                                                        8.0,
+                                                                        0.0,
+                                                                        0.0),
+                                                            child: Column(
+                                                              // .min, not .max: height is
+                                                              // unbounded inside the FittedBox
+                                                              // above, and .max against an
+                                                              // infinite height is a layout
+                                                              // error.
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                AuthUserStreamWidget(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          Text(
+                                                                    valueOrDefault<
+                                                                        String>(
+                                                                      // currentUserDocument is
+                                                                      // null until the first
+                                                                      // authenticatedUserStream
+                                                                      // emission. That stream is
+                                                                      // a broadcast stream, so it
+                                                                      // does not replay to late
+                                                                      // listeners, and this
+                                                                      // builder runs before the
+                                                                      // first event. Fall through
+                                                                      // to the default instead of
+                                                                      // asserting non-null.
+                                                                      currentUserDocument?.createdTime ==
+                                                                              null
+                                                                          ? null
+                                                                          : formatNumber(
+                                                                              functions.dayscounter(currentUserDocument!.createdTime!, getCurrentTimestamp),
+                                                                              formatType: FormatType.compact,
+                                                                            ),
+                                                                      '24',
+                                                                    ),
+                                                                    style: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .displaySmall
+                                                                        .override(
+                                                                          font:
+                                                                              GoogleFonts.plusJakartaSans(
+                                                                            fontWeight:
+                                                                                FontWeight.w800,
+                                                                            fontStyle:
+                                                                                FlutterFlowTheme.of(context).displaySmall.fontStyle,
+                                                                          ),
+                                                                          fontSize:
+                                                                              38.0,
+                                                                          letterSpacing:
+                                                                              0.0,
+                                                                          fontWeight:
+                                                                              FontWeight.w800,
+                                                                          fontStyle: FlutterFlowTheme.of(context)
+                                                                              .displaySmall
+                                                                              .fontStyle,
+                                                                          lineHeight:
+                                                                              1.0,
+                                                                        ),
+                                                                  ),
+                                                                ),
+                                                                _GradientText(
+                                                                  'Days',
+                                                                  style: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleMedium
+                                                                      .override(
+                                                                        font: GoogleFonts
+                                                                            .manrope(
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          fontStyle: FlutterFlowTheme.of(context)
+                                                                              .titleMedium
+                                                                              .fontStyle,
+                                                                        ),
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            18.0,
+                                                                        letterSpacing:
+                                                                            0.0,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                        fontStyle: FlutterFlowTheme.of(context)
+                                                                            .titleMedium
+                                                                            .fontStyle,
+                                                                        lineHeight:
+                                                                            1.0,
+                                                                      ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
-                                                          Text(
-                                                            'Community',
-                                                            // Fixed-width cell: one line, never wrap.
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodySmall
-                                                                .override(
-                                                                  font: GoogleFonts
-                                                                      .manrope(
+                                                          AuthUserStreamWidget(
+                                                            builder:
+                                                                (context) =>
+                                                                    Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                // Same null-until-first-emission
+                                                                // guard as the day counter above.
+                                                                currentUserDocument
+                                                                            ?.createdTime ==
+                                                                        null
+                                                                    ? null
+                                                                    : functions.hoursMinutesCounter(
+                                                                        currentUserDocument!
+                                                                            .createdTime!,
+                                                                        getCurrentTimestamp),
+                                                                '07     25',
+                                                              ),
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .titleLarge
+                                                                  .override(
+                                                                    font: GoogleFonts
+                                                                        .manrope(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .titleLarge
+                                                                          .fontStyle,
+                                                                    ),
+                                                                    fontSize:
+                                                                        19.0,
+                                                                    letterSpacing:
+                                                                        0.0,
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .w300,
+                                                                            .w800,
                                                                     fontStyle: FlutterFlowTheme.of(
                                                                             context)
-                                                                        .bodySmall
+                                                                        .titleLarge
                                                                         .fontStyle,
                                                                   ),
-                                                                  fontSize: 12.0 *
-                                                                      _kShortcutContentScale,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                          ),
-                                                        ].divide(SizedBox(
-                                                            height: 4.0)),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Align(
-                                                  alignment:
-                                                      AlignmentDirectional(
-                                                          0.0, 0.0),
-                                                  child: InkWell(
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    focusColor:
-                                                        Colors.transparent,
-                                                    hoverColor:
-                                                        Colors.transparent,
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    onTap: () async {
-                                                      await showModalBottomSheet(
-                                                        isScrollControlled:
-                                                            true,
-                                                        backgroundColor:
-                                                            Color(0x81000000),
-                                                        barrierColor:
-                                                            Color(0x7E000000),
-                                                        enableDrag: false,
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return GestureDetector(
-                                                            onTap: () {
-                                                              FocusScope.of(
-                                                                      context)
-                                                                  .unfocus();
-                                                              FocusManager
-                                                                  .instance
-                                                                  .primaryFocus
-                                                                  ?.unfocus();
-                                                            },
-                                                            child: Padding(
-                                                              padding: MediaQuery
-                                                                  .viewInsetsOf(
-                                                                      context),
-                                                              child:
-                                                                  CoursesWidget(),
-                                                            ),
-                                                          );
-                                                        },
-                                                      ).then((value) =>
-                                                          safeSetState(() {}));
-                                                    },
-                                                    child: Container(
-                                                      width:
-                                                          _kShortcutCardWidth,
-                                                      height:
-                                                          _kShortcutCardHeight,
-                                                      decoration: BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            blurRadius: 24.0,
-                                                            color: Color(
-                                                                0x33D4B8E8),
-                                                            offset: Offset(
-                                                                0.0, 0.0),
-                                                            spreadRadius: 1.0,
-                                                          ),
-                                                        ],
-                                                        gradient:
-                                                            _kCardGradient,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(6.0),
-                                                      ),
-                                                      foregroundDecoration:
-                                                          const GradientStroke(
-                                                              radius: 6.0),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              kCardStrokeWidth),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8.0),
-                                                            child: Image.asset(
-                                                              'assets/images/courses.png',
-                                                              width: 27.0 *
-                                                                  _kShortcutContentScale,
-                                                              fit: BoxFit.cover,
                                                             ),
                                                           ),
-                                                          Text(
-                                                            'Courses',
-                                                            // Fixed-width cell: one line, never wrap.
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodySmall
-                                                                .override(
-                                                                  font: GoogleFonts
-                                                                      .manrope(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w300,
-                                                                    fontStyle: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmall
-                                                                        .fontStyle,
-                                                                  ),
-                                                                  fontSize: 12.0 *
-                                                                      _kShortcutContentScale,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300,
-                                                                  fontStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodySmall
-                                                                      .fontStyle,
-                                                                ),
-                                                          ),
-                                                        ].divide(SizedBox(
-                                                            height: 4.0)),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: _kStreakCardWidth,
-                                            child: Container(
-                                              // Height comes from the Row's stretch,
-                                              // i.e. rowHeight above -- derived from
-                                              // the grid's aspect ratio rather than
-                                              // the hand-tuned 203 this used to
-                                              // hard-code.
-                                              decoration: BoxDecoration(
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    blurRadius: 32.0,
-                                                    color: Color(0x66D4B8E8),
-                                                    offset: Offset(0.0, 0.0),
-                                                    spreadRadius: 1.0,
-                                                  ),
-                                                ],
-                                                // Figma: 172.8deg translucent plum wash.
-                                                gradient: LinearGradient(
-                                                  begin: AlignmentDirectional(
-                                                      -0.13, -1.0),
-                                                  end: AlignmentDirectional(
-                                                      0.13, 1.0),
-                                                  colors: [
-                                                    Color(0x911E131E),
-                                                    Color(0x916B546B)
-                                                  ],
-                                                  stops: [0.172, 1.0],
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12.0),
-                                              ),
-                                              foregroundDecoration:
-                                                  const GradientStroke(
-                                                      radius: 12.0),
-                                              padding: const EdgeInsets.all(
-                                                  kCardStrokeWidth),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                child: Container(
-                                                  // Figma (streakcard_gradient.png):
-                                                  // #0C8185 and #0D7F83, both at
-                                                  // 0.01% opacity, ramping into
-                                                  // solid #3D2C3C. The teals are
-                                                  // invisible in themselves but
-                                                  // steer the interpolation, so
-                                                  // the fade carries a cool cast
-                                                  // rather than being plum all
-                                                  // the way down, which is what
-                                                  // this used to paint.
-                                                  //
-                                                  // Caveat, if this reads too
-                                                  // green on device: Flutter
-                                                  // interpolates gradient stops
-                                                  // UNPREMULTIPLIED (Skia's
-                                                  // kInterpolateColorsInPremul is
-                                                  // not set by ui.Gradient), so a
-                                                  // 0-alpha stop still tints the
-                                                  // midtones. Figma and CSS
-                                                  // interpolate premultiplied,
-                                                  // where it contributes no hue
-                                                  // at all. Same numbers, two
-                                                  // different pictures. Revert to
-                                                  // Color(0x003D2C3C) as the
-                                                  // first stop to get the old
-                                                  // plum-to-plum ramp back.
-                                                  //
-                                                  // The second teal is dropped:
-                                                  // the panel gives stop opacity,
-                                                  // not position, and at the same
-                                                  // hue and alpha as the first it
-                                                  // has nothing to add.
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      begin:
-                                                          AlignmentDirectional(
-                                                              0.0, 1.0),
-                                                      end: AlignmentDirectional(
-                                                          0.0, -1.0),
-                                                      colors: [
-                                                        Color(0x000C8185),
-                                                        Color(0xFF3D2C3C)
-                                                      ],
-                                                      stops: [0.118, 0.736],
-                                                    ),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsetsDirectional
-                                                        .fromSTEB(0.0, 4.0, 0.0,
-                                                            _kStreakCardBottomPad),
-                                                    // Bottom padding 14, not 0: the mockup leaves
-                                                    // about that much room under "Hours"/"Mins".
-                                                    // It sits OUTSIDE the FittedBox, so it is real
-                                                    // space rather than something the scale-down
-                                                    // eats -- the content shrinks slightly to make
-                                                    // room instead of running to the card's edge.
-                                                    //
-                                                    // The contents used to fit this card by
-                                                    // about four pixels, and the ClipRRect
-                                                    // above silently sliced off anything
-                                                    // over -- which is why "Hours"/"Mins"
-                                                    // appeared cut in half instead of
-                                                    // showing an overflow warning.
-                                                    // scaleDown shrinks the whole block
-                                                    // uniformly only when it does not fit,
-                                                    // so the design's internal proportions
-                                                    // survive and nothing is ever clipped.
-                                                    child: LayoutBuilder(
-                                                      builder: (context,
-                                                              cardConstraints) =>
-                                                          FittedBox(
-                                                        fit: BoxFit.scaleDown,
-                                                        // FittedBox hands its child
-                                                        // unbounded constraints. The
-                                                        // SizedBox restores a real width so
-                                                        // the spaceEvenly Row below still
-                                                        // distributes across the card
-                                                        // instead of collapsing onto itself.
-                                                        child: SizedBox(
-                                                          width: cardConstraints
-                                                              .maxWidth,
-                                                          child: Column(
+                                                          Row(
                                                             mainAxisSize:
                                                                 MainAxisSize
-                                                                    .min,
+                                                                    .max,
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
-                                                                    .start,
+                                                                    .spaceEvenly,
                                                             children: [
-                                                              ClipRRect(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8.0),
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/images/cube2.png',
-                                                                  width:
-                                                                      _kStreakCubeWidth,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  alignment:
-                                                                      Alignment(
-                                                                          0.0,
-                                                                          -1.0),
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                'You Meditated',
+                                                              _GradientText(
+                                                                'Hours',
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
-                                                                    .bodySmall
+                                                                    .bodyMedium
                                                                     .override(
                                                                       font: GoogleFonts
                                                                           .manrope(
                                                                         fontWeight:
-                                                                            FontWeight.w600,
+                                                                            FontWeight.w500,
                                                                         fontStyle: FlutterFlowTheme.of(context)
-                                                                            .bodySmall
+                                                                            .bodyMedium
                                                                             .fontStyle,
                                                                       ),
                                                                       color: Colors
                                                                           .white,
                                                                       fontSize:
-                                                                          10.0,
+                                                                          11.0,
                                                                       letterSpacing:
-                                                                          0.15,
+                                                                          0.0,
                                                                       fontWeight:
                                                                           FontWeight
-                                                                              .w600,
+                                                                              .w500,
                                                                       fontStyle: FlutterFlowTheme.of(
                                                                               context)
-                                                                          .bodySmall
+                                                                          .bodyMedium
                                                                           .fontStyle,
+                                                                      lineHeight:
+                                                                          1.0,
                                                                     ),
                                                               ),
-                                                              Padding(
-                                                                padding:
-                                                                    EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            0.0,
-                                                                            8.0,
-                                                                            0.0,
-                                                                            0.0),
-                                                                child: Column(
-                                                                  // .min, not .max: height is
-                                                                  // unbounded inside the FittedBox
-                                                                  // above, and .max against an
-                                                                  // infinite height is a layout
-                                                                  // error.
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  children: [
-                                                                    AuthUserStreamWidget(
-                                                                      builder:
-                                                                          (context) =>
-                                                                              Text(
-                                                                        valueOrDefault<
-                                                                            String>(
-                                                                          // currentUserDocument is
-                                                                          // null until the first
-                                                                          // authenticatedUserStream
-                                                                          // emission. That stream is
-                                                                          // a broadcast stream, so it
-                                                                          // does not replay to late
-                                                                          // listeners, and this
-                                                                          // builder runs before the
-                                                                          // first event. Fall through
-                                                                          // to the default instead of
-                                                                          // asserting non-null.
-                                                                          currentUserDocument?.createdTime == null
-                                                                              ? null
-                                                                              : formatNumber(
-                                                                                  functions.dayscounter(currentUserDocument!.createdTime!, getCurrentTimestamp),
-                                                                                  formatType: FormatType.compact,
-                                                                                ),
-                                                                          '24',
-                                                                        ),
-                                                                        style: FlutterFlowTheme.of(context)
-                                                                            .displaySmall
-                                                                            .override(
-                                                                              font: GoogleFonts.plusJakartaSans(
-                                                                                fontWeight: FontWeight.w800,
-                                                                                fontStyle: FlutterFlowTheme.of(context).displaySmall.fontStyle,
-                                                                              ),
-                                                                              fontSize: 38.0,
-                                                                              letterSpacing: 0.0,
-                                                                              fontWeight: FontWeight.w800,
-                                                                              fontStyle: FlutterFlowTheme.of(context).displaySmall.fontStyle,
-                                                                              lineHeight: 1.0,
-                                                                            ),
-                                                                      ),
-                                                                    ),
-                                                                    _GradientText(
-                                                                      'Days',
-                                                                      style: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .titleMedium
-                                                                          .override(
-                                                                            font:
-                                                                                GoogleFonts.manrope(
-                                                                              fontWeight: FontWeight.w500,
-                                                                              fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                            ),
-                                                                            color:
-                                                                                Colors.white,
-                                                                            fontSize:
-                                                                                18.0,
-                                                                            letterSpacing:
-                                                                                0.0,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).titleMedium.fontStyle,
-                                                                            lineHeight:
-                                                                                1.0,
-                                                                          ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              AuthUserStreamWidget(
-                                                                builder:
-                                                                    (context) =>
-                                                                        Text(
-                                                                  valueOrDefault<
-                                                                      String>(
-                                                                    // Same null-until-first-emission
-                                                                    // guard as the day counter above.
-                                                                    currentUserDocument?.createdTime ==
-                                                                            null
-                                                                        ? null
-                                                                        : functions.hoursMinutesCounter(
-                                                                            currentUserDocument!.createdTime!,
-                                                                            getCurrentTimestamp),
-                                                                    '07     25',
-                                                                  ),
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .titleLarge
-                                                                      .override(
-                                                                        font: GoogleFonts
-                                                                            .manrope(
-                                                                          fontWeight:
-                                                                              FontWeight.w700,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .titleLarge
-                                                                              .fontStyle,
-                                                                        ),
-                                                                        fontSize:
-                                                                            19.0,
-                                                                        letterSpacing:
-                                                                            0.0,
+                                                              _GradientText(
+                                                                'Mins',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .bodyMedium
+                                                                    .override(
+                                                                      font: GoogleFonts
+                                                                          .manrope(
                                                                         fontWeight:
-                                                                            FontWeight.w800,
+                                                                            FontWeight.w500,
                                                                         fontStyle: FlutterFlowTheme.of(context)
-                                                                            .titleLarge
+                                                                            .bodyMedium
                                                                             .fontStyle,
                                                                       ),
-                                                                ),
-                                                              ),
-                                                              Row(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .max,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceEvenly,
-                                                                children: [
-                                                                  _GradientText(
-                                                                    'Hours',
-                                                                    style: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodyMedium
-                                                                        .override(
-                                                                          font:
-                                                                              GoogleFonts.manrope(
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                                                                          ),
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontSize:
-                                                                              11.0,
-                                                                          letterSpacing:
-                                                                              0.0,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodyMedium
-                                                                              .fontStyle,
-                                                                          lineHeight:
-                                                                              1.0,
-                                                                        ),
-                                                                  ),
-                                                                  _GradientText(
-                                                                    'Mins',
-                                                                    style: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodyMedium
-                                                                        .override(
-                                                                          font:
-                                                                              GoogleFonts.manrope(
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                                                                          ),
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontSize:
-                                                                              11.0,
-                                                                          letterSpacing:
-                                                                              0.0,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontStyle: FlutterFlowTheme.of(context)
-                                                                              .bodyMedium
-                                                                              .fontStyle,
-                                                                          lineHeight:
-                                                                              1.0,
-                                                                        ),
-                                                                  ),
-                                                                ],
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          11.0,
+                                                                      letterSpacing:
+                                                                          0.0,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyMedium
+                                                                          .fontStyle,
+                                                                      lineHeight:
+                                                                          1.0,
+                                                                    ),
                                                               ),
                                                             ],
                                                           ),
-                                                        ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ),
@@ -1451,10 +1465,9 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                               ),
                                             ),
                                           ),
-                                        ].divide(
-                                            SizedBox(width: _kShortcutRowGap)),
+                                        ),
                                       ),
-                                    ),
+                                    ].divide(SizedBox(width: _kShortcutRowGap)),
                                   ),
                                 ),
                               ),

@@ -24,15 +24,17 @@ on `intl` before committing.
 
 | Project | Reached by | Safety |
 |---|---|---|
-| `yoogeeapp` | **release** builds — `android/app/google-services.json` | **PRODUCTION. Live user data.** Rules are `allow read/write: if true`, and `allow delete: if false` on nearly everything, so anything written is permanent. |
+| `yoogeeapp` | **release** builds — `android/app/google-services.json` | **Staging / test**, per the owner (2026-08-20) — the name and the `release` build type are misleading. Fine to test against. Rules are still `allow read/write: if true` with `allow delete: if false` on nearly everything, so anything written is permanent. |
 | `yogee-e62e2` | **debug** builds — `android/app/src/debug/google-services.json` | Dev project, safe to write to |
 | `demo-yoogee` | `--dart-define=USE_FIREBASE_EMULATOR=true` | Local emulator, wiped on restart |
 
-> ⚠️ **Currently broken: `android/app/src/debug/google-services.json` is MISSING.**
-> It is untracked and not in `.gitignore`, so git never had a copy. Without it,
-> **debug builds fall through to `android/app/google-services.json` and hit
-> PRODUCTION.** There is presently no build configuration that avoids live data on
-> Android. Restore it from the `yogee-e62e2` console before relying on debug being safe.
+> ⚠️ **`android/app/src/debug/google-services.json` is MISSING.** Untracked and
+> not in `.gitignore`, so git never had a copy. Without it, **debug builds fall
+> through to `android/app/google-services.json` and hit `yoogeeapp`** — staging,
+> not `yogee-e62e2`. Not a data-loss risk now that yoogeeapp is known to be
+> staging, but debug and release currently reach the same backend, so a
+> "dev vs prod" comparison proves nothing. Restore it from the `yogee-e62e2`
+> console to separate them again.
 
 `USE_DEV_FIREBASE` and the `FirebaseOptions` in `lib/backend/firebase/firebase_config.dart`
 only affect **web**. On Android the Gradle plugin bakes in whichever
@@ -101,8 +103,9 @@ flutter build appbundle --release
 
 Output: `build/app/outputs/flutter-apk/app-release.apk`
 
-**This targets PRODUCTION (`yoogeeapp`).** Signing in on a release build creates real
-user documents that no client can delete.
+**This targets `yoogeeapp`**, which is staging/test per the owner. Signing in on
+a release build still creates user documents that no client can delete, so it is
+shared state rather than scratch.
 
 ### Signing
 

@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/notification_type.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
@@ -515,6 +516,8 @@ class _RepliesWidgetState extends State<RepliesWidget> {
                                                                 isread: false,
                                                                 ispost: true,
                                                                 isLike: true,
+                                                                type: NotificationType
+                                                                    .likePost,
                                                                 postref: widget!
                                                                     .postref,
                                                                 madeby:
@@ -899,8 +902,17 @@ class _RepliesWidgetState extends State<RepliesWidget> {
                                     _model.commenttextfieldTextController
                                         ?.clear();
                                   });
-                                  if (stackPostsRecord.poster ==
-                                      currentUserReference) {
+                                  // Guard the RECIPIENT, not the post's author.
+                                  // This used to test stackPostsRecord.poster
+                                  // while the notification below is addressed
+                                  // to widget!.userref -- so when those two
+                                  // differ the guard did not fire, and when
+                                  // they matched it suppressed a notification
+                                  // that was going to someone else.
+                                  //
+                                  // In-app that was cosmetic; as push it wakes
+                                  // the user's phone for their own action.
+                                  if (widget!.userref == currentUserReference) {
                                     return;
                                   }
 
@@ -910,6 +922,7 @@ class _RepliesWidgetState extends State<RepliesWidget> {
                                         isread: false,
                                         ispost: true,
                                         isLike: false,
+                                        type: NotificationType.reply,
                                         postref: widget!.postref,
                                         madeby: currentUserReference,
                                         madeto: widget!.userref,
@@ -1287,6 +1300,8 @@ class _RepliesWidgetState extends State<RepliesWidget> {
                                                                                 false,
                                                                             isLike:
                                                                                 true,
+                                                                            type:
+                                                                                NotificationType.likeComment,
                                                                             postref:
                                                                                 widget!.postref,
                                                                             madeby:

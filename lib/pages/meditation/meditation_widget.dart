@@ -40,17 +40,26 @@ const double _kFeatureChipGap = 12.0;
 // ---------------------------------------------------------------------------
 
 /// Cover art inside an album card, square.
-const double _kAlbumCoverSize = 150.0;
+const double _kAlbumCoverSize = 160.0;
 
-/// Padding above and below the cover art, from its (12, 10, 12, 8) inset.
-const double _kAlbumCoverPadTop = 10.0;
+/// Padding above and below the cover art.
+///
+/// Top is larger than bottom on purpose: the art has a frame and a highlight
+/// along its top edge, and sitting it 10pt under the card's border read as
+/// cramped. Both feed [_kAlbumCellExtent], so raising either grows the cell
+/// instead of squeezing the artwork.
+const double _kAlbumCoverPadTop = 13.0;
 const double _kAlbumCoverPadBottom = 8.0;
 
 /// The card and the frame around the art each draw a 1pt border a side.
 const double _kAlbumBorder = 1.0;
 
 /// Padding under the labels, inside the card.
-const double _kAlbumCardBottomPad = 8.0;
+///
+/// Feeds [_kAlbumCellExtent], so raising this makes the card taller rather
+/// than eating into the artwork above it. Both cards read it directly, so the
+/// space you see and the height the grid reserves cannot drift apart.
+const double _kAlbumCardBottomPad = 13.0;
 
 /// Padding around each card, inside its cell.
 const double _kAlbumCellPad = 4.0;
@@ -1158,8 +1167,8 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                         ),
                                                     ],
                                                   ),
-                                                ].divide(
-                                                    const SizedBox(width: _kFeatureChipGap)),
+                                                ].divide(const SizedBox(
+                                                    width: _kFeatureChipGap)),
                                               ),
                                             ),
                                           ),
@@ -1500,13 +1509,12 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                       ),
                                                     ),
                                                     child: Padding(
-                                                      padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  0.0,
-                                                                  0.0,
-                                                                  0.0,
-                                                                  8.0),
+                                                      padding: EdgeInsetsDirectional
+                                                          .fromSTEB(
+                                                              0.0,
+                                                              0.0,
+                                                              0.0,
+                                                              _kAlbumCardBottomPad),
                                                       child: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.max,
@@ -1522,13 +1530,12 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                 AlignmentDirectional(
                                                                     0.0, -1.0),
                                                             child: Padding(
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          12.0,
-                                                                          10.0,
-                                                                          12.0,
-                                                                          8.0),
+                                                              padding: EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                                      12.0,
+                                                                      _kAlbumCoverPadTop,
+                                                                      12.0,
+                                                                      _kAlbumCoverPadBottom),
                                                               child: Container(
                                                                 decoration:
                                                                     BoxDecoration(
@@ -1581,8 +1588,10 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                             .coverImage,
                                                                         'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
                                                                       ),
-                                                                      width: _kAlbumCoverSize,
-                                                                      height: _kAlbumCoverSize,
+                                                                      width:
+                                                                          _kAlbumCoverSize,
+                                                                      height:
+                                                                          _kAlbumCoverSize,
                                                                       fit: BoxFit
                                                                           .cover,
                                                                     ),
@@ -1610,8 +1619,9 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                     TextAlign
                                                                         .start,
                                                                 maxLines: 1,
-                                                                overflow: TextOverflow
-                                                                    .ellipsis,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
                                                                     .labelSmall
@@ -1788,13 +1798,12 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                       ),
                                                     ),
                                                     child: Padding(
-                                                      padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  0.0,
-                                                                  0.0,
-                                                                  0.0,
-                                                                  8.0),
+                                                      padding: EdgeInsetsDirectional
+                                                          .fromSTEB(
+                                                              0.0,
+                                                              0.0,
+                                                              0.0,
+                                                              _kAlbumCardBottomPad),
                                                       child: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.max,
@@ -1810,13 +1819,12 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                 AlignmentDirectional(
                                                                     0.0, -1.0),
                                                             child: Padding(
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          12.0,
-                                                                          10.0,
-                                                                          12.0,
-                                                                          8.0),
+                                                              padding: EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                                      12.0,
+                                                                      _kAlbumCoverPadTop,
+                                                                      12.0,
+                                                                      _kAlbumCoverPadBottom),
                                                               child: Container(
                                                                 decoration:
                                                                     BoxDecoration(
@@ -1866,8 +1874,10 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                           .coverImage,
                                                                       'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/thumb.png?alt=media&token=e6577b33-e529-48be-8df3-6a94f5b68e16',
                                                                     ),
-                                                                    width: _kAlbumCoverSize,
-                                                                      height: _kAlbumCoverSize,
+                                                                    width:
+                                                                        _kAlbumCoverSize,
+                                                                    height:
+                                                                        _kAlbumCoverSize,
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   ),
@@ -1894,8 +1904,9 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                                                                     TextAlign
                                                                         .start,
                                                                 maxLines: 1,
-                                                                overflow: TextOverflow
-                                                                    .ellipsis,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
                                                                     .labelSmall

@@ -3,6 +3,7 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/notification_type.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
 import '/index.dart';
@@ -159,6 +160,7 @@ class _AddfriendWidgetState extends State<AddfriendWidget> {
                           isread: false,
                           ispost: false,
                           isLike: false,
+                          type: NotificationType.follow,
                           madeby: currentUserReference,
                           madeto: widget!.user,
                           timestamp: getCurrentTimestamp,
@@ -169,6 +171,7 @@ class _AddfriendWidgetState extends State<AddfriendWidget> {
                                   isread: false,
                                   ispost: false,
                                   isLike: false,
+                                  type: NotificationType.follow,
                                   madeby: currentUserReference,
                                   madeto: widget!.user,
                                   timestamp: getCurrentTimestamp,

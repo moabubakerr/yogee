@@ -58,7 +58,7 @@ const double kAlbumCardStrokeWidth = 0.5;
 
 /// Inset between the cover art and the card's stroke, so the artwork's corners
 /// nest inside the card's rather than colliding with them.
-const double kAlbumCoverInset = 8.0;
+const double kAlbumCoverInset = 9.0;
 
 /// Border drawn by the frame around the artwork, one side.
 const double _kCoverFrameBorder = 1.0;
@@ -70,8 +70,16 @@ const double _kCoverRadius = 5.0;
 /// Gap between the cover art and the label block.
 const double _kTextGap = 8.0;
 
-/// Vertical padding inside the card, above the art and below the labels.
-const double _kCardVerticalPad = 7.0;
+/// Padding above the cover art, inside the card.
+///
+/// Deliberately larger than [_kCardBottomPad]: the art has a frame and a
+/// highlight along its top edge, and sitting it 7pt off the stroke read as
+/// cramped. The card sizes to its content, so this makes it taller rather
+/// than squeezing the artwork.
+const double _kCardTopPad = 12.0;
+
+/// Padding below the labels, inside the card.
+const double _kCardBottomPad = 7.0;
 
 /// Horizontal padding on the labels.
 const double _kLabelSidePad = 12.0;
@@ -154,7 +162,7 @@ class AlbumCard extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          boxShadow: const [
+      boxShadow: const [
             BoxShadow(
               blurRadius: 20.0,
               color: Color(0x33D4B8E8),
@@ -171,7 +179,10 @@ class AlbumCard extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(kAlbumCardStrokeWidth),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: _kCardVerticalPad),
+          padding: const EdgeInsets.only(
+            top: _kCardTopPad,
+            bottom: _kCardBottomPad,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -217,40 +228,40 @@ class AlbumCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    Text(
-                      title,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.bodySmall.override(
-                        font: GoogleFonts.manrope(
+                      Text(
+                        title,
+                        textAlign: TextAlign.start,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.bodySmall.override(
+                          font: GoogleFonts.manrope(
+                            fontWeight: FontWeight.w600,
+                            fontStyle: theme.bodySmall.fontStyle,
+                          ),
+                          fontSize: 13.0 * scale,
+                          letterSpacing: 0.1,
                           fontWeight: FontWeight.w600,
                           fontStyle: theme.bodySmall.fontStyle,
                         ),
-                        fontSize: 13.0 * scale,
-                        letterSpacing: 0.1,
-                        fontWeight: FontWeight.w600,
-                        fontStyle: theme.bodySmall.fontStyle,
                       ),
-                    ),
-                    const SizedBox(height: 2.0),
-                    Text(
-                      artist,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.bodySmall.override(
-                        font: GoogleFonts.manrope(
+                      const SizedBox(height: 2.0),
+                      Text(
+                        artist,
+                        textAlign: TextAlign.start,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.bodySmall.override(
+                          font: GoogleFonts.manrope(
+                            fontWeight: FontWeight.w300,
+                            fontStyle: theme.bodySmall.fontStyle,
+                          ),
+                          color: const Color(0xFFE6BCE5),
+                          fontSize: 10.0 * scale,
+                          letterSpacing: 0.0,
                           fontWeight: FontWeight.w300,
                           fontStyle: theme.bodySmall.fontStyle,
                         ),
-                        color: const Color(0xFFE6BCE5),
-                        fontSize: 10.0 * scale,
-                        letterSpacing: 0.0,
-                        fontWeight: FontWeight.w300,
-                        fontStyle: theme.bodySmall.fontStyle,
                       ),
-                    ),
                     ],
                   ),
                 ),

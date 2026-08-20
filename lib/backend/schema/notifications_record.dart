@@ -31,6 +31,27 @@ class NotificationsRecord extends FirestoreRecord {
   bool get isLike => _isLike ?? false;
   bool hasIsLike() => _isLike != null;
 
+  // "type" field.
+  //
+  // Explicit event kind, added for push delivery (docs/fcm-push-plan.md,
+  // Issue 1). The ispost/is_like pair encodes FOUR states, not three, and a
+  // consumer that assumes three sends "started following you" to everyone
+  // whose comment was liked:
+  //
+  //   ispost  is_like  meaning
+  //   true    true     like_post
+  //   false   true     like_comment
+  //   true    false    reply
+  //   false   false    follow
+  //
+  // Both are written. Documents created by an older installed client carry
+  // only the booleans, so any reader needs the fallback for as long as those
+  // clients exist. Values are NotificationType.* in
+  // lib/custom_code/notification_type.dart.
+  String? _type;
+  String get type => _type ?? '';
+  bool hasType() => _type != null;
+
   // "postref" field.
   DocumentReference? _postref;
   DocumentReference? get postref => _postref;
@@ -55,6 +76,7 @@ class NotificationsRecord extends FirestoreRecord {
     _isread = snapshotData['isread'] as bool?;
     _ispost = snapshotData['ispost'] as bool?;
     _isLike = snapshotData['is_like'] as bool?;
+    _type = snapshotData['type'] as String?;
     _postref = snapshotData['postref'] as DocumentReference?;
     _madeby = snapshotData['madeby'] as DocumentReference?;
     _madeto = snapshotData['madeto'] as DocumentReference?;
@@ -99,6 +121,7 @@ Map<String, dynamic> createNotificationsRecordData({
   bool? isread,
   bool? ispost,
   bool? isLike,
+  String? type,
   DocumentReference? postref,
   DocumentReference? madeby,
   DocumentReference? madeto,
@@ -109,6 +132,7 @@ Map<String, dynamic> createNotificationsRecordData({
       'isread': isread,
       'ispost': ispost,
       'is_like': isLike,
+      'type': type,
       'postref': postref,
       'madeby': madeby,
       'madeto': madeto,
@@ -128,6 +152,7 @@ class NotificationsRecordDocumentEquality
     return e1?.isread == e2?.isread &&
         e1?.ispost == e2?.ispost &&
         e1?.isLike == e2?.isLike &&
+        e1?.type == e2?.type &&
         e1?.postref == e2?.postref &&
         e1?.madeby == e2?.madeby &&
         e1?.madeto == e2?.madeto &&
@@ -139,6 +164,7 @@ class NotificationsRecordDocumentEquality
         e?.isread,
         e?.ispost,
         e?.isLike,
+        e?.type,
         e?.postref,
         e?.madeby,
         e?.madeto,
