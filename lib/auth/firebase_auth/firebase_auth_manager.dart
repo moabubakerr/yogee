@@ -432,6 +432,14 @@ class FirebaseAuthManager extends AuthManager
       if (error.code == 'facebook_login_failed') {
         return 'Facebook sign-in could not complete. Please try again.';
       }
+      // Raised by facebook_auth.dart when the SDK never answers. The usual
+      // cause is that Facebook Login has no platform config in this build --
+      // no facebook_app_id in strings.xml and no FacebookActivity in the
+      // manifest -- so the SDK cannot initialise and the call never returns.
+      // See docs/publish-checklist.md section 7.
+      if (error.code == 'facebook_login_timeout') {
+        return 'Facebook sign-in is not responding. It may not be set up for this app yet.';
+      }
       // google_sign_in surfaces Play Services failures here.
       if (error.code == 'sign_in_canceled') {
         return null;
