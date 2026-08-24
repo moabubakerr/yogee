@@ -45,4 +45,33 @@ abstract final class NotificationType {
     if (isLike) return ispost ? likePost : likeComment;
     return ispost ? reply : follow;
   }
+
+  /// Longest reply preview carried on a notification document.
+  ///
+  /// Mirrors `PREVIEW_MAX` in `firebase/functions/notification_type.js`, which
+  /// caps it AGAIN on the way out. Both caps are wanted: this one keeps the
+  /// document small, and that one is the trust boundary, because any client can
+  /// write a notification document and an FCM message has a 4KB ceiling for the
+  /// whole payload.
+  ///
+  /// 120 is roughly two lines in a notification shade. Both platforms truncate
+  /// past that anyway, so a larger cap would only cost payload.
+  static const int previewMaxChars = 120;
+
+  /// Condenses a reply into the preview stored on its notification.
+  ///
+  /// Returns null for anything with no visible text, so the caller can omit the
+  /// field entirely rather than storing an empty string -- the Cloud Function
+  /// falls back to the plain "replied to your post" when it is absent, which is
+  /// also what every document written before this field existed gets.
+  ///
+  /// Whitespace is collapsed, not just trimmed: a notification body renders
+  /// newlines, so a reply padded with blank lines would otherwise turn a
+  /// one-word banner into a full-height one.
+  static String? previewOf(String text) {
+    final collapsed = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (collapsed.isEmpty) return null;
+    if (collapsed.length <= previewMaxChars) return collapsed;
+    return '${collapsed.substring(0, previewMaxChars).trimRight()}…';
+  }
 }

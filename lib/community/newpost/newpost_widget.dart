@@ -7,6 +7,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
+import '/custom_code/actions/index.dart' as actions;
 import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
 import '/index.dart';
@@ -127,6 +128,20 @@ class _NewpostWidgetState extends State<NewpostWidget> {
                                 });
                                 FFAppState().selectedtags = [];
                                 safeSetState(() {});
+
+                                // The priming sheet, at the one moment push
+                                // sells itself: they have just posted, so
+                                // "someone replied" is now a thing that can
+                                // happen to them. Awaited before navigating so
+                                // it is not racing a route change.
+                                //
+                                // No-op unless permission is still undecided
+                                // and the sheet was not dismissed recently, so
+                                // it does NOT fire on every post. Never throws.
+                                await actions.maybeAskForPush(context);
+                                if (!context.mounted) {
+                                  return;
+                                }
 
                                 context.pushNamed(CommunityWidget.routeName);
                               },

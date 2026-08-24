@@ -2,5 +2,28 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Push (docs/fcm-push-plan.md, Step 5). This file was an empty dict; it is
+	     referenced by all three build configurations in project.pbxproj, so
+	     filling it is enough - no Xcode change needed.
+
+	     `production` targets the live APNs host, which is what TestFlight and
+	     App Store builds use. Set here because TestFlight is where push is
+	     actually tested - the release build points at `yoogeeapp`, which is
+	     staging, so there is no real production build to keep separate.
+
+	     Cost: local debug and development-signed device builds now register
+	     sandbox tokens against the production host and receive nothing. Flip
+	     back to `development` to debug push on a cabled device, or split this
+	     into a Release-only entitlements file if that starts to hurt.
+
+	     Either way the failure is silent - wrong-environment tokens are
+	     rejected by APNs and never reported to the app.
+
+	     None of this works until an APNs auth key (.p8) is uploaded under
+	     Firebase -> Project settings -> Cloud Messaging, which needs a paid
+	     Apple Developer Program membership. A .p8 covers both environments;
+	     only the legacy .p12 certificates are per-environment. -->
+	<key>aps-environment</key>
+	<string>production</string>
 </dict>
 </plist>

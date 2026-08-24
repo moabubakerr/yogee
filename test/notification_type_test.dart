@@ -47,4 +47,29 @@ void main() {
     };
     expect(values, hasLength(4));
   });
+
+  test('previewOf collapses whitespace', () {
+    // A notification body renders newlines, so a reply padded with blank lines
+    // would otherwise become a full-height banner for one word.
+    expect(NotificationType.previewOf('a\n\n\nb'), 'a b');
+    expect(NotificationType.previewOf('  spaced   out  '), 'spaced out');
+  });
+
+  test('previewOf returns null when there is nothing to show', () {
+    // Null so the caller omits the field, which the Cloud Function reads as
+    // "no preview" and falls back to the plain sentence.
+    expect(NotificationType.previewOf(''), isNull);
+    expect(NotificationType.previewOf('   \n  '), isNull);
+  });
+
+  test('previewOf caps long replies, ellipsis included', () {
+    final capped = NotificationType.previewOf('x' * 500)!;
+    expect(capped.length, NotificationType.previewMaxChars + 1);
+    expect(capped.endsWith('…'), isTrue);
+  });
+
+  test('previewOf leaves a reply at the cap untouched', () {
+    final exact = 'y' * NotificationType.previewMaxChars;
+    expect(NotificationType.previewOf(exact), exact);
+  });
 }

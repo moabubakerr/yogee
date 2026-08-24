@@ -183,7 +183,7 @@ const double _kCarouselCoverInset = kAlbumCoverInset + 2.5;
 /// Height reserved while the albums query is in flight, so the section does
 /// not visibly jump when the real cards replace the spinner. Approximate on
 /// purpose -- it is a placeholder, not a layout constraint.
-const double _kCarouselLoadingHeight = 154.0;
+const double _kCarouselLoadingHeight = 159.0;
 
 /// The column every top-level block on this page sits in.
 ///

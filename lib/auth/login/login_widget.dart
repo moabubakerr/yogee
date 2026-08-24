@@ -692,6 +692,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                                 shape: BoxShape.circle,
                               ),
                               child: FlutterFlowIconButton(
+                                // Same reason as the Google button above.
+                                showLoadingIndicator: true,
                                 buttonSize: 40.0,
                                 icon: FaIcon(
                                   FontAwesomeIcons.facebookF,
@@ -699,8 +701,20 @@ class _LoginWidgetState extends State<LoginWidget> {
                                       .secondaryBackground,
                                   size: 20.0,
                                 ),
-                                onPressed: () {
-                                  print('IconButton pressed ...');
+                                onPressed: () async {
+                                  GoRouter.of(context).prepareAuthEvent();
+                                  final user = await withLoadingOverlay(
+                                    context,
+                                    () =>
+                                        authManager.signInWithFacebook(context),
+                                    message: 'Signing you in…',
+                                  );
+                                  if (user == null) {
+                                    return;
+                                  }
+
+                                  context.goNamedAuth(DashboardWidget.routeName,
+                                      context.mounted);
                                 },
                               ),
                             ),

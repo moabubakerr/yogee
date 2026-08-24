@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "yogee-e62e2",
+    "dev": "yogee-e62e2",
+    "staging": "yoogeeapp",
+    "emulator": "demo-yoogee"
+  }
+}

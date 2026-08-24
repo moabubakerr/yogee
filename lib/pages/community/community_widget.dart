@@ -47,7 +47,21 @@ class _CommunityWidgetState extends State<CommunityWidget>
       initialIndex: 0,
     )..addListener(() => safeSetState(() {}));
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    // The FlutterFlow-generated `addPostFrameCallback((_) => safeSetState(() {}))`
+    // was here. It rebuilt the whole page once after first paint, to cover
+    // generated builds that read state which is not ready during the first
+    // build. Nothing here needs it: both `currentUserDocument` reads are inside
+    // AuthUserStreamWidget (:397, :1040), which rebuilds its own subtree when
+    // the user document lands; `currentUserReference` cannot be null on a page
+    // the router only reaches behind requireAuth; and the tab controller and
+    // nav model are both assigned before the first build.
+    //
+    // It was not free. Every `stream:` and `future:` on this page is built
+    // inline in build(), so that rebuild re-created all of them. The streams
+    // barely showed -- Firestore answers a re-subscribe from its local cache --
+    // but `queryCommentsRecordCount` is a `count()` aggregation, which is
+    // server-only, so every visible comment count re-queried and flashed its
+    // spinner back on.
   }
 
   @override
@@ -944,7 +958,7 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                                 size: 18.0,
                                                                               ),
                                                                               onPressed: () async {
-                                                                                context.pushNamed(
+                                                                                await context.pushNamed(
                                                                                   RepliesWidget.routeName,
                                                                                   queryParameters: {
                                                                                     'postref': serializeParam(
@@ -957,17 +971,20 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                                     ),
                                                                                   }.withoutNulls,
                                                                                 );
+
+                                                                                // Awaited so this runs on the way BACK: the user may
+                                                                                // have just added a comment, and the cached count
+                                                                                // would otherwise stay stale until they leave the page.
+                                                                                _model.invalidateCommentCount(listViewPostsRecord.reference);
+                                                                                safeSetState(() {});
                                                                               },
                                                                             ),
                                                                             Align(
                                                                               alignment: AlignmentDirectional(-1.0, 0.0),
                                                                               child: FutureBuilder<int>(
-                                                                                future: queryCommentsRecordCount(
-                                                                                  queryBuilder: (commentsRecord) => commentsRecord.where(
-                                                                                    'postref',
-                                                                                    isEqualTo: listViewPostsRecord.reference,
-                                                                                  ),
-                                                                                ),
+                                                                                // Cached in the model: this future is built inside build(),
+                                                                                // so an uncached call re-queries on every rebuild.
+                                                                                future: _model.commentCount(listViewPostsRecord.reference),
                                                                                 builder: (context, snapshot) {
                                                                                   // Customize what your widget looks like when it's loading.
                                                                                   if (!snapshot.hasData) {
@@ -1397,6 +1414,29 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                                     ),
                                                                                   ),
                                                                                 ),
+                                                                              // Link preview. The Everything tab has had this
+                                                                              // since it was added; this tab never got it, so the
+                                                                              // same post rendered a preview in one tab and a bare
+                                                                              // URL in the other.
+                                                                              //
+                                                                              // The two tabs are separate copies of the same card
+                                                                              // markup, which is what let them drift. Kept
+                                                                              // identical here -- same condition, same 230x130 --
+                                                                              // so a future change to one is an obvious change to
+                                                                              // make to the other.
+                                                                              if (functions.extractFirstLink(listViewPostsRecord.topic) != null && functions.extractFirstLink(listViewPostsRecord.topic) != '')
+                                                                                Padding(
+                                                                                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
+                                                                                  child: Container(
+                                                                                    width: 230.0,
+                                                                                    height: 130.0,
+                                                                                    child: custom_widgets.LinkPreviewCard(
+                                                                                      width: 230.0,
+                                                                                      height: 130.0,
+                                                                                      url: functions.extractFirstLink(listViewPostsRecord.topic)!,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
                                                                               Row(
                                                                                 mainAxisSize: MainAxisSize.max,
                                                                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -1490,7 +1530,7 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                                             size: 18.0,
                                                                                           ),
                                                                                           onPressed: () async {
-                                                                                            context.pushNamed(
+                                                                                            await context.pushNamed(
                                                                                               RepliesWidget.routeName,
                                                                                               queryParameters: {
                                                                                                 'postref': serializeParam(
@@ -1503,17 +1543,18 @@ class _CommunityWidgetState extends State<CommunityWidget>
                                                                                                 ),
                                                                                               }.withoutNulls,
                                                                                             );
+
+                                                                                            // See the All Posts tab: awaited so the count
+                                                                                            // re-reads on the way back from Replies.
+                                                                                            _model.invalidateCommentCount(listViewPostsRecord.reference);
+                                                                                            safeSetState(() {});
                                                                                           },
                                                                                         ),
                                                                                         Align(
                                                                                           alignment: AlignmentDirectional(-1.0, 0.0),
                                                                                           child: FutureBuilder<int>(
-                                                                                            future: queryCommentsRecordCount(
-                                                                                              queryBuilder: (commentsRecord) => commentsRecord.where(
-                                                                                                'postref',
-                                                                                                isEqualTo: listViewPostsRecord.reference,
-                                                                                              ),
-                                                                                            ),
+                                                                                            // Cached in the model -- see the All Posts tab above.
+                                                                                            future: _model.commentCount(listViewPostsRecord.reference),
                                                                                             builder: (context, snapshot) {
                                                                                               // Customize what your widget looks like when it's loading.
                                                                                               if (!snapshot.hasData) {

@@ -72,14 +72,20 @@ const double _kTextGap = 8.0;
 
 /// Padding above the cover art, inside the card.
 ///
-/// Deliberately larger than [_kCardBottomPad]: the art has a frame and a
-/// highlight along its top edge, and sitting it 7pt off the stroke read as
-/// cramped. The card sizes to its content, so this makes it taller rather
-/// than squeezing the artwork.
+/// The art has a frame and a highlight along its top edge, and sitting it 7pt
+/// off the stroke read as cramped. The card sizes to its content, so this makes
+/// it taller rather than squeezing the artwork.
 const double _kCardTopPad = 12.0;
 
 /// Padding below the labels, inside the card.
-const double _kCardBottomPad = 7.0;
+///
+/// Raised from 7.0 to add 5pt of card height. Height is bought here rather than
+/// with a `height:` on the card itself: the card sizes to its content on
+/// purpose, and a fixed height clips the labels the moment a title grows (see
+/// the note on `_kCarouselItemWidth` in dashboard_widget.dart). Now equal to
+/// [_kCardTopPad], which reads level because the art carries more visual weight
+/// than the two label lines do.
+const double _kCardBottomPad = 12.0;
 
 /// Horizontal padding on the labels.
 const double _kLabelSidePad = 12.0;

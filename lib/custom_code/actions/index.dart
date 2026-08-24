@@ -12,3 +12,13 @@ export 'skip_to_previous.dart' show skipToPrevious;
 export 'mark_all_notifications_as_read.dart' show markAllNotificationsAsRead;
 export 'clear_all_notifications.dart' show clearAllNotifications;
 export 'init_audio_player.dart' show initAudioPlayer;
+export 'register_push_token.dart'
+    show
+        registerPushToken,
+        requestPushPermission,
+        unregisterPushToken,
+        initPushMessaging,
+        pushPermissionStatus,
+        openPushSettings,
+        maybeAskForPush,
+        PushPermission;

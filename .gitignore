@@ -44,6 +44,11 @@ ui-debug.log
 serviceAccountKey.json
 .env
 .env.*
+# APNs auth key (docs/fcm-push-plan.md, Step 5). Signs pushes for the entire
+# Apple team - every app, no expiry, cannot be scoped down. Unlike a SHA-1
+# fingerprint (public, and already in google-services.json) this is a real
+# credential. Upload it to Firebase console, never into the repo.
+*.p8
 
 # Deliberately NOT ignoring google-services.json / GoogleService-Info.plist.
 # They are client identifiers that ship inside every binary, not secrets, and

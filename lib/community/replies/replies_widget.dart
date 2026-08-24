@@ -888,12 +888,18 @@ class _RepliesWidgetState extends State<RepliesWidget> {
                                   size: 24.0,
                                 ),
                                 onPressed: () async {
+                                  // Captured BEFORE the clear below, which is
+                                  // the only copy of it that survives: the
+                                  // notification write further down needs the
+                                  // same text, and by then the controller is
+                                  // empty.
+                                  final commentText = _model
+                                      .commenttextfieldTextController.text;
+
                                   await CommentsRecord.collection
                                       .doc()
                                       .set(createCommentsRecordData(
-                                        comment: _model
-                                            .commenttextfieldTextController
-                                            .text,
+                                        comment: commentText,
                                         time: getCurrentTimestamp,
                                         postref: stackPostsRecord.reference,
                                         userref: currentUserReference,
@@ -927,6 +933,14 @@ class _RepliesWidgetState extends State<RepliesWidget> {
                                         madeby: currentUserReference,
                                         madeto: widget!.userref,
                                         timestamp: getCurrentTimestamp,
+                                        // What the push quotes. Null for a
+                                        // whitespace-only reply, and
+                                        // withoutNulls then drops the field --
+                                        // which the function reads as "no
+                                        // preview" and falls back to the plain
+                                        // sentence.
+                                        preview: NotificationType.previewOf(
+                                            commentText),
                                       ));
                                 },
                               ),

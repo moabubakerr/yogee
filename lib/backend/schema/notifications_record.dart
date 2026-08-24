@@ -72,6 +72,20 @@ class NotificationsRecord extends FirestoreRecord {
   DateTime? get timestamp => _timestamp;
   bool hasTimestamp() => _timestamp != null;
 
+  // "preview" field.
+  //
+  // The reply's own text, condensed by `NotificationType.previewOf` at the
+  // write site, so a push can say what was said instead of only that something
+  // was said. Written for `reply` only -- a like and a follow have no text.
+  //
+  // Absent on every document written before this field existed, and on any
+  // reply that was pure whitespace. `bodyForType` in
+  // firebase/functions/notification_type.js falls back to the plain sentence
+  // when it is missing, so absent is a supported state, not a broken one.
+  String? _preview;
+  String get preview => _preview ?? '';
+  bool hasPreview() => _preview != null;
+
   void _initializeFields() {
     _isread = snapshotData['isread'] as bool?;
     _ispost = snapshotData['ispost'] as bool?;
@@ -81,6 +95,7 @@ class NotificationsRecord extends FirestoreRecord {
     _madeby = snapshotData['madeby'] as DocumentReference?;
     _madeto = snapshotData['madeto'] as DocumentReference?;
     _timestamp = snapshotData['timestamp'] as DateTime?;
+    _preview = snapshotData['preview'] as String?;
   }
 
   static CollectionReference get collection =>
@@ -126,6 +141,7 @@ Map<String, dynamic> createNotificationsRecordData({
   DocumentReference? madeby,
   DocumentReference? madeto,
   DateTime? timestamp,
+  String? preview,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -137,6 +153,7 @@ Map<String, dynamic> createNotificationsRecordData({
       'madeby': madeby,
       'madeto': madeto,
       'timestamp': timestamp,
+      'preview': preview,
     }.withoutNulls,
   );
 
@@ -156,7 +173,8 @@ class NotificationsRecordDocumentEquality
         e1?.postref == e2?.postref &&
         e1?.madeby == e2?.madeby &&
         e1?.madeto == e2?.madeto &&
-        e1?.timestamp == e2?.timestamp;
+        e1?.timestamp == e2?.timestamp &&
+        e1?.preview == e2?.preview;
   }
 
   @override
@@ -168,7 +186,8 @@ class NotificationsRecordDocumentEquality
         e?.postref,
         e?.madeby,
         e?.madeto,
-        e?.timestamp
+        e?.timestamp,
+        e?.preview
       ]);
 
   @override

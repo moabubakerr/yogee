@@ -10,7 +10,6 @@
     "axios": "1.13.5",
     "razorpay": "^2.8.4",
     "qs": "^6.7.0",
-    "@onesignal/node-onesignal": "^2.0.1-beta2",
     "@langchain/core": "^0.3.19",
     "@langchain/langgraph": "^0.2.23",
     "@langchain/openai": "^0.3.14",
@@ -23,9 +22,11 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint --max-warnings=0 .",
+    "test": "node --test",
     "emulators": "cd .. && firebase emulators:start --project demo-yoogee --only auth,firestore,storage",
     "seed": "node seed.mjs",
     "seed:dev": "node seed.mjs --cloud",
+    "push:test": "node send_test_push.mjs",
     "serve": "firebase -P yogee-e62e2 emulators:start --only functions",
     "shell": "firebase -P yogee-e62e2 functions:shell",
     "start": "npm run shell",
@@ -34,7 +35,7 @@
     "compile": "cp ../../tsconfig.template.json ./tsconfig-compile.json && tsc --project tsconfig-compile.json"
   },
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "private": true
 }

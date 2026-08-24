@@ -1,31 +1,72 @@
 TODO / FIX LIST
 
-  1. Push notifications - not implemented          (docs/fcm-push-plan.md)
+  Shipping to a store? Read docs/publish-checklist.md first. It orders this
+  list against the account setup and flags the two PERMANENT choices (Firestore
+  location, app identifier) that have to be settled before anything is created.
+
+  1. Push notifications - server side DEPLOYED, no push delivered yet
+     BLOCKED ON: enable Cloud Messaging API on yoogeeapp (console toggle)
+                                                     (docs/fcm-push-plan.md)
   2. Images load slowly - measured, cause found    (docs/image-loading-plan.md)
   3. Firebase Storage has no CORS config           (blocked: needs prod access)
   4. Sign-in fails silently, no loading UI         (docs/auth-signin-plan.md)
-
+  5. onPostDeleted - now DEPLOYED (2026-08-21). Orphaned comment backlog from
+     the years it was not deployed is still there; no backfill, early testing
+  6. Two live functions exist in no source tree    (addFcmToken,
+     sendPushNotificationsTrigger - FlutterFlow push scaffolding)
+  7. onUserDeleted recursiveDelete fix written but NOT deployed
+  8. DONE - .firebaserc added (default=dev, staging, emulator)
+  9. DONE - Artifact Registry cleanup policy set, both regions
+ 10. Node runtime part-migrated. nodejs22 PROVEN; 2 functions still on 20.
+     HARD DEADLINE 2026-10-30, after which deploys are refused
+ 11. Dev project cannot run functions at all (Spark plan), so every functions
+     change has to be tested against staging
 
 ================================================================================
-1. PUSH NOTIFICATIONS - NOT IMPLEMENTED
+1. PUSH NOTIFICATIONS - SERVER SIDE DEPLOYED, NOTHING DELIVERED YET
 ================================================================================
 
 Full plan: docs/fcm-push-plan.md
 
-Decision: FCM, not OneSignal. @onesignal/node-onesignal is in
-firebase/functions/package.json but nothing in lib/ has ever imported it.
+Decision: FCM, not OneSignal. @onesignal/node-onesignal has been removed from
+firebase/functions/package.json and the lockfile; nothing ever imported it.
 
-Notifications exist only as Firestore documents rendered in-app. Nothing leaves
-the device; pubspec.yaml has no push package. Delivery is added on top of the
-documents already being written - no create site has to change for push to
-work.
+Delivery rides on the notifications documents the app was ALREADY writing - no
+create site changed to add push.
 
-Groundwork DONE (2026-08-20). The four items worth doing regardless:
+DEPLOYED to yoogeeapp on 2026-08-21:
+  - firestore.rules (fcm_tokens subcollection, tightened notifications rules)
+  - firestore indexes, incl. the fcm_tokens/token COLLECTION_GROUP override
+  - onNotificationCreated  (europe-west2) - sends the push
+  - onTokenRegistered      (europe-west2) - token dedup
+  - onPostDeleted          (europe-west2) - see item 5
+
+NEXT, AND THE ONLY BLOCKER: enable the Cloud Messaging API on yoogeeapp. It is
+a console toggle. Until then no token can be issued, so onNotificationCreated
+fires and logs "no fcm tokens for users/..." - the expected empty-token branch,
+not a failure.
+
+Then: install a debug build, open Notification settings (the ONLY place the
+permission prompt fires), confirm users/{uid}/fcm_tokens/{token} appears, have a
+second account like a post, watch `npm run logs:prod`.
+
+DEPLOY SYNTAX - firebase.json names the codebase "functions", so per-function
+filters need BOTH names. `--only functions:onNotificationCreated` fails with
+"No function matches given --only filters". Use:
+
+  firebase deploy --only functions:functions:onNotificationCreated -P yoogeeapp --non-interactive
+
+NEVER run a bare `firebase deploy --only functions` - see item 6.
+
+The three new functions are in europe-west2 (colocated with Firestore);
+onUserDeleted and the two sourceless functions stay in us-central1. Region
+cannot be changed after creation, so the project is deliberately mixed-region.
+
+Groundwork done 2026-08-20, all of it now shipped:
 
   - firestore.rules  users/{uid}/fcm_tokens/{token} subcollection added, and
     notifications `allow create` now requires madeby == the authenticated user.
-    WRITTEN LOCALLY, NOT DEPLOYED - live rules are unchanged until
-    `firebase deploy --only firestore:rules` runs.
+    DEPLOYED 2026-08-21.
   - othersprofile_widget.dart self-notify guard added; the replies_widget.dart
     guard now checks the recipient (widget!.userref) instead of the post author.
   - functions/package.json serve/logs/shell now point at yogee-e62e2; the
@@ -33,8 +74,15 @@ Groundwork DONE (2026-08-20). The four items worth doing regardless:
   - notifications.type field added at all seven create sites, with
     lib/custom_code/notification_type.dart + test/notification_type_test.dart.
 
-NEXT: android/app/src/debug/google-services.json is missing, so debug builds
-fall through to yoogeeapp. Per the owner (2026-08-20) yoogeeapp is a
+Client side, written and analysed clean but never yet exercised on a device:
+lib/custom_code/actions/register_push_token.dart plus three call sites
+(main.dart auth stream, firebase_auth_manager signOut + deleteUser,
+notificationssettings initState). Every public function there swallows its own
+errors on purpose - unregisterPushToken is awaited inside signOut(), and a throw
+would leave the user unable to log out.
+
+ALSO STILL OPEN: android/app/src/debug/google-services.json is missing, so debug
+builds fall through to yoogeeapp. Per the owner (2026-08-20) yoogeeapp is a
 STAGING/TEST project despite the name and the `release` build type - so this is
 a testing inconvenience, not a live-data hazard: debug and release reach the
 same backend and cannot be told apart. Restore it from the yogee-e62e2 console
@@ -101,7 +149,6 @@ Fix, once someone with project access can run it:
 Until then: test images on Android/iOS, or point web at the dev project
 (picsum.photos, used by the seed, is CORS-clean).
 
-
 ================================================================================
 4. SIGN-IN FAILS SILENTLY, NO LOADING UI, RAW ERROR MESSAGES
 ================================================================================
@@ -134,3 +181,194 @@ Everything else is why nobody could tell what was failing:
 Note for anyone working from older copies of this file: the claim that repeated
 taps stack concurrent sign-in attempts is WRONG. Both button widgets guard
 re-entry with `if (loading) return;` regardless of the flag.
+
+================================================================================
+5. onPostDeleted - NOW DEPLOYED. ORPHANED COMMENTS BACKLOG REMAINS
+================================================================================
+
+Found 2026-08-21 while checking what was live before the push deploy.
+Full audit: docs/fcm-push-plan.md, "Production drift".
+
+onPostDeleted was in the repo and in git history but NOT in
+`firebase functions:list -P yoogeeapp`. The comment cascade had therefore never
+run in production, and every post deleted since launch left its replies in the
+`comments` collection. Clients cannot remove them - firestore.rules:53 is
+`allow delete: if false` on comments, which is why the cascade is a function.
+
+DEPLOYED 2026-08-21 to europe-west2, so posts deleted from now on cascade
+correctly. THE BACKLOG IS UNTOUCHED and needs a one-off script: find comments
+whose `postref` points at a document that no longer exists. Per the owner
+(2026-08-21) the project is early enough in testing that no backfill is wanted.
+
+Three gaps were found in the function itself. TWO ARE NOW FIXED (2026-08-21):
+
+  - FIXED - the cascade was INCOMPLETE. Both `comments.postref` and
+    `notifications.postref` point back at a post; only comments were deleted.
+    A notification left pointing at a deleted post still rendered, and tapping
+    it (notifications_widget.dart:381) navigated to RepliesWidget with a
+    dangling reference - the same screen push tap-routing will use. Both
+    collections are now queried in parallel and deleted through one chunk loop.
+    A follow notification has no postref, so it correctly outlives the post.
+  - retry was wired up, then TURNED BACK OFF by the owner before deploy
+    (failurePolicy: false) pending cost monitoring. Deployed with retries off,
+    so a failed cascade stays half-done permanently.
+    WHY IT WAS A CONCERN: left unbounded, a v1 background function retries for
+    SEVEN DAYS - backoff 10s, 30s, 70s, 150s, 310s, 630s then every 600s, so
+    ~1,000 invocations for one stuck event, and stuck events retry
+    independently. MAX_RETRY_AGE_MS (2 min) is still in the source and caps that
+    at 3 retries whenever failurePolicy is flipped back to true. It is inert
+    while retries are off, because the event age is always ~0.
+  - STILL OPEN - the read is unbounded. .get() loads every matching document at
+    256MB, now across two collections. The chunked commit anticipates volume;
+    the read does not. Fine at current scale.
+
+================================================================================
+6. TWO LIVE FUNCTIONS EXIST IN NO SOURCE TREE
+================================================================================
+
+Found 2026-08-21. Full detail: docs/fcm-push-plan.md, "Production drift".
+
+`addFcmToken` (callable) and `sendPushNotificationsTrigger` (onCreate on
+ff_push_notifications/{id}) are live on yoogeeapp and are in neither this repo
+nor its git history. They are FlutterFlow's stock push scaffolding.
+
+They look dead - nothing in lib/ calls addFcmToken, nothing writes
+ff_push_notifications, functions:log is empty, and pubspec.yaml had no push
+package until 2026-08-21. But there is no source to redeploy them from, so
+deleting them is a one-way decision for the owner to make deliberately.
+
+CONSEQUENCE FOR EVERY FUTURE DEPLOY: they carry
+firebase-functions-codebase: "functions", so a bare
+`firebase deploy --only functions` offers to DELETE them. Always name functions
+explicitly:
+
+  firebase deploy --only functions:someFunction -P yoogeeapp
+
+================================================================================
+7. onUserDeleted recursiveDelete FIX WRITTEN BUT NOT DEPLOYED
+================================================================================
+
+Firestore does NOT remove a document's subcollections when the document is
+deleted, so the deployed onUserDeleted leaves users/{uid}/fcm_tokens/* behind
+forever - an orphan device token under a uid whose auth user no longer exists.
+
+index.js now uses firestore.recursiveDelete(). It was deliberately EXCLUDED from
+the 2026-08-21 deploy: it deletes strictly more than the live version does, and
+that is the one change here with no undo. Deploy it on its own, once its blast
+radius has been looked at deliberately:
+
+  firebase deploy --only functions:functions:onUserDeleted -P yoogeeapp --non-interactive
+
+Blast radius check done 2026-08-21: fcm_tokens is the only subcollection under
+users anywhere in lib/. That does not prove none exists in live data.
+
+================================================================================
+8. DONE 2026-08-21 - .firebaserc ADDED
+================================================================================
+
+firebase/.firebaserc now defines:
+
+  default   -> yogee-e62e2   (dev)
+  dev       -> yogee-e62e2
+  staging   -> yoogeeapp
+  emulator  -> demo-yoogee
+
+`default` points at DEV on purpose: a bare command with a forgotten -P lands
+somewhere harmless instead of on the project release builds talk to. Add a
+`prod` alias when that project exists.
+
+================================================================================
+9. DONE 2026-08-21 - ARTIFACT REGISTRY CLEANUP POLICY SET
+================================================================================
+
+3-day policy on gcf-artifacts in BOTH europe-west2 and us-central1 on yoogeeapp.
+Had to be run once per region - --location defaults to us-central1 and silently
+skips the other:
+
+  firebase functions:artifacts:setpolicy --location <region> --days 3 -f -P staging
+
+Not yet set on any other project. Do it the first time functions deploy there.
+
+================================================================================
+10. NODE RUNTIME - PARTIALLY MIGRATED, HARD DEADLINE 2026-10-30
+================================================================================
+
+nodejs20 was deprecated 2026-04-30. After 2026-10-30 deploys are REFUSED. Live
+functions keep running; you just cannot ship a fix. The risk is not an outage,
+it is an urgent bug in November that cannot be deployed until someone does a
+runtime migration under pressure.
+
+TESTED 2026-08-21: nodejs22 builds and deploys fine with firebase-functions
+4.9.0 and firebase-admin 11.11 - NO code changes needed. Verified by deploying
+onPostDeleted, which UPDATED in place: trigger and region preserved, no gap.
+
+package.json now says engines.node = 22, so THE NEXT DEPLOY OF ANY FUNCTION
+PICKS UP NODE 22 whether or not that was the intent. Deliberate - do not revert
+it, or the next deploy would downgrade onPostDeleted back to 20.
+
+Current split on yoogeeapp:
+
+  onPostDeleted                europe-west2   nodejs22   done
+  onNotificationCreated        europe-west2   nodejs20   one deploy away
+  onTokenRegistered            europe-west2   nodejs20   one deploy away
+  onUserDeleted                us-central1    nodejs20   see below
+  addFcmToken                  us-central1    nodejs20   see item 6
+  sendPushNotificationsTrigger us-central1    nodejs20   see item 6
+
+  firebase deploy --only functions:functions:onNotificationCreated,functions:functions:onTokenRegistered -P staging --non-interactive
+
+onUserDeleted is COUPLED to item 7: bumping its runtime means deploying the
+file, which also ships the recursiveDelete change being deliberately held back.
+Same file, same deploy - they cannot be separated. Its runtime bump is gated on
+the recursiveDelete decision, not on anything Node-related.
+
+STILL SEPARATE WORK: firebase-functions 4.9.0 -> >=5.1.0. The CLI asks for it on
+every deploy and warns of breaking changes. All four functions are plain v1
+(functions.firestore, functions.auth), the shape most likely to survive
+untouched, but that needs checking against the changelog rather than assuming.
+Independent of the runtime bump; do not bundle them.
+
+Also lurking behind this: gen1 -> gen2. NOT required for the runtime bump, and
+worth keeping separate - gen2 changes trigger semantics and requires recreating
+functions, which for onNotificationCreated means a window where pushes silently
+do not send.
+
+================================================================================
+11. DEV PROJECT CANNOT RUN CLOUD FUNCTIONS - SPARK PLAN
+================================================================================
+
+Found 2026-08-21 trying to test the Node 22 bump on dev first.
+
+yogee-e62e2 is on the Spark (free) plan, so cloudfunctions, cloudbuild and
+artifactregistry cannot be enabled:
+
+  Error: Your project yogee-e62e2 must be on the Blaze (pay-as-you-go) plan to
+  complete this command.
+
+That is why dev has never had a function deployed - it never could. Every
+functions change therefore has to be tested against yoogeeapp, which is the
+project release builds point at.
+
+The Node 22 test was safe there only because a FAILED deploy leaves the existing
+function running untouched - Cloud Functions does not tear down the old version
+until the new one builds. That will not be true of every future change.
+
+Blaze has a free tier, so a quiet dev project bills near zero, but it needs a
+billing account attached. Owner decision.
+
+WHILE HERE: the three projects have Firestore in THREE DIFFERENT LOCATIONS.
+
+  yoogeeapp    europe-west2
+  yogee-e62e2  asia-southeast1
+  demo-yoogee  n/a (emulator)
+
+So the REGION constant in functions/index.js ("europe-west2") is correct for
+staging and wrong for dev. Firestore location CANNOT be changed after creation.
+Worth settling deliberately before the production project is created, since that
+choice is permanent - see the region notes in docs/fcm-push-plan.md.
+
+================================================================================
+12. FRONTEND CODE REFRACTORING
+================================================================================
+
+To much nested code, have to divide it into reusable components, or seperate it by sections for better management

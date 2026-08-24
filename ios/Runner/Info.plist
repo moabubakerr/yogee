@@ -56,6 +56,10 @@
     <key>UIBackgroundModes</key>
     <array>
       <string>audio</string>
+      <!-- Push: lets a data message wake the app while backgrounded
+           (docs/fcm-push-plan.md, Step 5). Without it iOS holds background
+           messages until the user next opens the app. -->
+      <string>remote-notification</string>
     </array>
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>

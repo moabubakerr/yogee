@@ -345,7 +345,8 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineMedium
                                               .override(
-                                                font: GoogleFonts.plusJakartaSans(
+                                                font:
+                                                    GoogleFonts.plusJakartaSans(
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)
@@ -451,7 +452,8 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineSmall
                                               .override(
-                                                font: GoogleFonts.plusJakartaSans(
+                                                font:
+                                                    GoogleFonts.plusJakartaSans(
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)
@@ -479,7 +481,8 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineSmall
                                               .override(
-                                                font: GoogleFonts.plusJakartaSans(
+                                                font:
+                                                    GoogleFonts.plusJakartaSans(
                                                   fontWeight: FontWeight.w500,
                                                   fontStyle:
                                                       FlutterFlowTheme.of(
@@ -511,7 +514,8 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
                                           style: FlutterFlowTheme.of(context)
                                               .headlineMedium
                                               .override(
-                                                font: GoogleFonts.plusJakartaSans(
+                                                font:
+                                                    GoogleFonts.plusJakartaSans(
                                                   fontWeight:
                                                       FlutterFlowTheme.of(
                                                               context)

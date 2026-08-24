@@ -14,6 +14,7 @@ import 'flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'flutter_flow/nav/nav.dart';
+import 'custom_code/actions/index.dart' as actions;
 import 'index.dart';
 
 void main() async {
@@ -128,9 +129,26 @@ class _MyAppState extends State<MyApp> {
 
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
+
+    // Foreground banner and tap routing. Not hung off the auth stream like
+    // registerPushToken below: message delivery belongs to the install, not to
+    // whoever is signed in, and re-subscribing per auth event would stack
+    // listeners. A tap that launched the app from killed is read here too, and
+    // is held internally until auth and the navigator are both ready.
+    // See docs/fcm-push-plan.md, Steps 3 and 9.
+    actions.initPushMessaging();
     userStream = yogeeFirebaseUserStream()
       ..listen((user) {
         _appStateNotifier.update(user);
+        // Push token registration, hung off the auth stream rather than each
+        // sign-in button, so all six providers and cold start with an already
+        // signed-in user are covered by one call. Never prompts -- it no-ops
+        // until permission has been granted from Notification settings. The
+        // write is idempotent, so re-running on every auth event is free.
+        // See docs/fcm-push-plan.md, Step 6.
+        if (user.loggedIn) {
+          actions.registerPushToken();
+        }
       });
     jwtTokenStream.listen((_) {});
     Future.delayed(

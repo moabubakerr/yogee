@@ -9,6 +9,11 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <!-- Push (docs/fcm-push-plan.md, Step 4). targetSdkVersion is 36, so this is
+         a RUNTIME permission on Android 13+ and must be requested as well as
+         declared. Never granted means notifications are dropped silently: no
+         exception, no log, nothing in logcat. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
 
     <application
@@ -78,6 +83,19 @@
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="false" />
+
+        <!-- Channel FCM posts into when the app is backgrounded or killed and
+             the message carries no channel of its own. Required since API 26:
+             without a matching channel the OS discards the notification and
+             reports nothing.
+
+             The channel itself must be CREATED at runtime with this exact id
+             (flutter_local_notifications, AndroidNotificationChannel) or this
+             meta-data points at nothing. That happens in the token
+             registration action, Step 6, not yet written. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="yogee_social" />
 
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

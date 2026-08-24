@@ -101,6 +101,18 @@ class UsersRecord extends FirestoreRecord {
   bool get appupdateNotifications => _appupdateNotifications ?? false;
   bool hasAppupdateNotifications() => _appupdateNotifications != null;
 
+  // "notify_social" field. The single "Social notifications" switch: likes,
+  // replies and new followers together. Read by `socialPushMuted` in
+  // firebase/functions/notification_type.js -- rename it here and rename it
+  // there in the same commit, or the switch stops working silently.
+  //
+  // Defaults to TRUE, unlike the two fields above. Nobody who signed up before
+  // it existed has it, and defaulting to false would mute the entire existing
+  // user base the moment the gate ships.
+  bool? _notifySocial;
+  bool get notifySocial => _notifySocial ?? true;
+  bool hasNotifySocial() => _notifySocial != null;
+
   void _initializeFields() {
     _email = snapshotData['email'] as String?;
     _displayName = snapshotData['display_name'] as String?;
@@ -120,6 +132,7 @@ class UsersRecord extends FirestoreRecord {
     _announcementNotification =
         snapshotData['announcement_notification'] as bool?;
     _appupdateNotifications = snapshotData['appupdate_notifications'] as bool?;
+    _notifySocial = snapshotData['notify_social'] as bool?;
   }
 
   static CollectionReference get collection =>
@@ -168,6 +181,7 @@ Map<String, dynamic> createUsersRecordData({
   String? currentlocation,
   bool? announcementNotification,
   bool? appupdateNotifications,
+  bool? notifySocial,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -183,6 +197,7 @@ Map<String, dynamic> createUsersRecordData({
       'currentlocation': currentlocation,
       'announcement_notification': announcementNotification,
       'appupdate_notifications': appupdateNotifications,
+      'notify_social': notifySocial,
     }.withoutNulls,
   );
 
@@ -211,7 +226,8 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         listEquality.equals(e1?.interests, e2?.interests) &&
         listEquality.equals(e1?.favsongs, e2?.favsongs) &&
         e1?.announcementNotification == e2?.announcementNotification &&
-        e1?.appupdateNotifications == e2?.appupdateNotifications;
+        e1?.appupdateNotifications == e2?.appupdateNotifications &&
+        e1?.notifySocial == e2?.notifySocial;
   }
 
   @override
@@ -232,7 +248,8 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.interests,
         e?.favsongs,
         e?.announcementNotification,
-        e?.appupdateNotifications
+        e?.appupdateNotifications,
+        e?.notifySocial
       ]);
 
   @override

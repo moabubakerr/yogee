@@ -1,20 +1,217 @@
 # Push notifications — FCM implementation plan
 
-Status: **groundwork done, delivery not started.** Nothing in `lib/` sends or
-receives a push yet.
+Status: **the whole server side is deployed and live on `yoogeeapp`. Nothing has
+delivered a push yet**, because no device has ever registered a token — the
+Cloud Messaging API (Step 1) is still not enabled and no build has run the new
+code. `onNotificationCreated` will fire on the next like and log
+`no fcm tokens for users/...` (`index.js:161`), which is the expected
+empty-token branch, not a failure.
+
+Deployed 2026-08-21 to `yoogeeapp`:
 
 | Item | State |
 |---|---|
-| Issues 3, 4 — rules | **edited locally, NOT deployed.** Live rules unchanged until `firebase deploy --only firestore:rules` runs |
-| Issue 2 — self-notify guards | **fixed** in both client sites; the function backstop is still to write |
-| Issue 6 — npm scripts | **fixed**, now `-P yogee-e62e2` (old prod log kept as `logs:prod`) |
-| Issue 1 — `type` field | **done**: schema, all seven creates, `NotificationType`, and a test |
-| Everything else | not started |
+| Issues 3, 4 — rules | **deployed.** Token writes and the tightened `notifications` rules are live |
+| Firestore indexes | **deployed**, including the `fcm_tokens/token` `COLLECTION_GROUP` override |
+| Step 7 — `onNotificationCreated` | **deployed**, `europe-west2` |
+| Step 7b — `onTokenRegistered` | **deployed**, `europe-west2` |
+| `onPostDeleted` | **deployed**, `europe-west2` — first time ever live, see [Drift 2](#drift-2--onpostdeleted-has-never-been-deployed). Retries **disabled** by the owner pending cost monitoring |
 
-Decision: **FCM, not OneSignal.** See [D1](#d1--fcm-over-onesignal).
+Written and committed, not yet exercised:
+
+| Item | State |
+|---|---|
+| Issue 2 — self-notify guards | **fixed** in both client sites; the function backstop ships inside `onNotificationCreated` |
+| Issue 6 — npm scripts | **fixed**, now `-P yogee-e62e2` (prod log kept as `logs:prod`) |
+| Issue 1 — `type` field | **done**: schema, all seven creates, `NotificationType`, and a test |
+| Issue 7 — packages | **done.** `firebase_messaging 15.2.7` + `flutter_local_notifications 22.3.0`, pinned. No movement on `firebase_core` or `intl` |
+| Step 4 — Android config | **done.** `POST_NOTIFICATIONS`, channel meta-data. Desugaring was already on (`build.gradle:40, :97`) |
+| Step 5 — iOS config | **done.** `aps-environment`, `remote-notification`, delegate wiring. Unverifiable here — Issue 12 |
+| Step 6 — token registration | **done.** `register_push_token.dart`, three call sites, one test. Issue 13 ordering applied |
+| D1 — OneSignal dropped | **done.** Removed from `functions/package.json` and the lockfile; `CLAUDE.md` corrected |
+| Step 3 — foreground banner | **done 2026-08-23.** Folded into `initPushMessaging()` in `register_push_token.dart`, called from `main.dart:137`. Never fired — nothing has sent a push |
+| Step 9 — tap routing | **done 2026-08-23.** All four tap paths wired, `routeForPush` + `test/push_tap_route_test.dart`. Never fired |
+| Step 8 — test harness | **written 2026-08-23**, `firebase/functions/send_test_push.mjs`. **Never run** — needs a `yoogeeapp` service-account key |
+
+Outstanding:
+
+| Item | State |
+|---|---|
+| **Step 1 — enable Cloud Messaging API** | **not done, and it blocks the first push.** iOS additionally needs an APNs key — see [Step 1](#step-1--console-no-code) |
+| Step 8 — verify on a device | **not done.** Nothing has delivered a push yet |
+| `onUserDeleted` `recursiveDelete` fix | written, **deliberately not deployed.** Production still runs the old `delete()`, which orphans `fcm_tokens` |
+| Issue 11 — dev `google-services.json` | still missing; debug builds land on `yoogeeapp` |
+| D1 — social-event opt-out | still an open product question |
+
+Cleared since: the Artifact Registry cleanup policy is now set on both regions
+(`todo-fix.txt` item 9).
+
+### Deploy commands that work
+
+**Never run a bare `firebase deploy --only functions`** — it offers to delete two
+sourceless live functions, see
+[Drift 1](#drift-1--two-live-functions-exist-in-no-source-tree).
+
+`firebase.json` names the codebase `functions`, so per-function filters need
+**both** names — `functions:<codebase>:<function>`. Plain
+`--only functions:onNotificationCreated` fails with "No function matches given
+--only filters":
+
+```
+firebase deploy --only firestore:indexes -P yoogeeapp
+firebase deploy --only functions:functions:onNotificationCreated,functions:functions:onTokenRegistered,functions:functions:onPostDeleted -P yoogeeapp --non-interactive
+```
+
+`--non-interactive` is the safety belt: without `--force` it refuses to delete
+anything and aborts instead.
+
+### Regions
+
+The three new functions are in **`europe-west2`**, colocated with Firestore.
+`onUserDeleted` and the two sourceless functions remain in `us-central1`, so the
+project is deliberately **mixed-region** — a function's region cannot be changed
+after creation, only recreated.
+
+Cross-region triggers do still fire; the warning the CLI prints is about the
+network hop, not correctness. Region is *not* why
+`sendPushNotificationsTrigger` is dormant — that is because nothing writes
+`ff_push_notifications`.
+
+### First push — what to actually do
+
+1. **Enable the Cloud Messaging API on `yoogeeapp`.** Nothing below works first.
+2. Install a debug build and open **Notification settings** to trigger the
+   permission prompt — the only place it fires. This lands on `yoogeeapp` even
+   from a debug build ([Issue 11](#issue-11--the-dev-project-is-not-currently-reachable-on-android)).
+3. Confirm a document appears at `users/{uid}/fcm_tokens/{token}`.
+4. `node firebase/functions/send_test_push.mjs <your-email>` — sends the real
+   payload straight to FCM, bypassing Firestore and the trigger, so it isolates
+   token/channel/platform config from function logic. Needs
+   `GOOGLE_APPLICATION_CREDENTIALS` pointing at a `yoogeeapp` service-account
+   key saved **outside the repo**. A push that arrives here means anything still
+   broken is in the trigger, not the device.
+5. Have a second account like one of your posts — this is the step that
+   exercises `onNotificationCreated`.
+6. `npm run logs:prod` — the `yoogeeapp` log alias.
+
+---
+
+## Production drift, found during the Step 7 deploy
+
+Both of these were discovered by checking what was actually live before
+deploying, on 2026-08-21. Neither is caused by the push work; both change how
+the push work has to be deployed.
+
+### Drift 1 — two live functions exist in no source tree
+
+`firebase functions:list -P yoogeeapp` returns three functions. Two of them are
+in **neither this repo nor its git history** (checked with `git log -S` across
+all branches):
+
+| Live function | Trigger | In repo? |
+|---|---|---|
+| `addFcmToken` | callable | **no** |
+| `sendPushNotificationsTrigger` | onCreate `ff_push_notifications/{id}` | **no** |
+| `onUserDeleted` | auth `user.delete` | yes |
+
+These are FlutterFlow's stock push scaffolding — the canonical function names,
+the `ff_push_notifications` collection, 2048 MB. Someone enabled Push
+Notifications in FlutterFlow and deployed, and the source never landed here.
+This contradicts the "push notifications are not implemented" line that was in
+`CLAUDE.md`: it was true of the *repo* and false of the *project*.
+
+**One relief:** `sendPushNotificationsTrigger` fires on
+`ff_push_notifications/{id}`, **not** `notifications/{id}`. It will not
+double-send alongside `onNotificationCreated`.
+
+**The hazard:** both carry `firebase-functions-codebase: "functions"`, the
+codebase `firebase.json` declares. A bare `firebase deploy --only functions`
+treats them as belonging to this codebase, finds no local source, and **offers
+to delete them** — with no source anywhere to redeploy from. So always name the
+functions explicitly, as in the deploy commands above.
+
+They do look dead: nothing in `lib/` calls `addFcmToken`, nothing writes
+`ff_push_notifications`, `functions:log` has no entries, and `pubspec.yaml`
+carried no push package until 2026-08-21, so no client could have received
+anything. "Looks dead" is not "safe to delete permanently with no source",
+though, and that is an owner's decision rather than a deploy side effect.
+
+The same drift existed in `firestore.indexes.json`: three composite indexes were
+live but missing from the file, so an index deploy would have offered to delete
+them. They have since been added, and the deploy is now verified additive — zero
+deletions, one field override added.
+
+### Drift 2 — `onPostDeleted` has never been deployed
+
+It is in the repo, in git history, and in the local `index.js`. It is **not in
+`functions:list`**. So the comment cascade it exists to perform has never run in
+production, and **every post deleted since launch has left its replies behind**
+in the `comments` collection. Clients cannot clean them up: `firestore.rules:53`
+is `allow delete: if false` on `comments`, which is exactly why the cascade was
+written as a function.
+
+Count the orphans before deploying it — the first invocation after a deploy only
+cleans up the post being deleted at that moment, not the backlog. The backlog
+needs a one-off script.
+
+#### Audit of `onPostDeleted`
+
+Correct as written: the field name is `postref`, matching
+`comments_record.dart:47`; batches chunk at 400 against Firestore's 500-write
+cap; the `comments.empty` early return avoids an empty commit; and admin
+privileges are genuinely required because of the rule above.
+
+Three gaps were found. **Two are now fixed**, at the owner's call, since both
+interact with push:
+
+1. ~~**The cascade is incomplete — notifications are not cleaned.**~~ **Fixed.**
+   Two collections hold a reference back to a post: `comments.postref` **and**
+   `notifications.postref` (`notifications_record.dart:80`); only comments were
+   deleted. A notification left pointing at a deleted post still rendered, and
+   `notifications_widget.dart:381` navigates to `RepliesWidget` with that
+   dangling reference when tapped — the same screen push tap-routing will land
+   on. Both collections are now queried in parallel and their refs deleted
+   through the one chunk loop. A follow notification carries no `postref`, so it
+   does not match and correctly outlives the post.
+2. ~~**`retry: false`.**~~ **Fixed** with `runWith({failurePolicy: true})`.
+   Safe because every operation is a delete and therefore idempotent: re-running
+   a partially-completed cascade converges rather than duplicating.
+
+   **With a caveat that matters.** Left unbounded, a v1 background function with
+   a failure policy retries for **seven days** — backoff of 10s, 30s, 70s, 150s,
+   310s, 630s and then every 600s, which is **~1,000 invocations** for one
+   permanently-failing event, multiplied by however many posts are deleted while
+   it is broken.
+
+   `MAX_RETRY_AGE_MS` bounds it. At **2 minutes** the guard trips on the fourth
+   attempt, capping a stuck event at **3 retries**:
+
+   | cap | retries that run | total invocations |
+   |---|---|---|
+   | 60s | 2 | 3 |
+   | **120s** ← current | **3** | **4** |
+   | 300s | 4 | 5 |
+   | none | ~1,006 | ~1,007 |
+
+   Two minutes rather than something longer because a transient Firestore error
+   clears in seconds, and anything still failing at two minutes is a bug that
+   seven days will not fix either.
+3. **The read is unbounded — still open.** `.get()` loads every matching
+   document into memory at 256 MB, now across two collections rather than one.
+   The chunked *commit* already anticipates volume; the read is the half that
+   does not. Left as-is: fine at current scale, and paginating it is a real
+   change rather than a tweak.
+
+Minor, also fixed: `postRef` was rebuilt from `context.params.postId` when
+`snap.ref` is the same reference already in hand.
+
+**`onPostDeleted` is still not deployed** and deploying it stays a separate,
+deliberate step — it is not in the push deploy command above. The orphaned
+comment backlog is unaffected either way; per the owner (2026-08-21) the project
+is early enough in testing not to need a backfill.
 
 This document is the plan for `todo-fix.txt` item 1. Line numbers verified
-against the tree on 2026-08-20.
+against the tree on 2026-08-21.
 
 ---
 
@@ -26,62 +223,126 @@ closed — and open the right screen when it is tapped.
 
 ---
 
-## Where we are now
+## End-to-end flow
 
-Notifications already exist, but only inside the app. Nothing leaves the
-device. `pubspec.yaml` has no push package of any kind.
+**Drawn out, three flow charts:**
+<https://claude.ai/code/artifact/8013856c-1d92-4b37-b2a9-83733f5fd295>
+— delivery, the token lifecycle, and the unregister ordering from
+[Issue 13](#issue-13--unregister-must-run-before-deleteuser-not-after-signout).
+
+### Delivery — a like tap, end to end
+
+```
+                  CLIENT                              CLOUD FUNCTION
+  ─────────────────────────────────────────   ───────────────────────────────────
+
+  B taps Like on A's post
+  community_widget.dart:872
+        │
+        ├── poster == currentUserReference? ──yes──▶ nothing written
+        │   (client self-notify guard)
+       no
+        ▼
+  notifications doc created ─────▶ in-app bell + list
+  madeby=B  madeto=A
+  type + ispost/is_like
+        ┊
+        ┊ Firestore onCreate
+        ▼
+  onNotificationCreated
+        │
+        ├── madeby == madeto? ──yes──▶ drop (backstop for any write
+        │                              site that forgot its guard)
+       no
+        ▼
+  resolve kind from `type`, else the ispost/is_like pair
+        │
+        ├── users/A/fcm_tokens empty? ──yes──▶ return, logging
+        │                                      "no fcm tokens for ..."
+       no
+        ▼
+  read users/B for a display name
+        ▼
+  build copy + collapse id (keyed on kind, never per post)
+        ▼
+  sendEachForMulticast ─────▶ prune not-registered / invalid tokens
+        │
+        ├── app foregrounded? ──yes──▶ data only, no OS banner
+        │                              flutter_local_notifications draws it
+       no (background or killed)                    │
+        ▼                                           │
+  FCM draws the banner itself ──────────────────────┤
+  channel yogee_social                              │
+                                                    ▼
+                                            tap → GoRouter route
+```
+
+Two things this makes visible that the prose does not:
+
+- **The trigger hangs off a write that already happens.** No create site changes
+  for delivery. That is why Issues 1 and 2 had to land first — the function reads
+  what those sites wrote, and it cannot repair a document that lies about what
+  happened.
+- **The empty-token branch is the failure everyone hits.** No token, no push, no
+  error — the `index.js:161` log line is the only trace anywhere. If a push does
+  not arrive, read the subcollection before touching anything else.
+
+### Token lifecycle — Step 6
+
+```
+  SILENT PATH                             PROMPTING PATH
+  app start, or any sign-in               Notification settings opened
+  main.dart auth-stream listener          requestPushPermission()
+        │                                       │
+        ▼                                       │ grants, then falls through
+  registerPushToken() ◀─────────────────────────┘
+  custom_code/actions/register_push_token.dart
+        │
+        ├── permission already granted? ──no──▶ return. NEVER prompts here.
+        │   getNotificationSettings()           one decline at launch kills
+       yes                                      iOS push for the install
+        ▼
+  create channel yogee_social + getToken()
+        ▼
+  set users/{uid}/fcm_tokens/{token} ◀──┐   doc id = token, re-running is free
+        ▼                               │
+  subscribe onTokenRefresh ─────────────┘   delete old doc, write the new one
+```
+
+The loop closes on itself: the silent path fires on every auth event and the
+write is idempotent, so **an unregister that runs too early costs nothing** — the
+next sign-in puts the token straight back. That asymmetry is what decides
+[Issue 13](#issue-13--unregister-must-run-before-deleteuser-not-after-signout).
+
+### Where the notification documents come from
+
+Delivery was added on top of documents that were **already being written**. No
+create site had to change for a message to be *delivered* — but all seven did
+have to change for it to say the right thing
+([Issue 1](#issue-1--the-event-kind-has-four-states-not-three)), and two of them
+had guard bugs that push amplifies
+([Issue 2](#issue-2--self-notify-guards-missing-in-one-place-wrong-in-another)).
 
 | | |
 |---|---|
 | **Created by** | `lib/pages/community/community_widget.dart:872, :1439`<br>`lib/community/replies/replies_widget.dart:515, :921, :1296`<br>`lib/community/othersprofile/othersprofile_widget.dart:2022`<br>`lib/community/addfriend/addfriend_widget.dart:159` |
 | **Also calls the same builder** | `addfriend_widget.dart:170` builds an in-memory record for `_model.newfollower` — not a write, but it must carry the same fields<br>`notifications_widget.dart:402, :662, :683` are **updates** (marking read), not creates |
 | **Read by** | `lib/community/notifications/notifications_widget.dart`, plus the unread bell badge on `myprofilepage_widget.dart` and `community_widget.dart` |
-| **Schema** | `lib/backend/schema/notifications_record.dart` — `isread`, `ispost`, `is_like`, `postref`, `madeby`, `madeto`, `timestamp` |
+| **Schema** | `lib/backend/schema/notifications_record.dart` — `isread`, `ispost`, `is_like`, `postref`, `madeby`, `madeto`, `timestamp`, `type` |
 | **Index** | `madeto ASC + timestamp DESC` already in `firestore.indexes.json` — no new index needed |
-
-The plan adds delivery on top of documents that are **already being written**.
-No create site has to change for a message to be *delivered* — but they did have
-to change for it to say the right thing, because the boolean encoding cannot be
-decoded unambiguously ([Issue 1](#issue-1--the-event-kind-has-four-states-not-three)),
-and two of them had bugs that push amplifies
-([Issue 2](#issue-2--self-notify-guards-missing-in-one-place-wrong-in-another)).
-Both are now done.
 
 ---
 
-## Decisions to make before writing code
+## Open product question
 
-### D1 — FCM over OneSignal
-
-`firebase/functions/package.json` still carries `@onesignal/node-onesignal
-^2.0.1-beta2`, and `CLAUDE.md` names OneSignal as the provider. Nothing in
-`lib/` has ever imported it and no OneSignal app id exists anywhere in the tree.
-It is a dependency in name only.
-
-FCM wins: `firebase-admin` is already installed and initialised in `index.js`,
-the trigger has to be a Firestore trigger either way, and it keeps a
-third-party account off the critical path.
-
-The same change should drop the OneSignal dependency and correct `CLAUDE.md`,
-or the next person re-litigates this.
-
-### D2 — Add an explicit `type` field
-
-The current boolean encoding cannot be decoded correctly by a function.
-See [Issue 1](#issue-1--the-event-kind-has-four-states-not-three).
-
-### D3 — Where device tokens live
-
-**Not** on the user document. See [Issue 3](#issue-3--tokens-must-not-live-on-the-user-document).
-
-### D4 — Which events are opt-out-able
+### D1 — which events are opt-out-able
 
 `users` already has `announcement_notification` and `appupdate_notifications`,
 toggled in `lib/settings/notificationssettings/notificationssettings_widget.dart:224, :316`.
 Neither covers social events. Either add a third preference, or accept that
 likes/replies/follows cannot be turned off — a poor default for a wellness app.
 
-**Open question, needs a product call.**
+**Needs a product call.**
 
 ---
 
@@ -112,7 +373,7 @@ booleans. Values live in `lib/custom_code/notification_type.dart`, which also
 carries `fromLegacy()`; `test/notification_type_test.dart` covers all four
 states.
 
-The Cloud Function must switch on `type` and **fall back** to the boolean pair.
+The Cloud Function switches on `type` and **falls back** to the boolean pair.
 Not optional: documents from an older installed client carry only the booleans,
 and those installs outlive the deploy. The JS fallback mirrors `fromLegacy()` —
 change one and this repo's test is what catches the other.
@@ -139,10 +400,9 @@ file, not three.
 | Fixed | `othersprofile_widget.dart:2015` | had no guard at all; liking your own post from another user's profile notified you |
 | Fixed | `replies_widget.dart:915` | guarded the post author while the notification is addressed to `widget!.userref`; now guards the recipient |
 
-**Still to do — the backstop.** The Cloud Function should drop any document
-where `madeby == madeto`. One check covering all seven write sites and any
-future one. The two client bugs above are fixed, but a client guard cannot
-protect against a site nobody has written yet.
+**The backstop is done.** `onNotificationCreated` drops any document where
+`madeby == madeto` — one check covering all seven write sites and any future
+one, because a client guard cannot protect against a site nobody has written yet.
 
 ### Issue 3 — tokens must not live on the user document
 
@@ -159,8 +419,7 @@ them. Token theft alone does not let an attacker send pushes — that needs the
 server credential — but wiping them silently kills delivery, with no error
 anywhere.
 
-**Use a subcollection**, `users/{uid}/fcm_tokens/{token}` — **written into
-`firebase/firestore.rules`, not yet deployed:**
+**Uses a subcollection**, `users/{uid}/fcm_tokens/{token}` — deployed 2026-08-21:
 
 ```
 match /users/{uid}/fcm_tokens/{token} {
@@ -180,9 +439,7 @@ survivable once a function delivers them: an unauthenticated caller can write a
 document with any `madeto` and any `madeby`, and the function faithfully
 delivers it.
 
-Required **before** the function ships. **Written into
-`firebase/firestore.rules`, not yet deployed** — the live rule is still
-`allow create: if true` until `firebase deploy --only firestore:rules` runs:
+Deployed 2026-08-21, ahead of the function:
 
 ```
 allow create: if request.auth != null
@@ -217,10 +474,9 @@ which is the reason that is harder than it sounds.
 "shell": "firebase -P yoogeeapp functions:shell"
 ```
 
-`yoogeeapp` is the **production** project with live user data. `npm run serve`
-starts a functions emulator whose admin SDK talks to production Firestore,
-because no local Firestore runs alongside it. A trigger under development would
-read and write real documents.
+`npm run serve` started a functions emulator whose admin SDK talks to the shared
+project's Firestore, because no local Firestore runs alongside it. A trigger
+under development would read and write real documents.
 
 **DONE.** All three now target `yogee-e62e2`; the production log command is
 kept explicitly as `logs:prod`.
@@ -251,9 +507,7 @@ Failure mode for both is `version solving failed` — no build at all.
 
 **Do not hand-pick version numbers.** Add one package at a time, let pub
 resolve, and check `flutter pub deps` for movement on **`firebase_core` first,
-then `intl`**, before committing. If `flutter_local_notifications` is the
-conflicting one, foreground display can be done without it (see
-[Step 3](#step-3--why-both-packages)).
+then `intl`**, before committing.
 
 ### Issue 8 — no collapsing; a popular post is one push per like
 
@@ -296,9 +550,6 @@ must not collide — and version conflicts between `audio_service` and
 
 ### Issue 11 — the dev project is not currently reachable on Android
 
-`Step 8` assumes delivery can be verified against `yogee-e62e2`. On Android it
-cannot, today.
-
 `android/app/src/debug/google-services.json` is **missing** — untracked, never
 in git. Without it the Gradle plugin falls back to
 `android/app/google-services.json`, so a debug build registers its token with,
@@ -326,6 +577,51 @@ Verifying iOS delivery needs a physical iPhone, which in turn needs a Mac to
 install a development build on it. Budget for that before committing to iOS
 push, or ship Android first and treat iOS as a separate piece of work.
 
+### Issue 13 — unregister must run before `deleteUser`, not after `signOut`
+
+`deleteaccount_widget.dart:149-151` runs `deleteUser()` → `prepareAuthEvent()` →
+`signOut()`. Hanging the token delete off `signOut()` alone puts it *after* the
+Firebase Auth user is destroyed, so `request.auth` is null and the `fcm_tokens`
+rule denies the delete. The token document is orphaned.
+
+**Put `unregisterPushToken()` at the top of `deleteUser()` as well**, where the
+auth user is still alive. Both entry points then sit in
+`firebase_auth_manager.dart` and no widget changes. The delete is idempotent and
+removing an absent document is a no-op, so the double call on the delete-account
+path is harmless.
+
+#### "What if `deleteUser` then fails?"
+
+Right risk to take — the two failure directions are not symmetric:
+
+| Unregister too early | Unregister too late, or never |
+|---|---|
+| A live user loses push until the next auth event | The **next person to use the device** receives the previous user's notifications |
+| Self-heals: `main.dart`'s auth-stream hook re-runs `registerPushToken()` on the next sign-in or app start, and the write is idempotent | Never heals — the FCM token belongs to the *install*, not the user, so `users/{oldUid}/fcm_tokens/{token}` and `users/{newUid}/fcm_tokens/{token}` are the same token string |
+
+Early is recoverable, late is a privacy leak.
+
+On this screen it is close to moot anyway: `deleteaccount_widget.dart:150-155`
+runs `signOut()` and redirects to Signup **unconditionally**, so the user ends up
+signed out whether the delete succeeded or not, and re-registration happens the
+moment they sign back in.
+
+#### Two pre-existing bugs this uncovered — not push's to fix
+
+Out of scope here, recorded so they are not lost:
+
+1. **`deleteUser()` swallows every failure.** `firebase_auth_manager.dart:69-86`
+   catches `FirebaseAuthException`, shows a snackbar for `requires-recent-login`
+   and does **nothing at all** for any other code. It returns normally either
+   way, so `deleteaccount_widget.dart` cannot tell success from failure and
+   navigates to Signup regardless. **A user whose delete failed is told their
+   account is gone while it still exists.**
+2. **`onUserDeleted` leaves subcollections behind.** `functions/index.js:5-9`
+   deletes `users/{uid}`, but Firestore does not remove a document's
+   subcollections with it, so `fcm_tokens` outlives the account. Garbage rather
+   than a hazard — nothing creates notifications for a deleted user. The
+   `recursiveDelete` fix is written but deliberately not deployed.
+
 ---
 
 ## Setup
@@ -336,10 +632,8 @@ push, or ship Android first and treat iOS as a separate piece of work.
 - iOS: create an APNs auth key (`.p8`) in the Apple Developer portal, upload
   under **Firebase → Project settings → Cloud Messaging**. This requires a
   **paid Apple Developer Program membership** ($99/yr) — the portal section that
-  issues APNs keys does not exist on a free account. Nothing about iOS push
-  works without it.
-
-Skip the APNs key and iOS push fails silently: no error, no delivery.
+  issues APNs keys does not exist on a free account. Skip it and iOS push fails
+  silently: no error, no delivery.
 
 Do this on `yogee-e62e2` first. Production last, with the owner.
 
@@ -358,9 +652,33 @@ Add, resolve, verify `intl` did not move.
 FCM only draws its own banner when the app is backgrounded or killed. A message
 arriving in the foreground is delivered as data with **no UI at all**.
 
-If `flutter_local_notifications` conflicts, the fallback is to render foreground
-events as an in-app snackbar and accept that only background pushes get a system
-notification.
+**DONE, 2026-08-23.** `flutter_local_notifications` did not conflict.
+`initPushBanners()` in `register_push_token.dart`, called once from
+`main.dart:137` — from `initState`, **not** from `registerPushToken()`, because
+delivery belongs to the install rather than to whoever is signed in, and hanging
+it off the auth stream would re-subscribe on every auth event. `_messageSub ??=`
+is the second guard on the same hazard.
+
+Three things worth keeping straight, because they are not symmetrical between
+the platforms:
+
+- **iOS needs no local notification.** `setForegroundNotificationPresentationOptions(alert/badge/sound)`
+  makes iOS draw its own foreground banner; posting one as well shows **two**.
+  So `_showBanner()` returns early on anything that is not Android, and that
+  early return *is* the iOS implementation.
+- **`initialize()` is required for `show()`, not for the channel.** The channel
+  was already being created by `registerPushToken()`, which is why it appeared
+  to work without this. The Android init icon must resolve to a real
+  drawable/mipmap or `initialize` throws.
+- **The copy comes off the wire.** `_showBanner()` reads `message.notification`
+  and returns if it is null, rather than rebuilding the text from `data` — the
+  Cloud Function always sends a `notification` block (`index.js:181`), and a
+  second copy-builder on the client is a second implementation free to drift.
+
+`bannerIdForType()` decides what replaces what, mirroring the collapse key from
+[Issue 8](#issue-8--no-collapsing-a-popular-post-is-one-push-per-like) on the
+local-notification side; `test/push_banner_id_test.dart` covers it.
+`show()` already passes `payload: jsonEncode(message.data)`.
 
 ### Step 4 — Android config
 
@@ -381,28 +699,68 @@ notification.
 - `AppDelegate.swift` registers plugins and nothing else. Add the notification
   delegate wiring / `registerForRemoteNotifications` there.
 
-### Step 6 — token registration (`lib/custom_code/actions/`)
+### Step 6 — token registration — **DONE**
 
-One custom action that:
+`lib/custom_code/actions/register_push_token.dart`, exported from the barrel.
+Three functions, because the permission prompt and the token write have to
+happen at different moments:
 
-- requests notification permission
-- writes the token to `users/{uid}/fcm_tokens/{token}` ([Issue 3](#issue-3--tokens-must-not-live-on-the-user-document))
-- subscribes to `onTokenRefresh` and writes the new token too
-- **deletes the token on sign-out** — otherwise the next person to use that
-  device receives the previous user's notifications
-- handles the tap payload and navigates
+| Function | Called from | Does |
+|---|---|---|
+| `registerPushToken()` | `main.dart`, inside the existing `yogeeFirebaseUserStream()` listener | **Never prompts.** Reads `getNotificationSettings()` and no-ops unless already `authorized`/`provisional`; otherwise creates the channel, `getToken()`, writes the doc, subscribes `onTokenRefresh` |
+| `requestPushPermission()` | `notificationssettings_widget.dart` `initState` | The OS prompt, then registers |
+| `unregisterPushToken()` | `deleteUser()` **and** `signOut()`, both in `firebase_auth_manager.dart` | Deletes the token document |
 
-The refresh listener is not optional. Tokens rotate on reinstall, restore, and
-sometimes on their own; a stale token stops delivering with no error.
+Notes on why it is shaped this way:
 
-Put this in `lib/custom_code/actions/` — per `CLAUDE.md` that directory is
-hand-written and survives, unlike the generated schema files.
+- **The auth-stream hook beats editing sign-in buttons.** One line covers all
+  six providers, signup, and cold start with an already signed-in user. The
+  write is idempotent (doc id = token), so re-running on every auth event is
+  free.
+- **The prompt is separated out** because iOS shows it once per install, ever.
+  Splitting the two is what lets registration run anywhere.
+- **The refresh listener is guarded by a top-level subscription**, or every auth
+  event stacks another one. It re-reads the uid on fire, since it outlives the
+  sign-in that created it.
+- **`deleteToken()` is deliberately not called** on unregister. Delivery is
+  driven by the subcollection, so invalidating the token would only force a
+  pointless re-registration.
+- **Ordering is per [Issue 13](#issue-13--unregister-must-run-before-deleteuser-not-after-signout)**
+  — the `deleteUser()` call site is the one that matters.
+- **Web returns early.** FCM on web needs a VAPID key and a service worker,
+  neither of which exists; `getToken()` would throw.
 
-Call it **after sign-in**, not in `main()`. See [Gotchas](#gotchas).
+#### Every public function is guarded — and it is not optional
 
-### Step 7 — Cloud Function (`firebase/functions/index.js`)
+`unregisterPushToken()` is awaited from **inside `signOut()`**. An escaping
+exception there means `FirebaseAuth.instance.signOut()` never runs and **the
+user cannot log out** — and Firestore throwing is not hypothetical. The same
+call inside `deleteUser()` would escape that method's
+`catch (FirebaseAuthException)` entirely, since a Firestore `FirebaseException`
+is not one.
 
-Match the existing v1 style in that file (`onPostDeleted`, `index.js:15`) —
+So all three public functions, plus the `onTokenRefresh` callback, route through
+one `_guarded` helper: `debugPrint` + a non-fatal `Crashlytics.recordError`,
+matching the convention in `init_audio_player.dart`. Push registration can fail;
+it must never be able to break authentication.
+
+Swallowed but never silent, deliberately: a failed unregister leaves the token
+under the old uid, which is exactly the privacy leak
+[Issue 13](#issue-13--unregister-must-run-before-deleteuser-not-after-signout)
+describes, and the Crashlytics record is the only place it would ever surface.
+
+A **null token is a return, not an error** — on iOS the APNs token may not have
+arrived yet, and on an Android device without Play Services nothing can issue
+one. Both self-correct on the next auth event.
+
+`test/push_channel_id_test.dart` asserts the runtime `kPushChannelId` still
+matches the manifest meta-data. Nothing else links those two declarations, and
+drift is invisible: Android files the notification under an uncategorised
+heading and still delivers it.
+
+### Step 7 — Cloud Function — **DONE** (`firebase/functions/index.js`)
+
+Matches the existing v1 style in that file (`onPostDeleted`, `index.js:15`) —
 `firebase-functions` is `^4.4.1`, which still serves v1:
 
 ```js
@@ -411,20 +769,20 @@ exports.onNotificationCreated = functions.firestore
     .onCreate(async (snap, context) => { ... });
 ```
 
-It should:
+What it does, in order:
 
-1. drop the document if `madeby == madeto` ([Issue 2](#issue-2--self-notify-guards-missing-in-one-place-wrong-in-another) backstop)
-2. resolve the event kind from `type`, falling back to the `ispost`/`is_like`
+1. drops the document if `madeby == madeto` ([Issue 2](#issue-2--self-notify-guards-missing-in-one-place-wrong-in-another) backstop)
+2. resolves the event kind from `type`, falling back to the `ispost`/`is_like`
    pair using the four-row table ([Issue 1](#issue-1--the-event-kind-has-four-states-not-three))
-3. read the `madeto` user's `fcm_tokens` subcollection; return early if empty
-4. read the `madeby` user document for a display name ([Issue 9](#issue-9--the-notification-document-carries-no-display-name))
-5. build the copy and set a collapse id ([Issue 8](#issue-8--no-collapsing-a-popular-post-is-one-push-per-like))
-6. send with `sendEachForMulticast`
-7. inspect the per-token responses and delete every token returning
+3. reads the `madeto` user's `fcm_tokens` subcollection; returns early if empty
+4. reads the `madeby` user document for a display name ([Issue 9](#issue-9--the-notification-document-carries-no-display-name))
+5. builds the copy and sets a collapse id ([Issue 8](#issue-8--no-collapsing-a-popular-post-is-one-push-per-like))
+6. sends with `sendEachForMulticast`
+7. inspects the per-token responses and deletes every token returning
    `messaging/registration-token-not-registered` or
    `messaging/invalid-registration-token`
 
-Use `sendEachForMulticast`, **not** `sendMulticast`/`sendAll`. `firebase-admin`
+`sendEachForMulticast`, **not** `sendMulticast`/`sendAll`. `firebase-admin`
 is `^11.11.0`, which has it; the older batch-endpoint methods target an API that
 has since been decommissioned.
 
@@ -432,23 +790,157 @@ Step 7 is what stops the token collection filling with dead devices. With tokens
 as subcollection documents this is a plain delete — no `arrayRemove`
 read-modify-write race.
 
+#### Step 7b — token dedup, a second trigger — **DONE**
+
+Closes the one failure that does not self-heal. When
+[Issue 13](#issue-13--unregister-must-run-before-deleteuser-not-after-signout)'s
+guarded unregister fails, the token stays under the old uid and — since the
+token belongs to the install — after the next person signs in on that phone the
+same token string exists under two uids and both deliver.
+
+Nothing on the client can repair this. By the time it is detectable the client
+has signed out, and `firestore.rules:23` correctly forbids user B from deleting
+a document under `users/A/`. It has to be server-side, with admin privileges.
+
+**Done on registration, not on send.** The leak only becomes real at the moment
+a second user registers the same token, so that is both the cheapest place to
+check (once per sign-in, not once per notification) and the moment that closes
+the window as it opens:
+
+```js
+exports.onTokenRegistered = functions.firestore
+    .document("users/{uid}/fcm_tokens/{token}")
+    .onCreate(async (snap, context) => { ... });
+```
+
+It queries every `fcm_tokens` document carrying this token string and deletes
+the ones belonging to a different uid.
+
+`onCreate` rather than `onWrite` is deliberate and sufficient: re-registering on
+the same account rewrites an existing document and is an update, which does not
+fire. A *new* user on the same device writes under a different parent, which is
+a create — exactly the event that matters.
+
+**Two prerequisites, both easy to miss, both now done:**
+
+1. **The token is also stored as a field**, not only as the document id.
+   Collection group queries cannot filter on `FieldPath.documentId()` with a
+   bare id — for a collection group the comparison is against the full resource
+   path — so `collectionGroup("fcm_tokens").where("token", "==", token)` needs a
+   real field to match on.
+2. **A collection-group index.** Firestore's automatic single-field indexes are
+   collection-scoped, so querying across every user's subcollection needs an
+   explicit `fieldOverrides` entry in `firebase/firestore.indexes.json` with
+   `COLLECTION_GROUP` scope on `token`, or the query fails with
+   `FAILED_PRECONDITION`. Deployed alongside the trigger.
+
+**Which copy wins:** the newest `updated_at`, which is already a
+`serverTimestamp()` and so is not open to client clock skew. A missing
+`updated_at` counts as oldest — documents written before this field existed
+should lose to any live registration.
+
+**Ceiling:** one collection group query per registration. Fine at this scale and
+it only runs on sign-in. If registrations ever outgrow it, the alternative is a
+top-level `token → uid` mapping document, which is O(1) — but note that such a
+mapping is written by the same client whose write just failed, so it inherits
+the exact failure mode it is supposed to fix. Deriving the answer from the
+documents that actually exist is what makes the trigger correct rather than
+merely faster.
+
+Deliberately **not** also checking on the send path. One mechanism, in the place
+that can actually observe the event. Add the send-path check only if the trigger
+proves unreliable in practice.
+
 ### Step 8 — verify
 
 - **Function logic:** functions emulator, after adding it to the `emulators`
   block of `firebase.json` and to `emulators.cmd` per
   [Issue 5](#issue-5--nothing-about-fcm-delivery-can-be-tested-locally),
   triggered by writing a notification document.
-- **Delivery:** real device. Cannot be emulated. Both build types currently
-  reach `yoogeeapp` (staging) — see
-  [Issue 11](#issue-11--the-dev-project-is-not-currently-reachable-on-android).
-  Usable as a test target; it just means debug and release are not
-  distinguishable until the dev `google-services.json` is restored.
-- **iOS delivery** needs a physical device and a Mac; the simulator routes
-  available here do not test it. See
-  [Issue 12](#issue-12--ios-push-cannot-be-verified-with-the-current-tooling).
+- **Delivery:** real device, cannot be emulated. Both build types currently
+  reach `yoogeeapp` — usable as a target, it just means debug and release are
+  indistinguishable ([Issue 11](#issue-11--the-dev-project-is-not-currently-reachable-on-android)).
+- **iOS delivery** needs a physical device and a Mac
+  ([Issue 12](#issue-12--ios-push-cannot-be-verified-with-the-current-tooling)).
 - Check all four event kinds × foreground / background / killed, plus the tap
   route for each. The `like_comment` case is the one the old three-state decode
   got wrong, so it is the one to check first.
+
+### Step 9 — tap routing — **DONE**
+
+A tapped push opens the same screen the in-app notification list opens for that
+event. Wired inside `initPushMessaging()`; the decision itself is
+`routeForPush()`, covered by `test/push_tap_route_test.dart`.
+
+**Four tap paths, not one.** This is the part that looks like one listener and
+is not:
+
+| App state | Banner drawn by | Tap surfaces at |
+|---|---|---|
+| foreground, Android | `flutter_local_notifications` | `onDidReceiveNotificationResponse` |
+| foreground, iOS | iOS itself, via `setForegroundNotificationPresentationOptions` | `onMessageOpenedApp` |
+| backgrounded | FCM | `onMessageOpenedApp` |
+| killed | FCM | `getInitialMessage()` |
+
+Plus a fifth that is easy to miss: a **foreground** banner outlives the app that
+drew it. Background the app, let Android kill the process, then tap the banner
+still sitting in the shade — `onDidReceiveNotificationResponse` is not called,
+and `getNotificationAppLaunchDetails()` is the only record it happened.
+
+**Destinations**, mirroring `notifications_widget.dart:381, :639, :666`:
+
+| type | opens | with |
+|---|---|---|
+| `like_post`, `like_comment`, `reply` | `RepliesWidget` | `postref` from the payload, `userref` = signed-in user |
+| `follow` | `OthersprofileWidget` | `profileowner` = `madeby` |
+
+`like_comment` is the one to get right. It is the only type where `ispost` is
+false while the destination is still the **post** — it carries the post's
+reference, not the comment's (`replies_widget.dart:1307`). Decoding it as "not a
+post, therefore a profile" is the same three-state mistake as
+[Issue 1](#issue-1--the-event-kind-has-four-states-not-three), and the test
+names it explicitly.
+
+**The payload carries paths; routes want serialized references.**
+`onNotificationCreated` sends `postref`/`madeby` as `DocumentReference.path`
+(`index.js:187-188`), but `serializeParam` does **not** serialize a reference to
+its path — `_serializeDocumentReference` joins the document ids with `|`
+(`serialization_util.dart:39-50`), so `posts/abc` becomes `abc`. The path is
+rebuilt into a reference with `FirebaseFirestore.instance.doc()` and passed
+through the real serializer, rather than a second implementation free to drift.
+
+#### Cold start is the hard case, and it needs both halves
+
+A tap on a killed app arrives from `getInitialMessage()` inside `initState`,
+which is **before Firebase Auth has restored the session** and **before
+`MaterialApp.router` has built its navigator**. Neither is optional:
+
+- `RepliesWidget` force-unwraps `userref` (`replies_widget.dart:228, :1031`), so
+  pushing before the user is known is a null-check crash on open, not a degraded
+  screen. `userref` is deliberately not in the payload — it is the notification's
+  `madeto`, which for a push is by definition this device's user.
+- There is no navigator to push onto, so `appNavigatorKey.currentContext` is
+  null.
+
+So the tap is **held** in `_pendingTap` and retried, from the cheapest source for
+each half: auth from `registerPushToken()`, which already runs on every auth
+event and calls the flush before any of its own early returns; and the navigator
+from a single `addPostFrameCallback`, because one more frame is all that needs —
+not another auth event, which on a cold start may never come.
+
+A held tap that can never resolve stays held, which is the right end state: a
+push cannot reach a device with no registered token, so "signed out forever" has
+nothing to open.
+
+Also handled: the tap marks the notification read
+(`notifications_widget.dart:399` does the same), or the bell badge disagrees with
+what the user has just seen. `send_test_push.mjs`'s synthetic `test-<millis>` id
+is skipped — the document does not exist, and a Crashlytics report in the middle
+of the one flow that proves push works is noise.
+
+Two listeners are `??=`-guarded like the others. A duplicate `onMessageOpenedApp`
+is worse than a duplicate banner: it pushes the destination twice, so Back lands
+on a second copy of the screen the user just left.
 
 ---
 
@@ -466,24 +958,18 @@ read-modify-write race.
 
 ---
 
-## Suggested order
+## What is left
 
-Cheapest blocking work first:
+All the code is written and the server side is live. Nothing here has been
+observed working end to end yet.
 
-1. ~~`firestore.rules` — Issues 3 and 4.~~ **Written, not deployed.** Deploying
-   is a separate, owner-involved step.
-2. ~~The two client guard bugs — Issue 2.~~ **Done.** The `madeby == madeto`
-   backstop lands with the function.
-3. ~~Point the npm scripts away from production — Issue 6.~~ **Done.**
-4. ~~`type` field at the write sites, with fallback — Issue 1.~~ **Done**, with
-   a test.
-5. **Restore `android/app/src/debug/google-services.json`** — Issue 11. Now
-   blocking: without it every step below is tested against production.
-6. Packages and resolution check — Issue 7. Watch `firebase_core` before `intl`.
-7. Platform config — Steps 4 and 5.
-8. Token registration action — Step 6.
-9. The function itself — Step 7, including the collapse-key ceiling from
-   Issue 8.
-
-Items 1–4 were worth doing regardless of whether push ever ships, and are done.
-Item 5 is the next thing that blocks safe progress.
+1. **Enable the Cloud Messaging API on `yoogeeapp`** — Step 1. Console, one
+   toggle, and **the only thing now standing between this and a real push.**
+2. **Verify on a device — Step 8.** Grant permission from Notification
+   settings, confirm a token document appears, then have a second account like
+   a post.
+3. **Restore `android/app/src/debug/google-services.json`** — Issue 11. Not
+   blocking, but until it exists debug and release are indistinguishable and
+   test tokens pile up in the shared project.
+4. Deploy the `onUserDeleted` `recursiveDelete` fix, once its wider delete
+   behaviour has been looked at deliberately.

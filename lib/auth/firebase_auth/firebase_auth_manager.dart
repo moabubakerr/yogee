@@ -10,11 +10,13 @@ import '../base_auth_user_provider.dart';
 import '../../flutter_flow/flutter_flow_util.dart';
 
 import '/backend/backend.dart';
+import '/custom_code/actions/index.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'anonymous_auth.dart';
 import 'apple_auth.dart';
 import 'email_auth.dart';
+import 'facebook_auth.dart';
 import 'firebase_user_provider.dart';
 import 'google_auth.dart';
 import 'jwt_token_auth.dart';
@@ -49,6 +51,7 @@ class FirebaseAuthManager extends AuthManager
     with
         EmailSignInManager,
         GoogleSignInManager,
+        FacebookSignInManager,
         AppleSignInManager,
         AnonymousSignInManager,
         JwtSignInManager,
@@ -61,7 +64,12 @@ class FirebaseAuthManager extends AuthManager
   FirebasePhoneAuthManager phoneAuthManager = FirebasePhoneAuthManager();
 
   @override
-  Future signOut() {
+  Future signOut() async {
+    // Drop this device's push token before the auth user goes away. The FCM
+    // token belongs to the INSTALL, not the user, so a token left under the
+    // old uid keeps delivering that person's notifications to whoever signs
+    // in next on the same phone. See docs/fcm-push-plan.md, Issue 13.
+    await unregisterPushToken();
     return FirebaseAuth.instance.signOut();
   }
 
@@ -72,6 +80,12 @@ class FirebaseAuthManager extends AuthManager
         print('Error: delete user attempted with no logged in user!');
         return;
       }
+      // Also unregister here, not only in signOut(): deleteaccount_widget
+      // calls deleteUser() first, and by the time signOut() runs the auth user
+      // is gone, so `request.auth` is null and the fcm_tokens rule denies the
+      // delete. Deleting an absent document is a no-op, so the second call on
+      // this path costs nothing.
+      await unregisterPushToken();
       await currentUser?.delete();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
@@ -186,6 +200,10 @@ class FirebaseAuthManager extends AuthManager
   @override
   Future<BaseAuthUser?> signInWithGoogle(BuildContext context) =>
       _signInOrCreateAccount(context, googleSignInFunc, 'GOOGLE');
+
+  @override
+  Future<BaseAuthUser?> signInWithFacebook(BuildContext context) =>
+      _signInOrCreateAccount(context, facebookSignInFunc, 'FACEBOOK');
 
   @override
   Future<BaseAuthUser?> signInWithGithub(BuildContext context) =>
@@ -407,6 +425,13 @@ class FirebaseAuthManager extends AuthManager
       };
     }
     if (error is PlatformException) {
+      // Raised by facebook_auth.dart when Facebook reports LoginStatus.failed.
+      // Its own message is SDK-internal ("net::ERR_...", "User logged out"),
+      // so it is not shown; the point is that a failure says something at all
+      // rather than looking like a cancellation.
+      if (error.code == 'facebook_login_failed') {
+        return 'Facebook sign-in could not complete. Please try again.';
+      }
       // google_sign_in surfaces Play Services failures here.
       if (error.code == 'sign_in_canceled') {
         return null;

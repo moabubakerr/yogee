@@ -68,6 +68,26 @@ Three projects exist. **On Android the platform files decide which one you hit, 
 
 To verify what an APK actually points at, grep the binary for the project id rather than guessing.
 
+### Firestore locations differ per project — and cannot be changed
+
+| Project | Firestore | Plan |
+|---|---|---|
+| `yoogeeapp` | `europe-west2` | Blaze |
+| `yogee-e62e2` | `asia-southeast1` | **Spark — cannot run Cloud Functions at all** |
+
+A Firestore location is fixed at creation, permanently. `REGION` in `firebase/functions/index.js` is `europe-west2` to colocate with staging; dev would need a different value. Because dev is on Spark, **every functions change has to be tested against `yoogeeapp`** — see `todo-fix.txt` items 10 and 11.
+
+### Deploying functions — two things that will bite you
+
+`firebase/.firebaserc` defines `default` → dev, plus `dev`, `staging` (`yoogeeapp`) and `emulator`. `default` is dev on purpose, so a forgotten `-P` lands somewhere harmless.
+
+1. **Never run a bare `firebase deploy --only functions`.** Two live functions on `yoogeeapp` — `addFcmToken` and `sendPushNotificationsTrigger` — exist in no source tree and in no git history (FlutterFlow's push scaffolding). A bare deploy offers to delete them, and nothing could redeploy them. Always name functions explicitly, and keep `--non-interactive`, which refuses to delete without `--force`.
+2. **Per-function filters need the codebase name twice.** `firebase.json` names the codebase `functions`, so it is `functions:<codebase>:<function>`. Plain `--only functions:onNotificationCreated` fails with "No function matches given --only filters".
+
+```
+firebase deploy --only functions:functions:onNotificationCreated -P staging --non-interactive
+```
+
 ## Architecture
 
 ### State Management
@@ -140,4 +160,10 @@ Generated page widgets are deeply nested with very long `build()` methods (`dash
 | Animations | `flutter_animate`, Rive |
 | Local storage | `shared_preferences`, `sqflite` |
 
-**Push notifications are not implemented.** `firebase/functions/package.json` depends on `@onesignal/node-onesignal`, but nothing in `lib/` imports OneSignal and there are no push packages in `pubspec.yaml`. Notifications currently exist only as Firestore documents rendered in-app.
+**Push notifications use FCM, not OneSignal.** The `@onesignal/node-onesignal` dependency was never imported by anything and has been dropped; `firebase-admin` was already installed and the trigger had to be a Firestore trigger either way. See `docs/fcm-push-plan.md`.
+
+Delivery is `onNotificationCreated` in `firebase/functions/index.js`, triggered by the `notifications` documents the app already writes — no create site changed for push. Device tokens live at `users/{uid}/fcm_tokens/{token}`, a **subcollection**, because `/users/{document}` is `allow write: if true` and a field there would be world-readable and world-wipeable. `lib/custom_code/actions/register_push_token.dart` writes them, hung off the auth stream in `main.dart` rather than each sign-in button.
+
+Two things about that file are load-bearing: every public function swallows its own errors, because `unregisterPushToken()` is awaited inside `signOut()` and a throw there would leave the user unable to log out; and the permission prompt lives only in Notification settings, because iOS shows it once per install and a decline at launch kills push permanently.
+
+Still missing before a first push: the Cloud Messaging API toggle on `yoogeeapp`. Tap routing and the foreground banner are done.
