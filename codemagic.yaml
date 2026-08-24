@@ -19,3 +19,67 @@ workflows:
         script: ditto -c -k --sequesterRsrc --keepParent build/ios/iphonesimulator/Runner.app Runner.zip
     artifacts:
       - Runner.zip
+
+  ios-testflight:
+    name: iOS TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 90
+    integrations:
+      # The name given to the App Store Connect API key in Codemagic under
+      # Teams -> Integrations -> Developer Portal. It is a label, not the key:
+      # rename it there and rename it here. The key itself needs the App
+      # Manager role, or profile creation in `ios_signing` below is refused.
+      app_store_connect: <API_KEY_NAME>
+    environment:
+      flutter: 3.41.7        # pinned: intl 0.20.2 exact
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        # Codemagic creates and renews the Apple Distribution certificate and
+        # the App Store profile from the API key above. That is the whole
+        # reason for this route: creating a distribution certificate by hand
+        # needs a CSR from Keychain Access, which needs a Mac.
+        #
+        # It cannot grant a capability the App ID does not have. Push
+        # Notifications must already be ticked on the identifier in the
+        # developer portal, or the generated profile carries no
+        # `aps-environment` and the archive fails exactly as it did before --
+        # `ios/Runner/Runner.entitlements` declares that entitlement.
+        distribution_type: app_store
+        bundle_identifier: com.mycompany.yoogeeapp
+    scripts:
+      - name: pub get
+        script: flutter pub get
+      - name: apply fetched provisioning profiles
+        # Not optional, and the easiest step to leave out. This writes the
+        # fetched profile and team into the Xcode project and emits the
+        # export options plist the build step reads. Without it the project
+        # still has no DEVELOPMENT_TEAM -- none is committed -- and signing
+        # fails with the profile sitting right there unused.
+        script: xcode-project use-profiles
+      - name: build ipa
+        # No UI_PREVIEW here, unlike ios-sim: this is the real app, signed and
+        # going to real testers.
+        #
+        # TestFlight refuses a build number it has already seen, and
+        # pubspec.yaml's `+42` is a fixed string, so every upload would collide
+        # on 42. $BUILD_NUMBER is Codemagic's own per-workflow counter, which
+        # increments on its own. If a number collides anyway because builds
+        # were uploaded from elsewhere, swap it for
+        # `app-store-connect get-latest-testflight-build-number <numeric-app-id>
+        # --increment`.
+        script: |
+          flutter build ipa --release \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      # Xcode's own logs, the only place a signing failure explains itself.
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        # Uploads and releases to TestFlight. Deliberately no
+        # `submit_to_app_store` -- this workflow is for testers, and an
+        # accidental App Store submission is not a quiet mistake.
+        submit_to_testflight: true
