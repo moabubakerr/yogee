@@ -29,7 +29,7 @@ workflows:
       # Teams -> Integrations -> Developer Portal. It is a label, not the key:
       # rename it there and rename it here. The key itself needs the App
       # Manager role, or profile creation in `ios_signing` below is refused.
-      app_store_connect: <API_KEY_NAME>
+      app_store_connect: Yogee
     environment:
       flutter: 3.41.7        # pinned: intl 0.20.2 exact
       xcode: latest
