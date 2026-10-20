@@ -300,7 +300,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                         Padding(
                                           padding:
                                               EdgeInsetsDirectional.fromSTEB(
-                                                  16.0, 0.0, 16.0, 0.0),
+                                                  28.0, 0.0, 28.0, 0.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
                                             mainAxisAlignment:
@@ -380,7 +380,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                                 child: Padding(
                                                   padding: EdgeInsetsDirectional
                                                       .fromSTEB(
-                                                          0.0, 0.0, 40.0, 0.0),
+                                                          0.0, 0.0, 24.0, 0.0),
                                                   child: InkWell(
                                                     splashColor:
                                                         Colors.transparent,
@@ -471,7 +471,7 @@ class _NavBottomWidgetState extends State<NavBottomWidget> {
                                                 child: Padding(
                                                   padding: EdgeInsetsDirectional
                                                       .fromSTEB(
-                                                          40.0, 0.0, 0.0, 0.0),
+                                                          24.0, 0.0, 0.0, 0.0),
                                                   child: InkWell(
                                                     splashColor:
                                                         Colors.transparent,
