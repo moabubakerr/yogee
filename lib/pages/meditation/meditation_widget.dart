@@ -9,6 +9,7 @@ import '/index.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import '/custom_code/page_background.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -175,6 +176,7 @@ class _MeditationWidgetState extends State<MeditationWidget> {
                 color: FlutterFlowTheme.of(context).secondaryBackground,
                 image: DecorationImage(
                   fit: BoxFit.cover,
+                  colorFilter: kBackgroundLineBoost,
                   image: Image.asset(
                     'assets/images/journal_background.png',
                   ).image,

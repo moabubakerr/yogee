@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
+import '/custom_code/page_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'new_email_model.dart';
@@ -59,6 +60,7 @@ class _NewEmailWidgetState extends State<NewEmailWidget> {
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.cover,
+              colorFilter: kBackgroundLineBoost,
               image: Image.asset(
                 'assets/images/journal_background.png',
               ).image,

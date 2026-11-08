@@ -14,6 +14,7 @@ import '/index.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '/custom_code/page_background.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -100,6 +101,7 @@ class _OthersprofileWidgetState extends State<OthersprofileWidget> {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       fit: BoxFit.cover,
+                      colorFilter: kBackgroundLineBoost,
                       image: Image.asset(
                         'assets/images/Background2.png',
                       ).image,

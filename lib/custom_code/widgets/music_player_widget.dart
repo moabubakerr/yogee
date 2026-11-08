@@ -97,7 +97,17 @@ class _MusicPlayerWidgetState extends State<MusicPlayerWidget> {
       if (index != null && index < widget.playlist.length && mounted) {
         setState(() {
           _currentSong = widget.playlist[index];
+        });
+        // Show the mini player for whatever is now playing. Done here, the
+        // one place every player route passes through, rather than at each
+        // entry point: only the meditation detail page and player_widget
+        // used to set `miniplayer`, so a first song started from Library
+        // (Favourites, Playlists, Downloads) or a playlist page played
+        // with no mini player. update() notifies, so the nav redraws now
+        // rather than on the next unrelated rebuild.
+        FFAppState().update(() {
           FFAppState().activeSongRef = _currentSong!.reference;
+          FFAppState().miniplayer = true;
         });
       }
     });

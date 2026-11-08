@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 
-/// The starfield/grid backdrop shared by the Journal and Library pages.
+/// Contrast boost for the app's background artwork (journal_background.png,
+/// Background2.png, backgroundD.png).
 ///
-/// `journal_background.png` is very dark (its grid and haze sit at ~10-20%
-/// grey), so drawn as-is it barely shows. The matrix multiplies RGB to bring
-/// it forward; pure black stays black, so text contrast is unaffected.
-/// Tune [_kBoost] if it reads too faint or too loud on device.
-const double _kBoost = 2.2;
+/// Their line work -- grid, stripes, swirl -- is drawn at ~15% grey on ~5%
+/// grey, so it barely reads on a phone. A plain brightness multiply lifts the
+/// purple haze along with the lines and washes the page out; this scales
+/// contrast instead (1.8x, then -12), so the lines stand out while the
+/// near-black areas stay black and no colour is added.
+///
+/// The Dashboard applies the same numbers to its own layered background.
+/// Tune [_kGain] / [_kOffset] here to change every page at once.
+const double _kGain = 1.8;
+const double _kOffset = -12.0;
 
+const ColorFilter kBackgroundLineBoost = ColorFilter.matrix(<double>[
+  _kGain, 0, 0, 0, _kOffset, //
+  0, _kGain, 0, 0, _kOffset, //
+  0, 0, _kGain, 0, _kOffset, //
+  0, 0, 0, 1, 0, //
+]);
+
+/// The starfield/grid backdrop shared by Journal, Library and Playlist.
 const DecorationImage kPageBackgroundImage = DecorationImage(
   fit: BoxFit.cover,
-  colorFilter: ColorFilter.matrix(<double>[
-    _kBoost, 0, 0, 0, 0, //
-    0, _kBoost, 0, 0, 0, //
-    0, 0, _kBoost, 0, 0, //
-    0, 0, 0, 1, 0, //
-  ]),
+  colorFilter: kBackgroundLineBoost,
   image: AssetImage('assets/images/journal_background.png'),
 );

@@ -1137,8 +1137,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                   backgroundColor:
                                                                       Colors
                                                                           .transparent,
-                                                                  enableDrag:
-                                                                      false,
+                                                                  // Swipe-down to dismiss, like every
+                                                                  // other tab (was enableDrag: false).
                                                                   context:
                                                                       context,
                                                                   builder:

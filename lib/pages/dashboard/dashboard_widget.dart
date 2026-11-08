@@ -22,6 +22,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'dashboard_model.dart';
 import '/custom_code/slow_spin.dart';
+import '/custom_code/page_background.dart';
 export 'dashboard_model.dart';
 
 /// Figma: page base fill, #000000 -> #181818 top to bottom.
@@ -316,15 +317,25 @@ class _DashboardWidgetState extends State<DashboardWidget> {
               // If this comes back, _kPageShade has to flip with it -- its
               // window is cut on the same diagonal, and mirroring one layer
               // without the other leaves the bright band off the swirl.
+              // Shared contrast boost (see page_background.dart): brightens
+              // the stripes and grid while keeping near-black areas black.
               Positioned.fill(
-                child: Image.asset(
-                  'assets/images/Background2.png',
-                  fit: BoxFit.cover,
+                child: ColorFiltered(
+                  colorFilter: kBackgroundLineBoost,
+                  child: Image.asset(
+                    'assets/images/Background2.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
+              // Plum tint toned down to 0.35: at full strength, with the
+              // shade below lightened, it washed the page purple.
               Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(gradient: _kPageVignette),
+                child: Opacity(
+                  opacity: 0.35,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(gradient: _kPageVignette),
+                  ),
                 ),
               ),
               // At full strength the shade blacked out nearly all of the

@@ -8,6 +8,7 @@ import 'dart:ui';
 import '/index.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '/custom_code/page_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'writenote_model.dart';
@@ -87,6 +88,7 @@ class _WritenoteWidgetState extends State<WritenoteWidget> {
             color: FlutterFlowTheme.of(context).secondaryBackground,
             image: DecorationImage(
               fit: BoxFit.cover,
+              colorFilter: kBackgroundLineBoost,
               image: Image.asset(
                 'assets/images/journal_background.png',
               ).image,

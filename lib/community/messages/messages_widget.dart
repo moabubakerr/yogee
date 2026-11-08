@@ -10,6 +10,7 @@ import '/index.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '/custom_code/page_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -61,6 +62,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.cover,
+              colorFilter: kBackgroundLineBoost,
               image: Image.asset(
                 'assets/images/backgroundD.png',
               ).image,
