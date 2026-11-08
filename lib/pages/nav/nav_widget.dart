@@ -145,14 +145,8 @@ class _NavWidgetState extends State<NavWidget> {
                         height: 92.0,
                         decoration: BoxDecoration(
                           color: Color(0xFF0A0A0A),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 32.0,
-                              color: Color(0x66D4B8E8),
-                              offset: Offset(0.0, 0.0),
-                              spreadRadius: 2.0,
-                            ),
-                          ],
+                          // No boxShadow: the lavender glow (blur 32, spread 2)
+                          // spilled light around the card while playing.
                           // Was circular(42) -- a full pill, because 42 is half
                           // of the old 84 height. The design is a rounded
                           // rectangle whose bottom edge sits flush against the

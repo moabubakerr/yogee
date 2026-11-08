@@ -21,9 +21,19 @@ const ColorFilter kBackgroundLineBoost = ColorFilter.matrix(<double>[
   0, 0, 0, 1, 0, //
 ]);
 
+/// Stronger boost for the Journal / Library / Playlist backdrop. Its grid is
+/// fainter than the Dashboard's stripes, so the shared 1.8x left it too dim
+/// there. 2.8x with a deeper -20 offset keeps the black areas black.
+const ColorFilter _kPageBackdropBoost = ColorFilter.matrix(<double>[
+  2.8, 0, 0, 0, -20, //
+  0, 2.8, 0, 0, -20, //
+  0, 0, 2.8, 0, -20, //
+  0, 0, 0, 1, 0, //
+]);
+
 /// The starfield/grid backdrop shared by Journal, Library and Playlist.
 const DecorationImage kPageBackgroundImage = DecorationImage(
   fit: BoxFit.cover,
-  colorFilter: kBackgroundLineBoost,
+  colorFilter: _kPageBackdropBoost,
   image: AssetImage('assets/images/journal_background.png'),
 );
