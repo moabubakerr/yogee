@@ -32,7 +32,13 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '11.13.0'
+  # Precompiled Firestore disabled (2026-11-08). It only saves compile time,
+  # and its podspecs fetch binaries via github.com/.../raw/... archive links,
+  # which were returning 504 and failing every iOS build at pod install.
+  # Without it, Firestore builds from source via the normal Firebase pods
+  # (several extra minutes per build, nothing else changes). Re-enable once
+  # those downloads work again:
+  # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '11.13.0'
 end
 
 post_install do |installer|
