@@ -9,6 +9,7 @@ import 'dart:ui';
 import '/index.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '/auth/firebase_auth/facebook_auth.dart' show kFacebookLoginEnabled;
 import '/custom_code/page_background.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -1405,6 +1406,8 @@ class _SignupWidgetState extends State<SignupWidget> {
                                   ),
                                 ),
                               ),
+                              // Facebook Login disabled -- see facebook_auth.dart.
+                              if (kFacebookLoginEnabled)
                               Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(

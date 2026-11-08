@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+56
+version: 1.0.0+57
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
@@ -90,19 +90,9 @@ dependencies:
   flutter_plugin_android_lifecycle: 2.0.28
   font_awesome_flutter: ^11.0.0
   from_css_color: 2.0.0
-  # Facebook Login. Sits next to google_sign_in because it plays the same role:
-  # it only obtains a provider access token, which firebase_auth then exchanges
-  # for a credential -- it does not depend on any Firebase package, which is why
-  # it resolves without moving the exact pins below.
-  #
-  # Pinned exactly like everything else here. 7.2.0 resolves with no movement on
-  # firebase_core, firebase_auth, intl, go_router or the audio stack. It does
-  # pull flutter_secure_storage (and dbus on Linux) transitively.
-  #
-  # Needs facebook_app_id / facebook_client_token in
-  # android/app/src/main/res/values/strings.xml and ios/Runner/Info.plist.
-  # Without them the SDK throws at login and the button fails every time.
-  flutter_facebook_auth: 7.2.0
+  # flutter_facebook_auth: 7.2.0 -- temporarily removed (2026-11-08): its iOS
+  # SDK downloads from GitHub releases, which were 504ing and failing every
+  # iOS build. See lib/auth/firebase_auth/facebook_auth.dart to restore.
   go_router: 12.1.3
   google_fonts: 6.3.3
   google_sign_in: 6.3.0
