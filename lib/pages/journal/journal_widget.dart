@@ -10,6 +10,7 @@ import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
+import '/custom_code/page_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'journal_model.dart';
@@ -67,12 +68,7 @@ class _JournalWidgetState extends State<JournalWidget>
           height: double.infinity,
           decoration: BoxDecoration(
             color: FlutterFlowTheme.of(context).secondaryBackground,
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: Image.asset(
-                'assets/images/journal_background.png',
-              ).image,
-            ),
+            image: kPageBackgroundImage,
           ),
           child: Stack(
             children: [
@@ -106,13 +102,15 @@ class _JournalWidgetState extends State<JournalWidget>
                           children: [
                             Text(
                               'Journal',
+                              // headlineLarge (32), same as the Courses page
+                              // title; headlineSmall (24) looked undersized.
                               style: FlutterFlowTheme.of(context)
-                                  .headlineSmall
+                                  .headlineLarge
                                   .override(
                                     fontWeight: FontWeight.w800,
-                                    letterSpacing: -0.3,
+                                    letterSpacing: -0.6,
                                     fontStyle: FlutterFlowTheme.of(context)
-                                        .headlineSmall
+                                        .headlineLarge
                                         .fontStyle,
                                   ),
                             ),
@@ -756,9 +754,11 @@ class _JournalWidgetState extends State<JournalWidget>
                                                                         bottomLeft:
                                                                             Radius.circular(12.0),
                                                                       ),
+                                                                      // One thumbnail for notes and voice notes
+                                                                      // alike (was a different image per type).
                                                                       child: Image
                                                                           .asset(
-                                                                        'assets/images/Abstract_Shape_55_(white_on_transparent).png',
+                                                                        'assets/images/Abstract_Shape_55_(white_on_transparent)2.png',
                                                                         width:
                                                                             54.0,
                                                                         height:
@@ -767,28 +767,6 @@ class _JournalWidgetState extends State<JournalWidget>
                                                                             .cover,
                                                                       ),
                                                                     ),
-                                                                    if (listViewWrittenNoteRecord
-                                                                            .isVoice ==
-                                                                        false)
-                                                                      ClipRRect(
-                                                                        borderRadius:
-                                                                            BorderRadius.only(
-                                                                          topLeft:
-                                                                              Radius.circular(12.0),
-                                                                          bottomLeft:
-                                                                              Radius.circular(12.0),
-                                                                        ),
-                                                                        child: Image
-                                                                            .asset(
-                                                                          'assets/images/Abstract_Shape_55_(white_on_transparent)2.png',
-                                                                          width:
-                                                                              54.0,
-                                                                          height:
-                                                                              64.0,
-                                                                          fit: BoxFit
-                                                                              .cover,
-                                                                        ),
-                                                                      ),
                                                                   ],
                                                                 ),
                                                               ),
@@ -1366,7 +1344,9 @@ class _JournalWidgetState extends State<JournalWidget>
                                                                 ),
                                                                 child:
                                                                     Image.asset(
-                                                                  'assets/images/Abstract_Shape_55_(white_on_transparent).png',
+                                                                  // Same tunnel artwork as written notes: every
+                                                                  // journal entry uses one thumbnail.
+                                                                  'assets/images/Abstract_Shape_55_(white_on_transparent)2.png',
                                                                   width: 54.0,
                                                                   height: 64.0,
                                                                   fit: BoxFit

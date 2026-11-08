@@ -21,6 +21,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'dashboard_model.dart';
+import '/custom_code/slow_spin.dart';
 export 'dashboard_model.dart';
 
 /// Figma: page base fill, #000000 -> #181818 top to bottom.
@@ -326,9 +327,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                   decoration: BoxDecoration(gradient: _kPageVignette),
                 ),
               ),
+              // At full strength the shade blacked out nearly all of the
+              // artwork; 0.6 keeps the diagonal emphasis but lets the swirl
+              // show across the page. Raise toward 1.0 to darken again.
               Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(gradient: _kPageShade),
+                child: Opacity(
+                  opacity: 0.6,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(gradient: _kPageShade),
+                  ),
                 ),
               ),
               Padding(
@@ -1192,11 +1199,11 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                                                             MainAxisAlignment
                                                                 .start,
                                                         children: [
-                                                          ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8.0),
+                                                          // Slowly rotating glass cube. The
+                                                          // asset is transparent around the
+                                                          // cube, so the corners swinging out
+                                                          // during the turn are invisible.
+                                                          SlowSpin(
                                                             child: Image.asset(
                                                               'assets/images/cube2.png',
                                                               width:

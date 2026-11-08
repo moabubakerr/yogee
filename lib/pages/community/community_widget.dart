@@ -86,14 +86,14 @@ class _CommunityWidgetState extends State<CommunityWidget>
         floatingActionButton: AnimatedPadding(
           duration: Duration(milliseconds: 220),
           curve: Curves.easeOut,
-          // NavWidget is 120px tall normally and 200px once the mini player
-          // is showing, so lift the button by that extra 80px to keep it
+          // NavWidget is 120px tall normally and 190px once the mini player
+          // is showing, so lift the button by that extra 70px to keep it
           // clear of the now-playing card.
           padding: EdgeInsetsDirectional.fromSTEB(
             0.0,
             0.0,
             10.0,
-            FFAppState().miniplayer ? 140.0 : 60.0,
+            FFAppState().miniplayer ? 130.0 : 60.0,
           ),
           child: FloatingActionButton(
             onPressed: () async {

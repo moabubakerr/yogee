@@ -9,6 +9,7 @@ import '/pages/nav/nav_widget.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
+import '/custom_code/page_background.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'library_model.dart';
@@ -101,8 +102,9 @@ class _LibraryWidgetState extends State<LibraryWidget>
         });
       },
       child: Container(
-        width: 72.0,
-        height: 72.0,
+        // 75, matching the Journal page's tab tiles.
+        width: 75.0,
+        height: 75.0,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: selected
@@ -146,8 +148,9 @@ class _LibraryWidgetState extends State<LibraryWidget>
                 textAlign: TextAlign.center,
                 style: _manrope(
                   context,
-                  size: 10.0,
-                  weight: FontWeight.w800,
+                  // 12, matching the Journal tab labels (was 10).
+                  size: 12.0,
+                  weight: FontWeight.w700,
                   color: selected ? Colors.black : Colors.white,
                 ),
               ),
@@ -284,12 +287,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
           height: double.infinity,
           decoration: BoxDecoration(
             color: FlutterFlowTheme.of(context).secondaryBackground,
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: Image.asset(
-                'assets/images/journal_background.png',
-              ).image,
-            ),
+            image: kPageBackgroundImage,
           ),
           child: Stack(
             children: [
@@ -297,7 +295,9 @@ class _LibraryWidgetState extends State<LibraryWidget>
                 alignment: AlignmentDirectional(0.0, 0.0),
                 child: Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(40.0, 54.0, 28.0, 0.0),
+                      // Same 16pt gutters as the Journal page (was 40/28,
+                      // which pushed everything inward and off-centre).
+                      EdgeInsetsDirectional.fromSTEB(16.0, 48.0, 16.0, 0.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -318,14 +318,19 @@ class _LibraryWidgetState extends State<LibraryWidget>
                             0.0, 16.0, 0.0, 12.0),
                         child: Align(
                           alignment: AlignmentDirectional(-1.0, 0.0),
+                          // Same title style as Journal and Courses
+                          // (headlineLarge, 32 / w800, full white).
                           child: Text(
                             'Library',
-                            style: _manrope(
-                              context,
-                              size: 21.0,
-                              weight: FontWeight.w500,
-                              color: Color(0xBDFFFFFF),
-                            ),
+                            style: FlutterFlowTheme.of(context)
+                                .headlineLarge
+                                .override(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.6,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .headlineLarge
+                                      .fontStyle,
+                                ),
                           ),
                         ),
                       ),
@@ -652,10 +657,10 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                           label: 'Play All',
                                                           onTap: () async {
                                                             FFAppState()
-                                                                .isPlaying =
+                                                                    .isPlaying =
                                                                 true;
                                                             FFAppState()
-                                                                .isSongPlaying =
+                                                                    .isSongPlaying =
                                                                 true;
                                                             safeSetState(() {});
                                                             await showModalBottomSheet(
@@ -700,8 +705,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                           label: 'All',
                                                           onTap: () async {},
                                                         ),
-                                                      ].divide(
-                                                          SizedBox(width: 10.0)),
+                                                      ].divide(SizedBox(
+                                                          width: 10.0)),
                                                     ),
                                                   ),
                                                   Expanded(
@@ -827,8 +832,9 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               6.0),
-                                                                      border: Border
-                                                                          .all(
+                                                                      border:
+                                                                          Border
+                                                                              .all(
                                                                         color: Color(
                                                                             0xFF979797),
                                                                       ),
@@ -838,7 +844,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               5.0),
-                                                                      child: NetImage(
+                                                                      child:
+                                                                          NetImage(
                                                                         listViewSongsRecord
                                                                             .songCoverImage,
                                                                         width:
@@ -859,7 +866,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                       crossAxisAlignment:
                                                                           CrossAxisAlignment
                                                                               .start,
-                                                                      children: [
+                                                                      children:
+                                                                          [
                                                                         Text(
                                                                           listViewSongsRecord
                                                                               .title,
@@ -869,7 +877,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                               1,
                                                                           overflow:
                                                                               TextOverflow.ellipsis,
-                                                                          style: _manrope(
+                                                                          style:
+                                                                              _manrope(
                                                                             context,
                                                                             size:
                                                                                 15.0,
@@ -886,7 +895,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                               1,
                                                                           overflow:
                                                                               TextOverflow.ellipsis,
-                                                                          style: _manrope(
+                                                                          style:
+                                                                              _manrope(
                                                                             context,
                                                                             size:
                                                                                 12.5,
@@ -899,7 +909,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                         Text(
                                                                           listViewSongsRecord
                                                                               .duration,
-                                                                          style: _manrope(
+                                                                          style:
+                                                                              _manrope(
                                                                             context,
                                                                             size:
                                                                                 10.0,
@@ -910,8 +921,7 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                           ),
                                                                         ),
                                                                       ].divide(SizedBox(
-                                                                          height:
-                                                                              2.0)),
+                                                                              height: 2.0)),
                                                                     ),
                                                                   ),
                                                                   _moreButton(),
@@ -982,10 +992,10 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                           label: 'Play All',
                                                           onTap: () async {
                                                             FFAppState()
-                                                                .isPlaying =
+                                                                    .isPlaying =
                                                                 true;
                                                             FFAppState()
-                                                                .isSongPlaying =
+                                                                    .isSongPlaying =
                                                                 true;
                                                             safeSetState(() {});
                                                             await showModalBottomSheet(
@@ -1030,8 +1040,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                           label: 'All',
                                                           onTap: () async {},
                                                         ),
-                                                      ].divide(
-                                                          SizedBox(width: 10.0)),
+                                                      ].divide(SizedBox(
+                                                          width: 10.0)),
                                                     ),
                                                   ),
                                                   Expanded(
@@ -1173,8 +1183,9 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               6.0),
-                                                                      border: Border
-                                                                          .all(
+                                                                      border:
+                                                                          Border
+                                                                              .all(
                                                                         color: Color(
                                                                             0xFF979797),
                                                                       ),
@@ -1184,7 +1195,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               5.0),
-                                                                      child: NetImage(
+                                                                      child:
+                                                                          NetImage(
                                                                         listViewDownloadsRecord
                                                                             .coverimage,
                                                                         width:
@@ -1205,7 +1217,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                       crossAxisAlignment:
                                                                           CrossAxisAlignment
                                                                               .start,
-                                                                      children: [
+                                                                      children:
+                                                                          [
                                                                         Text(
                                                                           listViewDownloadsRecord
                                                                               .songName,
@@ -1215,7 +1228,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                               1,
                                                                           overflow:
                                                                               TextOverflow.ellipsis,
-                                                                          style: _manrope(
+                                                                          style:
+                                                                              _manrope(
                                                                             context,
                                                                             size:
                                                                                 15.0,
@@ -1232,7 +1246,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                               1,
                                                                           overflow:
                                                                               TextOverflow.ellipsis,
-                                                                          style: _manrope(
+                                                                          style:
+                                                                              _manrope(
                                                                             context,
                                                                             size:
                                                                                 12.5,
@@ -1245,7 +1260,8 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                         Row(
                                                                           mainAxisSize:
                                                                               MainAxisSize.min,
-                                                                          children: [
+                                                                          children:
+                                                                              [
                                                                             Icon(
                                                                               Icons.arrow_circle_down,
                                                                               color: _lavender,
@@ -1260,12 +1276,10 @@ class _LibraryWidgetState extends State<LibraryWidget>
                                                                                 color: Color(0x99FFFFFF),
                                                                               ),
                                                                             ),
-                                                                          ].divide(SizedBox(
-                                                                              width: 5.0)),
+                                                                          ].divide(SizedBox(width: 5.0)),
                                                                         ),
                                                                       ].divide(SizedBox(
-                                                                          height:
-                                                                              2.0)),
+                                                                              height: 2.0)),
                                                                     ),
                                                                   ),
                                                                   _moreButton(),

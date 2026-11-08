@@ -20,7 +20,8 @@ export 'nav_model.dart';
 const _kNavActive = Color(0xFFF2B5F0);
 
 /// Figma: the active tab's glyph is drawn larger than the inactive ones.
-double _navIconSize(bool active) => active ? 28.0 : 23.0;
+/// Bumped +3 from 28/23 on request -- the glyphs read small on device.
+double _navIconSize(bool active) => active ? 31.0 : 26.0;
 
 /// Figma: nav labels are Manrope Light ~11pt (13pt for the centre "Mediate").
 TextStyle _navLabelStyle(
@@ -85,7 +86,12 @@ class _NavWidgetState extends State<NavWidget> {
       borderRadius: BorderRadius.zero,
       child: Container(
         width: double.infinity,
-        // 198 = 8 top pad + 100 player + 90 visible bar.
+        // 190 = 8 top pad + 92 player + 90 visible bar.
+        //
+        // Keep this in step with the player's height below. When the two
+        // drifted apart (198 here vs a 110 player) the player overran the bar
+        // and the Mediate orb, which rises 30 above the bar, sat on top of the
+        // artist line. CommunityWidget's FAB offset depends on this too.
         //
         // The nav's outer Container is 120 tall, but the black bar drawn inside
         // it is only 90 (see the Container(height: 90) below) and is
@@ -94,8 +100,8 @@ class _NavWidgetState extends State<NavWidget> {
         // player, which is what made it look detached. Measure to the bar the
         // user can actually see, not to its container.
         height: valueOrDefault<double>(
-          FFAppState().miniplayer ? 198.0 : 120.0,
-          198.0,
+          FFAppState().miniplayer ? 190.0 : 120.0,
+          190.0,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.zero,
@@ -107,9 +113,9 @@ class _NavWidgetState extends State<NavWidget> {
               Align(
                 alignment: AlignmentDirectional(0.0, -1.0),
                 child: Padding(
-                  // Wider than the old 12pt inset: the design runs the player
-                  // close to the screen edges rather than floating it.
-                  padding: EdgeInsetsDirectional.fromSTEB(4.0, 8.0, 4.0, 0.0),
+                  // The design runs the player close to the screen edges
+                  // rather than floating it.
+                  padding: EdgeInsetsDirectional.fromSTEB(8.0, 8.0, 8.0, 0.0),
                   child: StreamBuilder<SongsRecord>(
                     stream:
                         SongsRecord.getDocument(FFAppState().activeSongRef!),
@@ -133,9 +139,10 @@ class _NavWidgetState extends State<NavWidget> {
 
                       return Container(
                         width: double.infinity,
-                        // 100, not 84: the design's cover art and two-line
-                        // title need the extra room.
-                        height: 110.0,
+                        // 92: the bottom 30 is under the Mediate orb, which
+                        // leaves ~62 for content -- enough for a 56 cover.
+                        // At 110 the card dwarfed the nav bar below it.
+                        height: 92.0,
                         decoration: BoxDecoration(
                           color: Color(0xFF0A0A0A),
                           boxShadow: [
@@ -181,60 +188,75 @@ class _NavWidgetState extends State<NavWidget> {
                               },
                             ).then((value) => safeSetState(() {}));
                           },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      28.0, 0.0, 0.0, 0.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      if (functions.isValidUrl(
-                                              containerSongsRecord
-                                                  .songCoverImage) ??
-                                          true)
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                          child: NetImage(
-                                            valueOrDefault<String>(
-                                              containerSongsRecord
-                                                  .songCoverImage,
-                                              'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/Square.jpeg?alt=media&token=6bb95a92-ae29-4638-9326-8ad36bcfaff0',
+                          // The Mediate orb rises 30 above the nav bar, i.e.
+                          // into the bottom 30 of this card, directly under
+                          // the title/artist text. Centre the row in the area
+                          // above the orb instead of the full card height.
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 0.0, 0.0, 26.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        20.0, 0.0, 0.0, 0.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        if (functions.isValidUrl(
+                                                containerSongsRecord
+                                                    .songCoverImage) ??
+                                            true)
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            child: NetImage(
+                                              valueOrDefault<String>(
+                                                containerSongsRecord
+                                                    .songCoverImage,
+                                                'https://firebasestorage.googleapis.com/v0/b/yoogeeapp.firebasestorage.app/o/Square.jpeg?alt=media&token=6bb95a92-ae29-4638-9326-8ad36bcfaff0',
+                                              ),
+                                              width: 56.0,
+                                              height: 56.0,
+                                              fit: BoxFit.cover,
                                             ),
-                                            width: 78.0,
-                                            height: 78.0,
-                                            fit: BoxFit.cover,
                                           ),
-                                        ),
-                                      Align(
-                                        alignment:
-                                            AlignmentDirectional(0.0, 0.0),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsetsDirectional
-                                                  .fromSTEB(0.0, 0.0, 0.0, 4.0),
-                                              child: Text(
-                                                containerSongsRecord.title
-                                                    .maybeHandleOverflow(
-                                                  // 13 cut "Thai Friendly EP"
-                                                  // short; the design shows the
-                                                  // full title.
-                                                  maxChars: 24,
-                                                ),
-                                                maxLines: 1,
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .titleMedium
-                                                    .override(
-                                                      font: GoogleFonts.manrope(
+                                        // Expanded so a long title ellipsizes
+                                        // instead of pushing into the buttons.
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                        0.0, 0.0, 0.0, 2.0),
+                                                child: Text(
+                                                  containerSongsRecord.title,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleMedium
+                                                      .override(
+                                                        fontSize: 16.0,
+                                                        font:
+                                                            GoogleFonts.manrope(
+                                                          fontWeight:
+                                                              FontWeight.w800,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .titleMedium
+                                                                  .fontStyle,
+                                                        ),
+                                                        letterSpacing: 0.0,
                                                         fontWeight:
                                                             FontWeight.w800,
                                                         fontStyle:
@@ -243,24 +265,31 @@ class _NavWidgetState extends State<NavWidget> {
                                                                 .titleMedium
                                                                 .fontStyle,
                                                       ),
-                                                      letterSpacing: 0.0,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .titleMedium
-                                                              .fontStyle,
-                                                    ),
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              containerSongsRecord.artist,
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodySmall
-                                                  .override(
-                                                    font: GoogleFonts.manrope(
+                                              Text(
+                                                containerSongsRecord.artist,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: FlutterFlowTheme.of(
+                                                        context)
+                                                    .bodySmall
+                                                    .override(
+                                                      font: GoogleFonts.manrope(
+                                                        fontWeight:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .fontWeight,
+                                                        fontStyle:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodySmall
+                                                                .fontStyle,
+                                                      ),
+                                                      color: Color(0xFFD6A8D8),
+                                                      fontSize: 12.0,
+                                                      letterSpacing: 0.0,
                                                       fontWeight:
                                                           FlutterFlowTheme.of(
                                                                   context)
@@ -272,124 +301,111 @@ class _NavWidgetState extends State<NavWidget> {
                                                               .bodySmall
                                                               .fontStyle,
                                                     ),
-                                                    color: Color(0xFFD6A8D8),
-                                                    fontSize: 13.0,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodySmall
-                                                            .fontWeight,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodySmall
-                                                            .fontStyle,
-                                                  ),
-                                            ),
-                                          ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ].divide(SizedBox(width: 12.0)),
+                                      ].divide(SizedBox(width: 12.0)),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 16.0, 0.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    if (FFAppState().isSongPlaying == true)
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        focusColor: Colors.transparent,
-                                        hoverColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () async {
-                                          FFAppState().isSongPlaying = false;
-                                          safeSetState(() {});
-                                          await actions.pauseSongBtn();
-                                        },
-                                        // Same artwork the audio player page
-                                        // uses (audioplayer_widget.dart:229),
-                                        // scaled down for the mini-player.
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child: Image.asset(
-                                            'assets/images/pause.png',
-                                            width: 44.0,
-                                            height: 44.0,
-                                            fit: BoxFit.cover,
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 0.0, 16.0, 0.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      if (FFAppState().isSongPlaying == true)
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          focusColor: Colors.transparent,
+                                          hoverColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () async {
+                                            FFAppState().isSongPlaying = false;
+                                            safeSetState(() {});
+                                            await actions.pauseSongBtn();
+                                          },
+                                          // Same artwork the audio player page
+                                          // uses (audioplayer_widget.dart:229),
+                                          // scaled down for the mini-player.
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: Image.asset(
+                                              'assets/images/pause.png',
+                                              width: 38.0,
+                                              height: 38.0,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      if (FFAppState().isSongPlaying == false)
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          focusColor: Colors.transparent,
+                                          hoverColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () async {
+                                            FFAppState().isSongPlaying = true;
+                                            safeSetState(() {});
+                                            await actions.playSongBtn();
+                                          },
+                                          // Same artwork as
+                                          // audioplayer_widget.dart:250.
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: Image.asset(
+                                              'assets/images/play.png',
+                                              width: 38.0,
+                                              height: 38.0,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            8.0, 0.0, 0.0, 0.0),
+                                        child: InkWell(
+                                          splashColor: Colors.transparent,
+                                          focusColor: Colors.transparent,
+                                          hoverColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () async {
+                                            await actions.pauseSongBtn();
+                                            FFAppState().miniplayer = false;
+                                            safeSetState(() {});
+                                          },
+                                          // Artwork, not Icons.close_rounded: the
+                                          // white Material glyph was the only
+                                          // control in this row not drawn from an
+                                          // asset, next to play.png and
+                                          // pause.png above.
+                                          //
+                                          // Container stays at 32 so the tap
+                                          // target does not shrink with the
+                                          // smaller glyph.
+                                          child: Container(
+                                            width: 32.0,
+                                            height: 32.0,
+                                            alignment: Alignment.center,
+                                            child: Image.asset(
+                                              'assets/images/crossplayer.png',
+                                              width: 20.0,
+                                              height: 20.0,
+                                              fit: BoxFit.contain,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    if (FFAppState().isSongPlaying == false)
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        focusColor: Colors.transparent,
-                                        hoverColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () async {
-                                          FFAppState().isSongPlaying = true;
-                                          safeSetState(() {});
-                                          await actions.playSongBtn();
-                                        },
-                                        // Same artwork as
-                                        // audioplayer_widget.dart:250.
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child: Image.asset(
-                                            'assets/images/play.png',
-                                            width: 44.0,
-                                            height: 44.0,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          8.0, 0.0, 0.0, 0.0),
-                                      child: InkWell(
-                                        splashColor: Colors.transparent,
-                                        focusColor: Colors.transparent,
-                                        hoverColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () async {
-                                          await actions.pauseSongBtn();
-                                          FFAppState().miniplayer = false;
-                                          safeSetState(() {});
-                                        },
-                                        // Artwork, not Icons.close_rounded: the
-                                        // white Material glyph was the only
-                                        // control in this row not drawn from an
-                                        // asset, next to play.png and
-                                        // pause.png above.
-                                        //
-                                        // Container stays at 32 so the tap
-                                        // target does not shrink with the
-                                        // smaller glyph.
-                                        child: Container(
-                                          width: 32.0,
-                                          height: 32.0,
-                                          alignment: Alignment.center,
-                                          child: Image.asset(
-                                            'assets/images/crossplayer.png',
-                                            width: 25.0,
-                                            height: 25.0,
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );
